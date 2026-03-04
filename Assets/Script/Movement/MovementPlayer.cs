@@ -25,12 +25,12 @@ public class MovementPlayer : MonoBehaviour
     public LayerMask obstacleMask;
     public float checkDistance = 1.0f;
 
-    [Header("Inventory System")]
+    /*[Header("Inventory System")]
     public float interactDistance;
     public Transform dropPoint;
     public float throwForce;
     private GameObject heldItemPrefab;
-    private bool isHoldingItem = false;
+    private bool isHoldingItem = false;*/
 
     [Header("Flashlight Settings")]
     public GameObject flashlightObject;
@@ -145,7 +145,7 @@ public class MovementPlayer : MonoBehaviour
         Debug.DrawRay(transform.position, Vector3.up * checkDistance, isBlockedAbove ? Color.red : Color.green);
     }
 
-    public void OnPickup(InputAction.CallbackContext context)
+    /*public void OnPickup(InputAction.CallbackContext context)
     {
        
         if (context.performed && !isHoldingItem)
@@ -226,5 +226,5 @@ public class MovementPlayer : MonoBehaviour
             flashlightObject.SetActive(isFlashlightOn);
             Debug.Log("Senter: " + (isFlashlightOn ? "Menyala" : "Mati"));
         }
-    }    
+    }   */ 
 }
