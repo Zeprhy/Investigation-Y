@@ -20,6 +20,10 @@ public class MovementPlayer : MonoBehaviour
     public float defaultHeight = 2f;
     public float crouchHeight = 1f;
 
+    [Header("Stealth & Hide")]
+    public LayerMask obstacleMask;
+    public float checkDistance = 1.0f;
+
     // Komponen & Data Input internal
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
@@ -30,6 +34,7 @@ public class MovementPlayer : MonoBehaviour
     // Status Karakter
     private bool isRunning;
     private bool isCrouching;
+    private bool isBlockedAbove;
 
     void Start()
     {
@@ -49,6 +54,7 @@ public class MovementPlayer : MonoBehaviour
 
     void Update()
     {
+        checkObstacleAbove();
         ApplyRotation();
         ApplyMovement();
         ApplyGravity();
@@ -60,13 +66,15 @@ public class MovementPlayer : MonoBehaviour
 
     private void ApplyRotation()
     {
+        float sensitivityMultiplier = 0.1f;
+        
         // Putar Kamera (Atas - Bawah)
-        rotationX -= inputLook.y * lookSpeed;
+        rotationX -= inputLook.y * lookSpeed * sensitivityMultiplier;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
         playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
 
         // Putar Badan (Kiri - Kanan)
-        transform.Rotate(Vector3.up * inputLook.x * lookSpeed);
+        transform.Rotate(Vector3.up * inputLook.x * lookSpeed * sensitivityMultiplier);
     }
 
     private void ApplyMovement()
@@ -105,7 +113,7 @@ public class MovementPlayer : MonoBehaviour
     private void ApplyCrouch()
     {
         // Mengubah tinggi karakter secara instan
-        if (isCrouching)
+        if (isCrouching || isBlockedAbove)
         {
             characterController.height = crouchHeight;
         }
@@ -113,5 +121,10 @@ public class MovementPlayer : MonoBehaviour
         {
             characterController.height = defaultHeight;
         }
+    }
+    private void checkObstacleAbove()
+    {
+        isBlockedAbove = Physics.Raycast(transform.position, Vector3.up, checkDistance, obstacleMask);
+        Debug.DrawRay(transform.position, Vector3.up * checkDistance, isBlockedAbove ? Color.red : Color.green);
     }
 }
