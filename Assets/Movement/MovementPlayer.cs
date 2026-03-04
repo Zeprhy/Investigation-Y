@@ -138,12 +138,10 @@ public class MovementPlayer : MonoBehaviour
 
     public void OnPickup(InputAction.CallbackContext context)
     {
-<<<<<<< HEAD
-=======
-        Debug.Log("Pickup Ditekan");
->>>>>>> 604cb08637b518d0ad680a6a4acaf925ba0e7da5
+       
         if (context.performed && !isHoldingItem)
         {
+             Debug.Log("Pickup Ditekan");
             PickupItem();
         }
     }
@@ -154,23 +152,6 @@ public class MovementPlayer : MonoBehaviour
         {
             DropItem();
         }
-<<<<<<< HEAD
-        
-        if (context.performed) 
-        {
-            Debug.Log("Tombol G ditekan! Status isHoldingItem: " + isHoldingItem);
-
-            if (isHoldingItem)
-            {
-                DropItem();
-            }
-            else 
-            {
-                Debug.LogWarning("Gagal Drop: Kamu sedang tidak membawa barang (heldItemPrefab kosong)");
-            }
-        }
-=======
->>>>>>> 604cb08637b518d0ad680a6a4acaf925ba0e7da5
     }
 
     private void PickupItem()
@@ -178,55 +159,41 @@ public class MovementPlayer : MonoBehaviour
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
 
-<<<<<<< HEAD
-        if (Physics.Raycast(ray, out hit, interactDistance))
-=======
         if (Physics.SphereCast(ray, 0.2f, out hit, interactDistance))
     {
         // Cek apakah objek yang terkena laser punya script "Item"
         Item item = hit.collider.GetComponentInParent<Item>();
         
         if (item != null)
->>>>>>> 604cb08637b518d0ad680a6a4acaf925ba0e7da5
         {
-            Item item = hit.collider.GetComponent<Item>();
+            Debug.Log("Mengambil: " + item.itemName);
+            
+            // Simpan prefabnya dan tandai sedang membawa barang
+            heldItemPrefab = item.itemPrefab;
+            isHoldingItem = true;
 
-            if (item != null)
-            {
-                // CEK: Apakah item ini punya 'sertifikat' prefab?
-                if (item.itemPrefab != null)
-                {
-                    heldItemPrefab = item.itemPrefab;
-                    isHoldingItem = true;
-                    Destroy(hit.collider.gameObject);
-                    Debug.Log("<color=green>Berhasil mengambil:</color> " + item.itemName);
-                }
-                else
-                {
-                    // Pesan ini akan muncul di Console jika kamu lupa langkah nomor 1 tadi
-                    Debug.LogError("Gagal mengambil! Objek '" + hit.collider.name + "' tidak memiliki referensi 'itemPrefab' di Inspector.");
-                }
-            }
+            // Hapus barang dari dunia
+            Destroy(hit.collider.gameObject);
         }
+        }
+
     }
 
     private void DropItem()
     {
-        if (heldItemPrefab == null) return;
+    // Munculkan barang kembali di depan Player
+    GameObject droppedObj = Instantiate(heldItemPrefab, dropPoint.position, dropPoint.rotation);
+    
+    // Beri efek lemparan ke depan
+    Rigidbody rb = droppedObj.GetComponent<Rigidbody>();
+    if (rb != null)
+    {
+        rb.AddForce(playerCamera.transform.forward * throwForce, ForceMode.Impulse);
+    }
 
-        // Munculkan barang kembali di depan Player
-        GameObject droppedObj = Instantiate(heldItemPrefab, dropPoint.position, dropPoint.rotation);
-
-        // Beri efek lemparan ke depan
-        Rigidbody rb = droppedObj.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.isKinematic = false;
-            rb.AddForce(playerCamera.transform.forward * throwForce, ForceMode.Impulse);
-        }
-
-        // Kosongkan inventory
-        heldItemPrefab = null;
-        isHoldingItem = false;
+    // Kosongkan inventory
+    heldItemPrefab = null;
+    isHoldingItem = false;
+    Debug.Log("Barang dibuang");
     }   
 }
