@@ -47,7 +47,6 @@ public class MovementPlayer : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
-        dropPoint = GetComponent<Transform>();
         
         // Kunci kursor agar tidak keluar layar
         Cursor.lockState = CursorLockMode.Locked;
@@ -137,20 +136,21 @@ public class MovementPlayer : MonoBehaviour
         Debug.DrawRay(transform.position, Vector3.up * checkDistance, isBlockedAbove ? Color.red : Color.green);
     }
 
-    public void OnInteract(InputAction.CallbackContext context)
+    public void OnPickup(InputAction.CallbackContext context)
     {
-    if (context.performed && !isHoldingItem)
-    {
-        PickupItem();
-    }
+        Debug.Log("Pickup Ditekan");
+        if (context.performed && !isHoldingItem)
+        {
+            PickupItem();
+        }
     }
 
     public void OnDrop(InputAction.CallbackContext context)
     {
-    if (context.performed && isHoldingItem)
-    {
-        DropItem();
-    }
+        if (context.performed && isHoldingItem)
+        {
+            DropItem();
+        }
     }
 
     private void PickupItem()
@@ -161,7 +161,7 @@ public class MovementPlayer : MonoBehaviour
         if (Physics.SphereCast(ray, 0.2f, out hit, interactDistance))
     {
         // Cek apakah objek yang terkena laser punya script "Item"
-        Item item = hit.collider.GetComponent<Item>();
+        Item item = hit.collider.GetComponentInParent<Item>();
         
         if (item != null)
         {
