@@ -26,9 +26,9 @@ public class MovementPlayer : MonoBehaviour
     public float checkDistance = 1.0f;
 
     [Header("Inventory System")]
-    public float interactDistance = 3f;
+    public float interactDistance;
     public Transform dropPoint;
-    public float throwForce = 5f;
+    public float throwForce;
     private GameObject heldItemPrefab;
     private bool isHoldingItem = false;
 
