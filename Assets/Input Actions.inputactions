@@ -52,7 +52,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Pickup Item",
+                    "name": "Pickup",
                     "type": "Button",
                     "id": "aa759cd1-5d7a-4524-bf75-b9589ae6a9b0",
                     "expectedControlType": "",
@@ -61,7 +61,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Remove Item",
+                    "name": "Drop",
                     "type": "Button",
                     "id": "6001c6b1-2cb6-40e2-8995-8ed5491cc73b",
                     "expectedControlType": "",
@@ -188,7 +188,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Pickup Item",
+                    "action": "Pickup",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -199,7 +199,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Remove Item",
+                    "action": "Drop",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

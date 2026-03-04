@@ -136,8 +136,12 @@ public class MovementPlayer : MonoBehaviour
         Debug.DrawRay(transform.position, Vector3.up * checkDistance, isBlockedAbove ? Color.red : Color.green);
     }
 
-    public void OnInteract(InputAction.CallbackContext context)
+    public void OnPickup(InputAction.CallbackContext context)
     {
+<<<<<<< HEAD
+=======
+        Debug.Log("Pickup Ditekan");
+>>>>>>> 604cb08637b518d0ad680a6a4acaf925ba0e7da5
         if (context.performed && !isHoldingItem)
         {
             PickupItem();
@@ -150,6 +154,7 @@ public class MovementPlayer : MonoBehaviour
         {
             DropItem();
         }
+<<<<<<< HEAD
         
         if (context.performed) 
         {
@@ -164,6 +169,8 @@ public class MovementPlayer : MonoBehaviour
                 Debug.LogWarning("Gagal Drop: Kamu sedang tidak membawa barang (heldItemPrefab kosong)");
             }
         }
+=======
+>>>>>>> 604cb08637b518d0ad680a6a4acaf925ba0e7da5
     }
 
     private void PickupItem()
@@ -171,7 +178,16 @@ public class MovementPlayer : MonoBehaviour
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
 
+<<<<<<< HEAD
         if (Physics.Raycast(ray, out hit, interactDistance))
+=======
+        if (Physics.SphereCast(ray, 0.2f, out hit, interactDistance))
+    {
+        // Cek apakah objek yang terkena laser punya script "Item"
+        Item item = hit.collider.GetComponentInParent<Item>();
+        
+        if (item != null)
+>>>>>>> 604cb08637b518d0ad680a6a4acaf925ba0e7da5
         {
             Item item = hit.collider.GetComponent<Item>();
 
