@@ -32,6 +32,9 @@ public class MovementPlayer : MonoBehaviour
     private GameObject heldItemPrefab;
     private bool isHoldingItem = false;
 
+    [Header("Flashlight Settings")]
+    public GameObject flashlightObject;
+
     // Komponen & Data Input internal
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
@@ -43,6 +46,7 @@ public class MovementPlayer : MonoBehaviour
     private bool isRunning;
     private bool isCrouching;
     private bool isBlockedAbove;
+    private bool isFlashlightOn = false;
 
     void Start()
     {
@@ -51,6 +55,11 @@ public class MovementPlayer : MonoBehaviour
         // Kunci kursor agar tidak keluar layar
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (flashlightObject != null)
+        {
+            flashlightObject.SetActive(false); // Senter mulai dalam keadaan mati
+        }
     }
 
     // BAGIAN INPUT (Dihubungkan ke Player Input Component)
@@ -175,31 +184,47 @@ public class MovementPlayer : MonoBehaviour
             isHoldingItem = true;
             // Hapus barang dari dunia
             item.gameObject.SetActive(false);
-        
         }
 
     }
 
     private void DropItem()
     {
-    if (heldItemPrefab == null)
-    return;
-    // Munculkan barang kembali di depan Player
-    heldItemPrefab.transform.position = transform.position + transform.forward * 2f;
+        if (heldItemPrefab == null)
+        return;
+        // Munculkan barang kembali di depan Player
+        heldItemPrefab.transform.position = transform.position + transform.forward * 2f;
 
-    heldItemPrefab.SetActive(true);
-    
-    // Beri efek lemparan ke depan
-    Rigidbody rb = heldItemPrefab.GetComponent<Rigidbody>();
-    if (rb != null)
+        heldItemPrefab.SetActive(true);
+
+        // Beri efek lemparan ke depan
+        Rigidbody rb = heldItemPrefab.GetComponent<Rigidbody>();
+        if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.AddForce(playerCamera.transform.forward * throwForce, ForceMode.Impulse);  
+            }
+
+        // Kosongkan inventory
+        heldItemPrefab = null;
+        isHoldingItem = false;
+    }
+
+    public void OnFlashlight(InputAction.CallbackContext context)
+    {
+        if (context.performed)
         {
-            rb.linearVelocity = Vector3.zero;
-            rb.AddForce(playerCamera.transform.forward * throwForce, ForceMode.Impulse);  
+            ToggleFlashlight();
         }
-        
+    }
 
-    // Kosongkan inventory
-    heldItemPrefab = null;
-    isHoldingItem = false;
-    }   
+    private void ToggleFlashlight()
+    {
+        if (flashlightObject != null)
+        {
+            isFlashlightOn = !isFlashlightOn;
+            flashlightObject.SetActive(isFlashlightOn);
+            Debug.Log("Senter: " + (isFlashlightOn ? "Menyala" : "Mati"));
+        }
+    }    
 }
