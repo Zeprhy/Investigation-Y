@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -24,6 +25,13 @@ public class MovementPlayer : MonoBehaviour
     public LayerMask obstacleMask;
     public float checkDistance = 1.0f;
 
+    [Header("Inventory System")]
+    public float interactDistance = 3f;
+    public Transform dropPoint;
+    public float throwForce = 5f;
+    private GameObject heldItemPrefab;
+    private bool isHoldingItem = false;
+
     // Komponen & Data Input internal
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
@@ -39,6 +47,7 @@ public class MovementPlayer : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        dropPoint = GetComponent<Transform>();
         
         // Kunci kursor agar tidak keluar layar
         Cursor.lockState = CursorLockMode.Locked;
@@ -127,4 +136,63 @@ public class MovementPlayer : MonoBehaviour
         isBlockedAbove = Physics.Raycast(transform.position, Vector3.up, checkDistance, obstacleMask);
         Debug.DrawRay(transform.position, Vector3.up * checkDistance, isBlockedAbove ? Color.red : Color.green);
     }
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+    if (context.performed && !isHoldingItem)
+    {
+        PickupItem();
+    }
+    }
+
+    public void OnDrop(InputAction.CallbackContext context)
+    {
+    if (context.performed && isHoldingItem)
+    {
+        DropItem();
+    }
+    }
+
+    private void PickupItem()
+    {
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+
+        if (Physics.SphereCast(ray, 0.2f, out hit, interactDistance))
+    {
+        // Cek apakah objek yang terkena laser punya script "Item"
+        Item item = hit.collider.GetComponent<Item>();
+        
+        if (item != null)
+        {
+            Debug.Log("Mengambil: " + item.itemName);
+            
+            // Simpan prefabnya dan tandai sedang membawa barang
+            heldItemPrefab = item.itemPrefab;
+            isHoldingItem = true;
+
+            // Hapus barang dari dunia
+            Destroy(hit.collider.gameObject);
+        }
+        }
+
+    }
+
+    private void DropItem()
+    {
+    // Munculkan barang kembali di depan Player
+    GameObject droppedObj = Instantiate(heldItemPrefab, dropPoint.position, dropPoint.rotation);
+    
+    // Beri efek lemparan ke depan
+    Rigidbody rb = droppedObj.GetComponent<Rigidbody>();
+    if (rb != null)
+    {
+        rb.AddForce(playerCamera.transform.forward * throwForce, ForceMode.Impulse);
+    }
+
+    // Kosongkan inventory
+    heldItemPrefab = null;
+    isHoldingItem = false;
+    Debug.Log("Barang dibuang");
+    }   
 }
