@@ -138,9 +138,10 @@ public class MovementPlayer : MonoBehaviour
 
     public void OnPickup(InputAction.CallbackContext context)
     {
-        Debug.Log("Pickup Ditekan");
+       
         if (context.performed && !isHoldingItem)
         {
+             Debug.Log("Pickup Ditekan");
             PickupItem();
         }
     }
