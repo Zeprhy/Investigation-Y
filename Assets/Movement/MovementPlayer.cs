@@ -148,6 +148,10 @@ public class MovementPlayer : MonoBehaviour
 
     public void OnDrop(InputAction.CallbackContext context)
     {
+        if (context.performed)
+        {
+            Debug.Log("Drop Ditekan");
+        }
         if (context.performed && isHoldingItem)
         {
             DropItem();
@@ -157,43 +161,45 @@ public class MovementPlayer : MonoBehaviour
     private void PickupItem()
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        RaycastHit hit;
 
-        if (Physics.SphereCast(ray, 0.2f, out hit, interactDistance))
+        if (Physics.SphereCast(ray, 0.2f, out RaycastHit hit, interactDistance))
     {
         // Cek apakah objek yang terkena laser punya script "Item"
         Item item = hit.collider.GetComponentInParent<Item>();
         
-        if (item != null)
-        {
-            Debug.Log("Mengambil: " + item.itemName);
+        if (item == null)
+        return;
             
             // Simpan prefabnya dan tandai sedang membawa barang
-            heldItemPrefab = item.itemPrefab;
+            heldItemPrefab = item.gameObject;
             isHoldingItem = true;
-
             // Hapus barang dari dunia
-            Destroy(hit.collider.gameObject);
-        }
+            item.gameObject.SetActive(false);
+        
         }
 
     }
 
     private void DropItem()
     {
+    if (heldItemPrefab == null)
+    return;
     // Munculkan barang kembali di depan Player
-    GameObject droppedObj = Instantiate(heldItemPrefab, dropPoint.position, dropPoint.rotation);
+    heldItemPrefab.transform.position = transform.position + transform.forward * 2f;
+
+    heldItemPrefab.SetActive(true);
     
     // Beri efek lemparan ke depan
-    Rigidbody rb = droppedObj.GetComponent<Rigidbody>();
+    Rigidbody rb = heldItemPrefab.GetComponent<Rigidbody>();
     if (rb != null)
-    {
-        rb.AddForce(playerCamera.transform.forward * throwForce, ForceMode.Impulse);
-    }
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.AddForce(playerCamera.transform.forward * throwForce, ForceMode.Impulse);  
+        }
+        
 
     // Kosongkan inventory
     heldItemPrefab = null;
     isHoldingItem = false;
-    Debug.Log("Barang dibuang");
     }   
 }
