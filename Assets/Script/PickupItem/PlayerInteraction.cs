@@ -1,13 +1,14 @@
 using UnityEngine;
+using UnityEngine.XR;
 
 public class PlayerInteraction : MonoBehaviour
 {
     public Camera playerCamera;
     public Transform handPoint;
+    public float ForcePush;
 
     private Item equippedItem;
     private Rigidbody equippedRb;
-
     private DragHandler dragHandler;
 
     void Start()
@@ -22,7 +23,17 @@ public class PlayerInteraction : MonoBehaviour
         HandleDropInput();
 
         if (equippedItem != null)
+        {
             FollowHand();
+            float distance = Vector3.Distance(playerCamera.transform.position, equippedItem.transform.position);
+            
+            if (distance > 3f)
+            {
+               DropEquipped(); 
+            }
+            
+        }
+            
     }
 
     void HandleEquipInput()
@@ -48,12 +59,25 @@ public class PlayerInteraction : MonoBehaviour
             {
                 equippedItem = item;
                 equippedRb = item.GetComponent<Rigidbody>();
+                Collider[] cols = equippedItem.GetComponentsInChildren<Collider>();
+
+                foreach(Collider col in cols)
+                {
+                    col.enabled = false;
+                    
+                }
+                
 
                 if (equippedRb != null)
                 {
                     equippedRb.useGravity = false;
-                    equippedRb.isKinematic = false;
                     equippedRb.linearDamping = 10f;
+                    equippedRb.angularDamping = 10f;
+                    
+
+                    
+                    equippedRb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+                    equippedRb.interpolation = RigidbodyInterpolation.Interpolate;
                 }
             }
         }
@@ -61,10 +85,10 @@ public class PlayerInteraction : MonoBehaviour
 
     void FollowHand()
     {
-        Vector3 targetPosition = handPoint.position;
-
-        Vector3 force = (targetPosition - equippedItem.transform.position) * 20f;
-        equippedRb.linearVelocity = force;
+        if(equippedRb == null)
+        return;
+        equippedRb.MovePosition(handPoint.position);
+        equippedRb.MoveRotation(handPoint.rotation);
     }
 
     void HandleUseInput()
@@ -90,8 +114,22 @@ public class PlayerInteraction : MonoBehaviour
         if (equippedItem == null) return;
 
         equippedRb.useGravity = true;
+        equippedRb.isKinematic = false;
         equippedRb.linearDamping = 0;
+
         equippedRb.linearVelocity = Vector3.zero;
+        equippedItem.transform.position = handPoint.position;
+        equippedItem.transform.rotation = Quaternion.identity;
+        
+        Collider[] cols = equippedItem.GetComponentsInChildren<Collider>();
+
+                foreach(Collider col in cols)
+                {
+                    col.enabled = true;
+                }
+
+        
+        equippedRb.AddForce(playerCamera.transform.forward * ForcePush, ForceMode.Impulse);
 
         equippedItem = null;
         equippedRb = null;
