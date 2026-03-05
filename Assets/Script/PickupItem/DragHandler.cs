@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DragHandler : MonoBehaviour
 {
@@ -13,24 +14,22 @@ public class DragHandler : MonoBehaviour
 
     void Update()
     {
-        HandleDrag();
+        if (draggedObj != null)
+        {
+            DragObject();
+        }
     }
 
-    void HandleDrag()
+    public void OnDrag(InputAction.CallbackContext context)
     {
-        if (Input.GetMouseButtonDown(0))
+        if (context.started)
         {
             TryStartDrag();
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (context.canceled)
         {
             StopDrag();
-        }
-
-        if (draggedObj != null)
-        {
-            DragObject();
         }
     }
 
@@ -48,7 +47,7 @@ public class DragHandler : MonoBehaviour
                 if (draggedRb != null)
                 {
                     draggedRb.useGravity = false;
-                    draggedRb.linearDamping = 8f;
+                    draggedRb.linearDamping = 0.5f;
 
                     grabOffset = draggedObj.transform.position - ray.origin;
                 }
@@ -59,10 +58,11 @@ public class DragHandler : MonoBehaviour
     void DragObject()
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        Vector3 targetPosition = ray.origin + grabOffset;
+        Vector3 targetPosition = ray.origin + (ray.direction * grabOffset.magnitude);
 
-        Vector3 force = (targetPosition - draggedObj.transform.position) * followSpeed;
-        draggedRb.linearVelocity = force;
+        Vector3 desireVelocity = (targetPosition - draggedObj.transform.position) * followSpeed;
+
+        draggedRb.linearVelocity = Vector3.ClampMagnitude(desireVelocity, 50f);
     }
 
     void StopDrag()

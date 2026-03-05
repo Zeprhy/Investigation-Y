@@ -24,14 +24,7 @@ public class MovementPlayer : MonoBehaviour
     [Header("Stealth & Hide")]
     public LayerMask obstacleMask;
     public float checkDistance = 1.0f;
-
-    /*[Header("Inventory System")]
-    public float interactDistance;
-    public Transform dropPoint;
-    public float throwForce;
-    private GameObject heldItemPrefab;
-    private bool isHoldingItem = false;*/
-
+    
     [Header("Flashlight Settings")]
     public GameObject flashlightObject;
 
@@ -144,72 +137,6 @@ public class MovementPlayer : MonoBehaviour
         isBlockedAbove = Physics.Raycast(transform.position, Vector3.up, checkDistance, obstacleMask);
         Debug.DrawRay(transform.position, Vector3.up * checkDistance, isBlockedAbove ? Color.red : Color.green);
     }
-
-    /*public void OnPickup(InputAction.CallbackContext context)
-    {
-       
-        if (context.performed && !isHoldingItem)
-        {
-             Debug.Log("Pickup Ditekan");
-            PickupItem();
-        }
-    }
-
-    public void OnDrop(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            Debug.Log("Drop Ditekan");
-        }
-        if (context.performed && isHoldingItem)
-        {
-            DropItem();
-        }
-    }
-
-    private void PickupItem()
-    {
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-
-        if (Physics.SphereCast(ray, 0.2f, out RaycastHit hit, interactDistance))
-    {
-        // Cek apakah objek yang terkena laser punya script "Item"
-        Item item = hit.collider.GetComponentInParent<Item>();
-        
-        if (item == null)
-        return;
-            
-            // Simpan prefabnya dan tandai sedang membawa barang
-            heldItemPrefab = item.gameObject;
-            isHoldingItem = true;
-            // Hapus barang dari dunia
-            item.gameObject.SetActive(false);
-        }
-
-    }
-
-    private void DropItem()
-    {
-        if (heldItemPrefab == null)
-        return;
-        // Munculkan barang kembali di depan Player
-        heldItemPrefab.transform.position = transform.position + transform.forward * 2f;
-
-        heldItemPrefab.SetActive(true);
-
-        // Beri efek lemparan ke depan
-        Rigidbody rb = heldItemPrefab.GetComponent<Rigidbody>();
-        if (rb != null)
-            {
-                rb.linearVelocity = Vector3.zero;
-                rb.AddForce(playerCamera.transform.forward * throwForce, ForceMode.Impulse);  
-            }
-
-        // Kosongkan inventory
-        heldItemPrefab = null;
-        isHoldingItem = false;
-    }*/
-
     public void OnFlashlight(InputAction.CallbackContext context)
     {
         if (context.performed)

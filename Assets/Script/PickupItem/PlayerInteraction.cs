@@ -1,16 +1,15 @@
 using UnityEngine;
-using UnityEngine.XR;
+using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour
 {
     public Camera playerCamera;
     public Transform handPoint;
-    public Transform dropPoint;
-
+    public float ForcePush;
     private Item equippedItem;
     private Rigidbody equippedRb;
-
     private DragHandler dragHandler;
+    
 
     void Start()
     {
@@ -18,22 +17,18 @@ public class PlayerInteraction : MonoBehaviour
     }
 
     void Update()
-    {
-        HandleEquipInput();
-        HandleUseInput();
-        HandleDropInput();
-
+    { 
         if (equippedItem != null)
         {
             FollowHand();  
         }
             
     }
-
-    void HandleEquipInput()
+    public void OnUse(InputAction.CallbackContext context)
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (context.started)
         {
+            if (equippedItem != null) return;
             if (dragHandler != null && dragHandler.IsDragging)
                 return;
 
@@ -78,24 +73,14 @@ public class PlayerInteraction : MonoBehaviour
 
     void FollowHand()
     {
-        if(equippedRb == null)
-        return;
+        if(equippedRb == null) return;
         equippedRb.MovePosition(handPoint.position);
+        equippedRb.MoveRotation(handPoint.rotation);
     }
 
-    void HandleUseInput()
+    public void OnDrop(InputAction.CallbackContext context)
     {
-        if (equippedItem == null) return;
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("Using: " + equippedItem.itemType);
-        }
-    }
-
-    void HandleDropInput()
-    {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (context.started && equippedItem != null)
         {
             DropEquipped();
         }
@@ -108,11 +93,9 @@ public class PlayerInteraction : MonoBehaviour
         equippedRb.useGravity = true;
         equippedRb.isKinematic = false;
         equippedRb.linearDamping = 0;
+        equippedRb.angularDamping = 0.05f;
 
         equippedRb.linearVelocity = Vector3.zero;
-        equippedItem.transform.position = dropPoint.position;
-        equippedItem.transform.rotation = Quaternion.identity;
-        
         Collider[] cols = equippedItem.GetComponentsInChildren<Collider>();
 
                 foreach(Collider col in cols)
@@ -121,7 +104,7 @@ public class PlayerInteraction : MonoBehaviour
                 }
 
         equippedRb.constraints = RigidbodyConstraints.None;
-        equippedRb.AddForce(playerCamera.transform.forward * 2f, ForceMode.Impulse);
+        equippedRb.AddForce(playerCamera.transform.forward * ForcePush, ForceMode.Impulse);
 
         equippedItem = null;
         equippedRb = null;
