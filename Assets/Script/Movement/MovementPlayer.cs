@@ -208,7 +208,7 @@ public class MovementPlayer : MonoBehaviour
         // Kosongkan inventory
         heldItemPrefab = null;
         isHoldingItem = false;
-    }
+    }*/
 
     public void OnFlashlight(InputAction.CallbackContext context)
     {
@@ -226,5 +226,5 @@ public class MovementPlayer : MonoBehaviour
             flashlightObject.SetActive(isFlashlightOn);
             Debug.Log("Senter: " + (isFlashlightOn ? "Menyala" : "Mati"));
         }
-    }   */ 
+    }   
 }
