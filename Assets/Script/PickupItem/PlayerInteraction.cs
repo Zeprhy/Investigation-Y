@@ -24,14 +24,7 @@ public class PlayerInteraction : MonoBehaviour
 
         if (equippedItem != null)
         {
-            FollowHand();
-            float distance = Vector3.Distance(playerCamera.transform.position, equippedItem.transform.position);
-            
-            if (distance > 3f)
-            {
-               DropEquipped(); 
-            }
-            
+            FollowHand();  
         }
             
     }
