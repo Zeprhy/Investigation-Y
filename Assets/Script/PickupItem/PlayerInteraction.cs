@@ -64,6 +64,7 @@ public class PlayerInteraction : MonoBehaviour
                 foreach(Collider col in cols)
                 {
                     col.enabled = false;
+                    
                 }
                 
 
@@ -87,6 +88,7 @@ public class PlayerInteraction : MonoBehaviour
         if(equippedRb == null)
         return;
         equippedRb.MovePosition(handPoint.position);
+        equippedRb.MoveRotation(handPoint.rotation);
     }
 
     void HandleUseInput()
