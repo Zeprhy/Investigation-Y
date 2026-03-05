@@ -8,7 +8,7 @@ public class DragHandler : MonoBehaviour
 
     private GameObject draggedObj;
     private Rigidbody draggedRb;
-    private float grabDistance;
+    private Vector3 grabOffset;
 
     public bool IsDragging => draggedObj != null;
 
@@ -49,10 +49,9 @@ public class DragHandler : MonoBehaviour
                 if (draggedRb != null)
                 {
                     draggedRb.useGravity = false;
-                    draggedRb.linearDamping = 5f;
-                    
-                    //simpan jarak asli object dari kamera
-                    grabDistance = Vector3.Distance(playerCamera.transform.position, draggedObj.transform.position);
+                    draggedRb.linearDamping = 8f;
+
+                    grabOffset = draggedObj.transform.position - ray.origin;
                 }
             }
         }
@@ -61,7 +60,7 @@ public class DragHandler : MonoBehaviour
     void DragObject()
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        Vector3 targetPosition = ray.origin + ray.direction * grabDistance;
+        Vector3 targetPosition = ray.origin + grabOffset;
 
         Vector3 force = (targetPosition - draggedObj.transform.position) * followSpeed;
         draggedRb.linearVelocity = force;
