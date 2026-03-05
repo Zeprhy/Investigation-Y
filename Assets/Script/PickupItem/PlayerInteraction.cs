@@ -5,10 +5,11 @@ public class PlayerInteraction : MonoBehaviour
 {
     public Camera playerCamera;
     public Transform handPoint;
-    public float ForcePush;
+    public Transform dropPoint;
 
     private Item equippedItem;
     private Rigidbody equippedRb;
+
     private DragHandler dragHandler;
 
     void Start()
@@ -74,7 +75,7 @@ public class PlayerInteraction : MonoBehaviour
                     equippedRb.angularDamping = 10f;
                     
 
-                    
+                    equippedRb.constraints = RigidbodyConstraints.FreezeRotation;
                     equippedRb.collisionDetectionMode = CollisionDetectionMode.Continuous;
                     equippedRb.interpolation = RigidbodyInterpolation.Interpolate;
                 }
@@ -116,7 +117,7 @@ public class PlayerInteraction : MonoBehaviour
         equippedRb.linearDamping = 0;
 
         equippedRb.linearVelocity = Vector3.zero;
-        equippedItem.transform.position = handPoint.position;
+        equippedItem.transform.position = dropPoint.position;
         equippedItem.transform.rotation = Quaternion.identity;
         
         Collider[] cols = equippedItem.GetComponentsInChildren<Collider>();
@@ -126,8 +127,8 @@ public class PlayerInteraction : MonoBehaviour
                     col.enabled = true;
                 }
 
-        
-        equippedRb.AddForce(playerCamera.transform.forward * ForcePush, ForceMode.Impulse);
+        equippedRb.constraints = RigidbodyConstraints.None;
+        equippedRb.AddForce(playerCamera.transform.forward * 2f, ForceMode.Impulse);
 
         equippedItem = null;
         equippedRb = null;
