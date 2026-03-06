@@ -28,6 +28,12 @@ public class MovementPlayer : MonoBehaviour
     [Header("Flashlight Settings")]
     public GameObject flashlightObject;
 
+    [Header("Noise System")]
+    public float baseNoiseRadius = 5f;
+    public float sprintNoiseMultiplier = 2f;
+    public float crouchNoiseMultiplier = 0.5f;
+    public LayerMask enemyLayer;
+
     // Komponen & Data Input internal
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
@@ -40,6 +46,7 @@ public class MovementPlayer : MonoBehaviour
     private bool isCrouching;
     private bool isBlockedAbove;
     private bool isFlashlightOn = false;
+    public bool IsHidden { get; private set; }
 
     void Start()
     {
@@ -69,11 +76,13 @@ public class MovementPlayer : MonoBehaviour
         ApplyMovement();
         ApplyGravity();
         ApplyCrouch();
+        HandleNoiseEmission();
 
         // Eksekusi pergerakan akhir
         characterController.Move(moveDirection * Time.deltaTime);
     }
 
+    
     private void ApplyRotation()
     {
         float sensitivityMultiplier = 0.1f;
@@ -154,4 +163,46 @@ public class MovementPlayer : MonoBehaviour
             Debug.Log("Senter: " + (isFlashlightOn ? "Menyala" : "Mati"));
         }
     }   
+    private void HandleNoiseEmission()
+    {
+        Vector3 horizontalVelocity = new Vector3(characterController.velocity.x, 0, characterController.velocity.z);
+        float currentMoveSpeed = horizontalVelocity.magnitude;
+
+        if (currentMoveSpeed > 0.1f)
+        {
+            // Tentukan radius berdasarkan status gerak
+            float multiplier = 1f;
+            if (isCrouching) multiplier = crouchNoiseMultiplier;
+            else if (isRunning) multiplier = sprintNoiseMultiplier;
+
+            float finalRadius = baseNoiseRadius * multiplier;
+
+            // Panggil fungsi kirim sinyal suara
+            EmitNoise(finalRadius);
+        }
+    }
+
+    private void EmitNoise(float radius)
+    {
+        // Mencari Enemy di sekitar menggunakan OverlapSphere
+        Collider[] enemies = Physics.OverlapSphere(transform.position, radius, enemyLayer);
+        
+        foreach (var enemyCollider in enemies)
+        {
+            // Mencoba mengambil script EnemyAI dari objek yang terkena radius
+            if (enemyCollider.TryGetComponent(out EnemyAI enemyScript))
+            {
+                enemyScript.OnHeardNoise(transform.position);
+            }
+        }
+    }
+
+    // Untuk membantu visualisasi radius suara di Editor (Garis Kuning)
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        float previewRadius = isCrouching ? baseNoiseRadius * crouchNoiseMultiplier : 
+                             (isRunning ? baseNoiseRadius * sprintNoiseMultiplier : baseNoiseRadius);
+        Gizmos.DrawWireSphere(transform.position, previewRadius);
+    }
 }
