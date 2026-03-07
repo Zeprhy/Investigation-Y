@@ -161,6 +161,7 @@ public class EnemyAI : MonoBehaviour
     void ExecutePatrol()
     {
         if (waypoints.Count == 0) return;
+        if (!agent.isOnNavMesh) return;
 
         // Cek apakah sudah sampai
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.3f)
@@ -183,6 +184,8 @@ public class EnemyAI : MonoBehaviour
 
     void ExecuteInvestigate()
     {
+    if (!agent.isOnNavMesh) return;
+    
     // Jika AI sudah sampai di titik terakhir player terlihat/suara terdengar
     if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.5f)
     {
