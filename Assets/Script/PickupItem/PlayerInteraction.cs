@@ -59,6 +59,7 @@ public class PlayerInteraction : MonoBehaviour
                 if (equippedRb != null)
                 {
                     equippedRb.useGravity = false;
+                    equippedRb.isKinematic = true;
                     equippedRb.linearDamping = 10f;
                     equippedRb.angularDamping = 10f;
                     
