@@ -3,7 +3,7 @@
     "name": "Input Actions",
     "maps": [
         {
-            "name": "New action map",
+            "name": "Player",
             "id": "d18a3f9d-3cb5-43fe-83e0-cfa7d9a31299",
             "actions": [
                 {
@@ -91,15 +91,6 @@
                     "name": "ToggleCursor",
                     "type": "Button",
                     "id": "104c8475-77d4-4d8f-9059-a6f99b019aaf",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "PauseMenu",
-                    "type": "Button",
-                    "id": "be4b338a-ecb4-471d-b074-8f10d793013f",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -260,10 +251,27 @@
                     "action": "ToggleCursor",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "e879203c-92fb-4006-aaf8-03227fce9913",
+            "actions": [
+                {
+                    "name": "PauseMenu",
+                    "type": "Button",
+                    "id": "4929e2f6-24d7-4576-a01c-2c94820d8d03",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
                 {
                     "name": "",
-                    "id": "33f0006d-ef99-492d-928b-7521fa9bd080",
+                    "id": "601667ac-0cd6-4da2-86de-93520fb0c97c",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
