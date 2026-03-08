@@ -1814,6 +1814,7 @@ MonoBehaviour:
   currentStamina: 0
   staminaDrain: 20
   staminaRegen: 15
+  staminaRegenDelay: 2
   staminaBarFill: {fileID: 1610046834}
 --- !u!136 &769955099
 CapsuleCollider:
@@ -2106,6 +2107,26 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: a2849182-9062-4e54-9609-c4f99309d5c7
     m_ActionName: 'New action map/Drag[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 769955098}
+        m_TargetAssemblyTypeName: MovementPlayer, Assembly-CSharp
+        m_MethodName: OnToggleCursor
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 104c8475-77d4-4d8f-9059-a6f99b019aaf
+    m_ActionName: 'New action map/ToggleCursor[/Keyboard/leftCtrl]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: be4b338a-ecb4-471d-b074-8f10d793013f
+    m_ActionName: 'New action map/PauseMenu[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: New action map
@@ -3069,13 +3090,14 @@ MonoBehaviour:
   - {fileID: 639417185}
   waypointWaitTime: 1
   viewDistance: 20
-  viewAngle: 40
+  viewAngle: 60
   obstacleMask:
     serializedVersion: 2
     m_Bits: 8
   awarenessThreshold: 1
   awarenessDecreaseSpeed: 0.5
   awarenessIncreaseSpeed: 5
+  awarenessMeter: 0
   attackRange: 2
   attackCooldown: 1
   patrolSpeed: 3.5
