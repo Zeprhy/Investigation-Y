@@ -50,6 +50,7 @@ public class MovementPlayer : MonoBehaviour
     private Vector2 inputMove;
     private Vector2 inputLook;
     private float rotationX = 0;
+    private bool isCursorLocked;
     
     // Status Karakter
     private bool isRunning;
@@ -65,8 +66,7 @@ public class MovementPlayer : MonoBehaviour
         currentStamina = maxStamina;
         
         // Kunci kursor agar tidak keluar layar
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        SetCursorState(false);
 
         if (flashlightObject != null)
         {
@@ -96,6 +96,20 @@ public class MovementPlayer : MonoBehaviour
         characterController.Move(moveDirection * Time.deltaTime);
     }
 
+    public void OnToggleCursor(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            SetCursorState(!isCursorLocked);
+        }
+    }
+
+    private void SetCursorState(bool locked)
+    {
+        isCursorLocked = locked;
+        Cursor.lockState = locked ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = locked;
+    }
     private void HandleStamina()
     {
         bool isMoving = inputMove.magnitude > 0.1f;
@@ -146,6 +160,9 @@ public class MovementPlayer : MonoBehaviour
 
     private void ApplyRotation()
     {
+        if (!isCursorLocked)
+        {
+
         float sensitivityMultiplier = 0.1f;
         
         // Putar Kamera (Atas - Bawah)
@@ -155,6 +172,7 @@ public class MovementPlayer : MonoBehaviour
 
         // Putar Badan (Kiri - Kanan)
         transform.Rotate(Vector3.up * inputLook.x * lookSpeed * sensitivityMultiplier);
+        }
     }
 
     private void ApplyMovement()
