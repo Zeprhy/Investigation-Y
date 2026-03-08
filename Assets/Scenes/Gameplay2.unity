@@ -1814,6 +1814,7 @@ MonoBehaviour:
   currentStamina: 0
   staminaDrain: 20
   staminaRegen: 15
+  staminaRegenDelay: 2
   staminaBarFill: {fileID: 1610046834}
 --- !u!136 &769955099
 CapsuleCollider:
@@ -3076,6 +3077,7 @@ MonoBehaviour:
   awarenessThreshold: 1
   awarenessDecreaseSpeed: 0.5
   awarenessIncreaseSpeed: 5
+  awarenessMeter: 0
   attackRange: 2
   attackCooldown: 1
   patrolSpeed: 3.5
@@ -3482,14 +3484,14 @@ RectTransform:
   m_GameObject: {fileID: 1610046833}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 19.671833, y: 0.12228858, z: 1}
+  m_LocalScale: {x: 19.205824, y: 0.26715165, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1624910404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -534}
+  m_AnchoredPosition: {x: 0, y: -528}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1624910403
