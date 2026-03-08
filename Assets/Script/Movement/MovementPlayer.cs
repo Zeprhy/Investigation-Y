@@ -1,5 +1,5 @@
-
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
@@ -34,6 +34,14 @@ public class MovementPlayer : MonoBehaviour
     public float crouchNoiseMultiplier = 0.5f;
     public LayerMask enemyLayer;
 
+    [Header("Stamina System")]
+    public float maxStamina = 100f;
+    public float currentStamina;
+    public float staminaDrain = 20f;
+    public float staminaRegen = 15f;
+    public Image staminaBarFill;
+    private bool isExhausted = false;
+
     // Komponen & Data Input internal
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
@@ -51,6 +59,7 @@ public class MovementPlayer : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        currentStamina = maxStamina;
         
         // Kunci kursor agar tidak keluar layar
         Cursor.lockState = CursorLockMode.Locked;
@@ -73,6 +82,8 @@ public class MovementPlayer : MonoBehaviour
     {
         checkObstacleAbove();
         ApplyRotation();
+        HandleStamina();
+        UpdateStaminaUI();
         ApplyMovement();
         ApplyGravity();
         ApplyCrouch();
@@ -82,7 +93,44 @@ public class MovementPlayer : MonoBehaviour
         characterController.Move(moveDirection * Time.deltaTime);
     }
 
-    
+    private void HandleStamina()
+    {
+        bool isMoving = inputMove.magnitude > 0.1f;
+
+        // Jika sedang berlari, bergerak, dan tidak lelah
+        if (isRunning && isMoving && !isExhausted && !isCrouching)
+        {
+            currentStamina -= staminaDrain * Time.deltaTime;
+            if (currentStamina <= 0)
+            {
+                currentStamina = 0;
+                isExhausted = true; // Masuk status sangat lelah
+            }
+        }
+        else
+        {
+            // Pulihkan stamina jika tidak sedang lari
+            currentStamina += staminaRegen * Time.deltaTime;
+            
+            // Pemain bisa lari lagi jika stamina sudah cukup pulih (misal di atas 20%)
+            if (isExhausted && currentStamina >= (maxStamina * 0.2f))
+            {
+                isExhausted = false;
+            }
+        }
+
+        currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
+    }
+
+    private void UpdateStaminaUI()
+    {
+        if (staminaBarFill != null)
+        {
+            // Mengubah nilai fill amount (0 sampai 1) berdasarkan persentase stamina
+            staminaBarFill.fillAmount = currentStamina / maxStamina;
+        }
+    }
+
     private void ApplyRotation()
     {
         float sensitivityMultiplier = 0.1f;
@@ -99,6 +147,7 @@ public class MovementPlayer : MonoBehaviour
     private void ApplyMovement()
     {
         // Tentukan kecepatan berdasarkan status
+        bool canRun = isRunning && currentStamina > 0 && !isExhausted;
         float currentSpeed = isCrouching ? crouchSpeed : (isRunning ? runSpeed : walkSpeed);
 
         // Ubah input 2D menjadi arah 3D (Forward & Right)
@@ -145,6 +194,8 @@ public class MovementPlayer : MonoBehaviour
     {
         isBlockedAbove = Physics.Raycast(transform.position, Vector3.up, checkDistance, obstacleMask);
         Debug.DrawRay(transform.position, Vector3.up * checkDistance, isBlockedAbove ? Color.red : Color.green);
+
+        IsHidden = isBlockedAbove && isCrouching;
     }
     public void OnFlashlight(InputAction.CallbackContext context)
     {
@@ -172,6 +223,7 @@ public class MovementPlayer : MonoBehaviour
         {
             // Tentukan radius berdasarkan status gerak
             float multiplier = 1f;
+            bool actuallyRunning = isRunning && currentStamina > 0 && !isExhausted;
             if (isCrouching) multiplier = crouchNoiseMultiplier;
             else if (isRunning) multiplier = sprintNoiseMultiplier;
 

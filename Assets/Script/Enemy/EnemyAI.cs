@@ -25,7 +25,9 @@ public class EnemyAI : MonoBehaviour
     [Header("Awareness System")]
     public float awarenessThreshold = 2f;
     public float awarenessDecreaseSpeed = 0.5f;
+    public float awarenessIncreaseSpeed = 2.0f; 
     private float awarenessMeter = 0f;
+    private Vector3 lastKnownPosition;
 
     [Header("Attack Settings")]
     public float attackRange = 2.5f;
@@ -38,18 +40,18 @@ public class EnemyAI : MonoBehaviour
     public float chaseSpeed = 6f;
 
     private float investigateTimer;
+    private bool isForward = true;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         
-        // Memastikan Tag "Player" sesuai standar Unity
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj == null) playerObj = GameObject.FindGameObjectWithTag("player");
-        
         if (playerObj != null) player = playerObj.transform;
 
-        // Inisialisasi awal
+        // PERBAIKAN: Cegah Agent berputar kasar saat berhenti menyerang
+        agent.updateRotation = true; 
+        
         if (waypoints.Count > 0) MoveToNextWaypoint();
     }
 
@@ -63,25 +65,42 @@ public class EnemyAI : MonoBehaviour
 
     private void HandleAwareness()
     {
-        if (player == null) return;
-
-        // Ambil script MovementPlayer untuk cek status sembunyi
         MovementPlayer playerMovement = player.GetComponent<MovementPlayer>();
         bool playerIsHidden = playerMovement != null && playerMovement.IsHidden;
-
-        Vector3 dir = (player.position - transform.position).normalized;
+    
+        Vector3 dirToPlayer = (player.position - transform.position).normalized;
         float dist = Vector3.Distance(transform.position, player.position);
-
-        // AI tidak bisa melihat player jika player sedang bersembunyi (IsHidden)
-        bool canSee = !playerIsHidden && 
-                      dist <= viewDistance && 
-                      Vector3.Angle(transform.forward, dir) < viewAngle / 2f && 
-                      !Physics.Raycast(transform.position + Vector3.up, dir, dist, obstacleMask);
-
+    
+        // 1. CEK LINE OF SIGHT (Apakah ada tembok?)
+        bool hasLineOfSight = !Physics.Raycast(transform.position + Vector3.up, dirToPlayer, dist, obstacleMask);
+        
+        // 2. CEK FIELD OF VIEW (Apakah dalam sudut pandang?)
+        bool inViewAngle = Vector3.Angle(transform.forward, dirToPlayer) < viewAngle / 2f;
+    
+        // 3. LOGIKA DETEKSI SENSITIF
+        bool canSee = !playerIsHidden && dist <= viewDistance && inViewAngle && hasLineOfSight;
+        
+        // A. INSTINCT RADIUS (Jika sangat dekat, langsung sadar tanpa peduli sudut pandang)
+        if (!playerIsHidden && dist < 9.0f && hasLineOfSight) 
+        {
+            canSee = true;
+            // Langsung penuhkan awareness jika jaraknya sangat intim (misal < 3m)
+            if (dist < 5f) awarenessMeter = awarenessThreshold; 
+        }
+    
+        // B. MODIFIKASI SPEED (Semakin dekat player, semakin cepat AI sadar)
+        float proximityMultiplier = Mathf.Clamp(viewDistance / dist, 1f, 3f); 
+        float currentIncreaseSpeed = awarenessIncreaseSpeed * proximityMultiplier;
+    
+        if (canSee)
+        {
+            lastKnownPosition = player.position;
+        }
+    
         float target = canSee ? awarenessThreshold + 0.1f : 0f;
-
-        // Jika player tiba-tiba bersembunyi saat dikejar, turunkan awareness lebih cepat
-        float speed = (canSee) ? 1.5f : (playerIsHidden ? awarenessDecreaseSpeed * 2f : awarenessDecreaseSpeed);
+        
+        // Gunakan currentIncreaseSpeed agar awareness naik lebih cepat saat player dekat
+        float speed = (canSee) ? currentIncreaseSpeed : (playerIsHidden ? awarenessDecreaseSpeed * 2f : awarenessDecreaseSpeed);
         awarenessMeter = Mathf.MoveTowards(awarenessMeter, target, speed * Time.deltaTime);
     }
 
@@ -101,8 +120,9 @@ public class EnemyAI : MonoBehaviour
             ChangeState(EnemyState.Chasing);
             ExecuteChase();
         }
-        else if (currentState == EnemyState.Investigating)
+        else if (currentState == EnemyState.Chasing || currentState == EnemyState.Investigating)
         {
+            ChangeState(EnemyState.Investigating);
             ExecuteInvestigate();
         }
         else
@@ -117,12 +137,7 @@ public class EnemyAI : MonoBehaviour
         if (currentState == newState) return;
         currentState = newState;
 
-        // Logika Pemulihan: Jika AI terjebak di luar NavMesh, tarik kembali ke area biru
-        NavMeshHit hit;
-        if (!agent.isOnNavMesh && NavMesh.SamplePosition(transform.position, out hit, 3.0f, NavMesh.AllAreas))
-        {
-            agent.Warp(hit.position); // Menarik AI kembali ke area NavMesh terdekat
-        }
+        agent.updateRotation = true;
 
         switch (currentState)
         {
@@ -177,14 +192,43 @@ public class EnemyAI : MonoBehaviour
     void MoveToNextWaypoint()
     {
         if (waypoints.Count == 0) return;
+
         waypointTimer = 0;
-        currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Count;
+
+        if (isForward)
+        {
+            currentWaypointIndex++;
+            // Jika sampai di titik terakhir, balik arah
+            if (currentWaypointIndex >= waypoints.Count)
+            {
+                currentWaypointIndex = waypoints.Count - 2; // Kembali ke titik sebelum terakhir
+                isForward = false;
+            }
+        }
+        else
+        {
+            currentWaypointIndex--;
+            // Jika sampai di titik awal, balik arah lagi
+            if (currentWaypointIndex < 0)
+            {
+                currentWaypointIndex = 1; // Mulai maju ke titik kedua
+                isForward = true;
+            }
+        }
+
+        // Pastikan index tidak minus jika waypoint hanya sedikit
+        currentWaypointIndex = Mathf.Clamp(currentWaypointIndex, 0, waypoints.Count - 1);
+
         agent.SetDestination(waypoints[currentWaypointIndex].position);
     }
 
     void ExecuteInvestigate()
     {
     if (!agent.isOnNavMesh) return;
+    
+    // Musuh pergi ke titik terakhir dia melihat kamu, bukan posisi kamu sekarang (karena kamu sembunyi)
+    agent.SetDestination(lastKnownPosition);
+    agent.speed = investigateSpeed;
     
     // Jika AI sudah sampai di titik terakhir player terlihat/suara terdengar
     if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.5f)
@@ -194,7 +238,6 @@ public class EnemyAI : MonoBehaviour
         investigateTimer += Time.deltaTime;
             if (investigateTimer >= 3f) 
             {
-                Debug.Log("AI Bingung selesai, kembali patroli");
                 // Pindah state hanya satu kali
                 investigateTimer = 0;
                 ChangeState(EnemyState.Patrolling);
@@ -222,9 +265,38 @@ public class EnemyAI : MonoBehaviour
         if (Time.time >= lastAttackTime + attackCooldown)
         {
             Debug.Log("<color=red>Enemy Menyerang!</color>");
-            // DISINI: Panggil animasi menyerang kamu
-            // GetComponent<Animator>().SetTrigger("Attack"); 
             lastAttackTime = Time.time;
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // 1. GIZMO JARAK PANDANG (View Distance) - Warna Biru/Cyan
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, viewDistance);
+
+        // 2. GIZMO JARAK SERANG (Attack Range) - Warna Merah
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        // 3. VISUALISASI SUDUT PANDANG (View Angle)
+        Gizmos.color = Color.yellow;
+        Vector3 leftRayDirection = Quaternion.AngleAxis(-viewAngle / 2, Vector3.up) * transform.forward;
+        Vector3 rightRayDirection = Quaternion.AngleAxis(viewAngle / 2, Vector3.up) * transform.forward;
+        
+        Gizmos.DrawRay(transform.position + Vector3.up, leftRayDirection * viewDistance);
+        Gizmos.DrawRay(transform.position + Vector3.up, rightRayDirection * viewDistance);
+
+        // 4. GARIS DETEKSI KE PLAYER (Hanya muncul jika Player terdeteksi)
+        if (player != null)
+        {
+            float dist = Vector3.Distance(transform.position, player.position);
+            if (dist <= viewDistance)
+            {
+                // Warna berubah sesuai Awareness Meter
+                Gizmos.color = Color.Lerp(Color.white, Color.red, awarenessMeter / awarenessThreshold);
+                Gizmos.DrawLine(transform.position + Vector3.up, player.position + Vector3.up);
+            }
         }
     }
 }
