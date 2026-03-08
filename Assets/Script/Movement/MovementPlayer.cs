@@ -6,43 +6,45 @@ using UnityEngine.InputSystem;
 public class MovementPlayer : MonoBehaviour
 {
     [Header("Kamera & Look")]
-    public Camera playerCamera;
-    public float lookSpeed = 0.1f;
-    public float lookXLimit = 45f;
+    [SerializeField] private Camera playerCamera;
+    [SerializeField] private float lookSpeed = 0.1f;
+    [SerializeField] private float lookXLimit = 45f;
 
     [Header("Kecepatan Jalan")]
-    public float walkSpeed = 6f;
-    public float runSpeed = 12f;
-    public float crouchSpeed = 3f;
+    [SerializeField] private float walkSpeed = 6f;
+    [SerializeField] private float runSpeed = 12f;
+    [SerializeField] private float crouchSpeed = 3f;
 
     [Header("Fisika")]
-    public float jumpPower = 7f;
-    public float gravity = 20f;
-    public float defaultHeight = 2f;
-    public float crouchHeight = 1f;
+    [SerializeField] private float jumpPower = 7f;
+    [SerializeField] private float gravity = 20f;
+    [SerializeField] private float defaultHeight = 2f;
+    [SerializeField] private float crouchHeight = 1f;
 
     [Header("Stealth & Hide")]
-    public LayerMask obstacleMask;
-    public float checkDistance = 1.0f;
+    [SerializeField] private LayerMask obstacleMask;
+    [SerializeField] private float checkDistance = 1.0f;
     
     [Header("Flashlight Settings")]
-    public GameObject flashlightObject;
+    [SerializeField] private GameObject flashlightObject;
 
     [Header("Noise System")]
-    public float baseNoiseRadius = 5f;
-    public float sprintNoiseMultiplier = 2f;
-    public float crouchNoiseMultiplier = 0.5f;
-    public LayerMask enemyLayer;
+    [SerializeField] private float baseNoiseRadius = 5f;
+    [SerializeField] private float sprintNoiseMultiplier = 2f;
+    [SerializeField] private float crouchNoiseMultiplier = 0.5f;
+    [SerializeField] private LayerMask enemyLayer;
 
     [Header("Stamina System")]
-    public float maxStamina = 100f;
-    public float currentStamina;
-    public float staminaDrain = 20f;
-    public float staminaRegen = 15f;
-    public Image staminaBarFill;
-    private bool isExhausted = false;
+    [SerializeField] private float maxStamina = 100f;
+    [SerializeField] private float currentStamina;
+    [SerializeField] private float staminaDrain = 20f;
+    [SerializeField] private float staminaRegen = 15f;
+    [SerializeField] private float staminaRegenDelay = 2f;
+    [SerializeField] private Image staminaBarFill;
+
 
     // Komponen & Data Input internal
+    private float regenDelayTimer;
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
     private Vector2 inputMove;
@@ -54,6 +56,7 @@ public class MovementPlayer : MonoBehaviour
     private bool isCrouching;
     private bool isBlockedAbove;
     private bool isFlashlightOn = false;
+    private bool isExhausted = false;
     public bool IsHidden { get; private set; }
 
     void Start()
@@ -105,13 +108,23 @@ public class MovementPlayer : MonoBehaviour
             {
                 currentStamina = 0;
                 isExhausted = true; // Masuk status sangat lelah
+
+                regenDelayTimer = staminaRegenDelay;
             }
         }
         else
         {
-            // Pulihkan stamina jika tidak sedang lari
-            currentStamina += staminaRegen * Time.deltaTime;
-            
+            // Jika masih ada waktu jeda, kurangi timernya
+            if (regenDelayTimer > 0)
+            {
+                regenDelayTimer -= Time.deltaTime;
+            }
+            else
+            {
+                // Jika timer sudah habis (<= 0), barulah stamina boleh terisi
+                currentStamina += staminaRegen * Time.deltaTime;
+            }
+
             // Pemain bisa lari lagi jika stamina sudah cukup pulih (misal di atas 20%)
             if (isExhausted && currentStamina >= (maxStamina * 0.2f))
             {

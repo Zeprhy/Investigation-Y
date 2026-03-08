@@ -14,30 +14,30 @@ public class EnemyAI : MonoBehaviour
     [Header("Patrol Settings")]
     public List<Transform> waypoints;
     private int currentWaypointIndex = 0;
-    public float waypointWaitTime = 1f;
+    [SerializeField] private float waypointWaitTime = 1f;
     private float waypointTimer;
 
     [Header("Detection Settings")]
-    public float viewDistance = 15f;
-    public float viewAngle = 60f;
-    public LayerMask obstacleMask;
+    [SerializeField] private float viewDistance = 15f;
+    [SerializeField] private float viewAngle = 60f;
+    [SerializeField] private LayerMask obstacleMask;
     
     [Header("Awareness System")]
-    public float awarenessThreshold = 2f;
-    public float awarenessDecreaseSpeed = 0.5f;
-    public float awarenessIncreaseSpeed = 2.0f; 
-    private float awarenessMeter = 0f;
+    [SerializeField] private float awarenessThreshold = 2f;
+    [SerializeField] private float awarenessDecreaseSpeed = 0.5f;
+    [SerializeField] private float awarenessIncreaseSpeed = 2.0f; 
+    [SerializeField] private float awarenessMeter = 0f;
     private Vector3 lastKnownPosition;
 
     [Header("Attack Settings")]
-    public float attackRange = 2.5f;
-    public float attackCooldown = 2f;
+    [SerializeField] private float attackRange = 2.5f;
+    [SerializeField] private float attackCooldown = 2f;
     private float lastAttackTime;
 
     [Header("Speed Settings")]
-    public float patrolSpeed = 3.5f;
-    public float investigateSpeed = 2f;
-    public float chaseSpeed = 6f;
+    [SerializeField] private float patrolSpeed = 3.5f;
+    [SerializeField] private float investigateSpeed = 2f;
+    [SerializeField] private float chaseSpeed = 6f;
 
     private float investigateTimer;
     private bool isForward = true;
