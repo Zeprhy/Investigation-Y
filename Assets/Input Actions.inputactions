@@ -95,6 +95,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PauseMenu",
+                    "type": "Button",
+                    "id": "db51c667-9994-449e-b267-2e9aa4e1d9ad",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -251,27 +260,10 @@
                     "action": "ToggleCursor",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "UI",
-            "id": "e879203c-92fb-4006-aaf8-03227fce9913",
-            "actions": [
-                {
-                    "name": "PauseMenu",
-                    "type": "Button",
-                    "id": "4929e2f6-24d7-4576-a01c-2c94820d8d03",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
+                },
                 {
                     "name": "",
-                    "id": "601667ac-0cd6-4da2-86de-93520fb0c97c",
+                    "id": "eb12804b-52ef-47dc-ac20-42746391f26f",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",

@@ -6,6 +6,7 @@ public class MenuController : MonoBehaviour
    public RectTransform subPanel;
    public Animator animator;
    private string currentActiveMenu = "None";
+   private bool isSwitching = false;
 
   public void ClickSettings() {
         StartCoroutine(SwitchMenuProcess("ShowSettings", "Settings"));
@@ -20,17 +21,26 @@ public class MenuController : MonoBehaviour
         currentActiveMenu = "None";
     }
 
+    public void ResetMenuState()
+    {
+        StopAllCoroutines();
+        currentActiveMenu = "None";
+    }
+
     IEnumerator SwitchMenuProcess(string targetTrigger, string menuName)
     {
-        if (currentActiveMenu == menuName)
-        yield break;
+        if (isSwitching || currentActiveMenu == menuName) yield break;
+        isSwitching = true;
+
         if(currentActiveMenu != "None")
         {
         animator.SetTrigger("HideAll");
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSecondsRealtime(0.25f);
         }
         
         animator.SetTrigger(targetTrigger);
         currentActiveMenu = menuName;
+
+        isSwitching = false;
     }
 }

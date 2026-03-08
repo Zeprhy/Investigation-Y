@@ -7,17 +7,19 @@ public class UIController : MonoBehaviour
     [Header("PauseMenu Ui Reference")]
     public GameObject PauseMenuCanvas;
     public Animator subPanelAnimator;
+    public MenuController menuScript;
     private bool isPaused = false;
 
     [Header("Player References")]
    
     public MonoBehaviour playerMovementScript; 
     public PlayerInput playerInput;
-   public void PauseMenu(InputAction.CallbackContext context)
+  public void PauseMenu(InputAction.CallbackContext context)
 {
     if (context.started)
     {
-        Debug.Log("Tombol Esc Ditekan! Status Paused: " + isPaused);
+        Debug.Log("ESC DItekan");
+        
         if (isPaused)
         {
             ResumeGame();
@@ -36,25 +38,35 @@ public class UIController : MonoBehaviour
 
         if (playerMovementScript != null)
         {
-
             playerMovementScript.enabled = false;
         }
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        if (playerInput != null)
+        if (subPanelAnimator != null)
         {
-            playerInput.SwitchCurrentActionMap("UI");
+            subPanelAnimator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            subPanelAnimator.Play("SubHide", 0, 0f);
         }
     }
 
     public void ResumeGame()
     {
+        
         isPaused = false;
         Time.timeScale = 1f;
 
-        subPanelAnimator.SetTrigger("HideAll");
+         if(menuScript != null)
+        {
+            menuScript.ResetMenuState();
+        }
+
+        if (subPanelAnimator != null)
+        {
+            subPanelAnimator.SetTrigger("HideAll");
+        }
+        
         PauseMenuCanvas.SetActive(false);
 
         if (playerMovementScript != null)
@@ -62,12 +74,12 @@ public class UIController : MonoBehaviour
             playerMovementScript.enabled = true;
         }
 
+        if(menuScript != null)
+        {
+            menuScript.ClickResume();
+        }
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        if (playerInput != null)
-        {
-            playerInput.SwitchCurrentActionMap("Player");
-        }
     }
 }
