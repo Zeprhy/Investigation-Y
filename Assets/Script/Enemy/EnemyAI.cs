@@ -10,6 +10,7 @@ public class EnemyAI : MonoBehaviour
     [Header("Components")]
     private NavMeshAgent agent;
     private Transform player;
+    private MovementPlayer playerScript;
 
     [Header("Patrol Settings")]
     public List<Transform> waypoints;
@@ -47,9 +48,12 @@ public class EnemyAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null) player = playerObj.transform;
+        if (playerObj != null)
+        {            
+            player = playerObj.transform;
+            playerScript = playerObj.GetComponent<MovementPlayer>();
+        }
 
-        // PERBAIKAN: Cegah Agent berputar kasar saat berhenti menyerang
         agent.updateRotation = true; 
         
         if (waypoints.Count > 0) MoveToNextWaypoint();
@@ -57,7 +61,7 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        if (player == null) return;
+        if (player == null || playerScript == null) return;
 
         HandleAwareness();
         UpdateBrain();
@@ -65,8 +69,7 @@ public class EnemyAI : MonoBehaviour
 
     private void HandleAwareness()
     {
-        MovementPlayer playerMovement = player.GetComponent<MovementPlayer>();
-        bool playerIsHidden = playerMovement != null && playerMovement.IsHidden;
+        bool playerIsHidden = playerScript.IsHidden;
     
         Vector3 dirToPlayer = (player.position - transform.position).normalized;
         float dist = Vector3.Distance(transform.position, player.position);
@@ -109,18 +112,23 @@ public class EnemyAI : MonoBehaviour
         float dist = Vector3.Distance(transform.position, player.position);
         bool aware = awarenessMeter >= awarenessThreshold;
 
-        // Logika Hierarki State
-        if (aware && dist <= attackRange)
+        // Jika player sembunyi, paksa AI ke state Investigating di lokasi terakhir
+        if (aware && !playerScript.IsHidden)
         {
-            ChangeState(EnemyState.Attacking);
-            ExecuteAttack();
+            // Logika Hierarki State
+            if (dist <= attackRange)
+            {
+                ChangeState(EnemyState.Attacking);
+                ExecuteAttack();
+            }
+            else
+            {
+                ChangeState(EnemyState.Chasing);
+                ExecuteChase();
+            }
         }
-        else if (aware)
-        {
-            ChangeState(EnemyState.Chasing);
-            ExecuteChase();
-        }
-        else if (currentState == EnemyState.Chasing || currentState == EnemyState.Investigating)
+        
+        else if (currentState == EnemyState.Chasing || currentState == EnemyState.Attacking || currentState == EnemyState.Investigating)
         {
             ChangeState(EnemyState.Investigating);
             ExecuteInvestigate();
@@ -150,6 +158,7 @@ public class EnemyAI : MonoBehaviour
             case EnemyState.Investigating:
                 agent.speed = investigateSpeed;
                 agent.isStopped = false; // Biarkan AI berjalan ke lokasi suara terakhir
+                investigateTimer = 0;
                 break;
             case EnemyState.Chasing:
                 agent.speed = chaseSpeed;
@@ -165,8 +174,8 @@ public class EnemyAI : MonoBehaviour
     {
         if (currentState == EnemyState.Patrolling || currentState == EnemyState.Investigating)
         {
+            lastKnownPosition = noisePosition;
             ChangeState(EnemyState.Investigating);
-            agent.SetDestination(noisePosition);
             awarenessMeter = Mathf.Max(awarenessMeter, awarenessThreshold * 0.6f);
         }
     }
@@ -240,9 +249,37 @@ public class EnemyAI : MonoBehaviour
             {
                 // Pindah state hanya satu kali
                 investigateTimer = 0;
+                SetToClosestWaypoint();
                 ChangeState(EnemyState.Patrolling);
             }
         }
+        else
+        {
+            // Jika belum sampai, pastikan agent tidak stopped
+            agent.isStopped = false;
+        }
+    }
+
+    void SetToClosestWaypoint()
+    {
+        if (waypoints.Count == 0) return;
+
+        float closestDistance = Mathf.Infinity;
+        int closestIndex = 0;
+
+        for (int i = 0; i < waypoints.Count; i++)
+        {
+            float distance = Vector3.Distance(transform.position, waypoints[i].position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestIndex = i;
+            }
+        }
+
+        currentWaypointIndex = closestIndex;
+        // Set tujuan ke waypoint tersebut
+        agent.SetDestination(waypoints[currentWaypointIndex].position);
     }
 
     void ExecuteChase()

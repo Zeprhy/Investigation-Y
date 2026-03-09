@@ -23,7 +23,7 @@ public class MovementPlayer : MonoBehaviour
 
     [Header("Stealth & Hide")]
     [SerializeField] private LayerMask obstacleMask;
-    [SerializeField] private float checkDistance = 1.0f;
+    private Locker currentLocker;
     
     [Header("Flashlight Settings")]
     [SerializeField] private GameObject flashlightObject;
@@ -42,6 +42,8 @@ public class MovementPlayer : MonoBehaviour
     [SerializeField] private float staminaRegenDelay = 2f;
     [SerializeField] private Image staminaBarFill;
 
+    [Header("UI Effects")]
+    [SerializeField] private CanvasGroup hideFadeGroup;
 
     // Komponen & Data Input internal
     private float regenDelayTimer;
@@ -83,7 +85,8 @@ public class MovementPlayer : MonoBehaviour
 
     void Update()
     {
-        checkObstacleAbove();
+        if (IsHidden) return;
+        
         ApplyRotation();
         HandleStamina();
         UpdateStaminaUI();
@@ -94,6 +97,53 @@ public class MovementPlayer : MonoBehaviour
 
         // Eksekusi pergerakan akhir
         characterController.Move(moveDirection * Time.deltaTime);
+    }
+
+    public void SetHiddenStatus(bool status)
+    {
+        IsHidden = status;
+
+        if (IsHidden && isFlashlightOn)
+        {
+            ToggleFlashlight();
+        }
+
+        if (hideFadeGroup != null)
+        {
+            hideFadeGroup.alpha = status ? 0.9f : 0f;
+        }
+    }
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Debug.Log("Tombol E ditekan!"); // Pastikan ini muncul di Console
+    
+            if (IsHidden && currentLocker != null)
+            {
+                currentLocker.Interact(this);
+                currentLocker = null;
+                return;
+            }
+    
+            RaycastHit hit;
+            // Kita gunakan SphereCast dengan radius 0.2 agar lebih mudah mengenai loker
+            Vector3 rayOrigin = playerCamera.transform.position;
+            Vector3 rayDirection = playerCamera.transform.forward;
+    
+            if (Physics.SphereCast(rayOrigin, 0.2f, rayDirection, out hit, 3.0f))
+            {
+                Debug.Log("Menyentuh objek: " + hit.collider.name);
+    
+                if (hit.collider.TryGetComponent(out Locker locker))
+                {
+                    Debug.Log("Loker terdeteksi! Masuk...");
+                    currentLocker = locker;
+                    locker.Interact(this);
+                }
+            }
+        }
     }
 
     public void OnToggleCursor(InputAction.CallbackContext context)
@@ -177,6 +227,13 @@ public class MovementPlayer : MonoBehaviour
 
     private void ApplyMovement()
     {
+        // Jika sembunyi, jangan biarkan ada pergerakan fisik
+        if (IsHidden) 
+        {
+            moveDirection = Vector3.zero;
+            return;
+        }
+
         // Tentukan kecepatan berdasarkan status
         bool canRun = isRunning && currentStamina > 0 && !isExhausted;
         float currentSpeed = isCrouching ? crouchSpeed : (isRunning ? runSpeed : walkSpeed);
@@ -221,13 +278,7 @@ public class MovementPlayer : MonoBehaviour
             characterController.height = defaultHeight;
         }
     }
-    private void checkObstacleAbove()
-    {
-        isBlockedAbove = Physics.Raycast(transform.position, Vector3.up, checkDistance, obstacleMask);
-        Debug.DrawRay(transform.position, Vector3.up * checkDistance, isBlockedAbove ? Color.red : Color.green);
 
-        IsHidden = isBlockedAbove && isCrouching;
-    }
     public void OnFlashlight(InputAction.CallbackContext context)
     {
         if (context.performed)
