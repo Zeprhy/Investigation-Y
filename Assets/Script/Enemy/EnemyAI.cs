@@ -301,8 +301,16 @@ public class EnemyAI : MonoBehaviour
 
         if (Time.time >= lastAttackTime + attackCooldown)
         {
-            Debug.Log("<color=red>Enemy Menyerang!</color>");
-            lastAttackTime = Time.time;
+            HealthManager hp = player.GetComponent<HealthManager>();
+            if (hp != null)
+            {
+                hp.TakeDamage(1);
+                lastAttackTime = Time.time;
+            }
+            else
+            {
+                Debug.LogError("HealthManager tidak ditemukan di objek Player!");
+            }
         }
     }
 

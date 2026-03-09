@@ -39,6 +39,7 @@ public class HealthManager : MonoBehaviour
     }
     public void TakeDamage(int amount)
     {
+        Debug.Log("Healthmanager: player terkena hit! Damage:" + amount);
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         targetAlpha = (1f - ((float) currentHealth / maxHealth)) * maxAlpha;

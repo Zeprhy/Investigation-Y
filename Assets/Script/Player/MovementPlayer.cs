@@ -45,6 +45,9 @@ public class MovementPlayer : MonoBehaviour
     [Header("UI Effects")]
     [SerializeField] private CanvasGroup hideFadeGroup;
 
+    [Header("Health Integration")]
+    [SerializeField] private HealthManager health;
+
     // Komponen & Data Input internal
     private float regenDelayTimer;
     private CharacterController characterController;
@@ -210,6 +213,8 @@ public class MovementPlayer : MonoBehaviour
 
     private void ApplyRotation()
     {
+        if (health != null && health.currentHealth <= 0) return;
+        
         if (!isCursorLocked)
         {
 
@@ -238,6 +243,17 @@ public class MovementPlayer : MonoBehaviour
         bool canRun = isRunning && currentStamina > 0 && !isExhausted;
         float currentSpeed = isCrouching ? crouchSpeed : (isRunning ? runSpeed : walkSpeed);
 
+        if (health != null)
+        {
+            if (health.currentHealth == 1)
+            {
+                currentSpeed *= 0.5f;
+            }
+            else if (health.currentHealth <= 0)
+            {
+                currentSpeed = 0; //pemain gk bisa gerak ketika health 0
+            }
+        }
         // Ubah input 2D menjadi arah 3D (Forward & Right)
         Vector3 move = (transform.forward * inputMove.y) + (transform.right * inputMove.x);
         

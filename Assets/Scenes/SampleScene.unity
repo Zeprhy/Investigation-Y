@@ -997,7 +997,7 @@ GameObject:
   - component: {fileID: 769955107}
   m_Layer: 0
   m_Name: Player
-  m_TagString: player
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1027,7 +1027,6 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 8
-  checkDistance: 1
   flashlightObject: {fileID: 1570782866}
   baseNoiseRadius: 5
   sprintNoiseMultiplier: 2
@@ -1041,6 +1040,8 @@ MonoBehaviour:
   staminaRegen: 15
   staminaRegenDelay: 2
   staminaBarFill: {fileID: 0}
+  hideFadeGroup: {fileID: 0}
+  health: {fileID: 769955107}
 --- !u!136 &769955099
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1410,8 +1411,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9a628bf47fcae84bab711b13492ccff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  maxHealth: 3
-  currentHealth: 0
+  maxHealth: 5
+  currentHealth: 5
   BloodScreenImage: {fileID: 1301217577}
   minAlpha: 0
   maxAlpha: 0.8
@@ -3672,7 +3673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 0.54509807}
+  m_Color: {r: 1, g: 0, b: 0, a: 0}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4031,7 +4032,7 @@ GameObject:
   - component: {fileID: 1474810402}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
