@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class BoardedWall : MonoBehaviour
+public class BoardedWall : MonoBehaviour, IInteractable
 {
    [Header("Boards")]
    public List<Rigidbody> boards;
@@ -34,8 +34,8 @@ public class BoardedWall : MonoBehaviour
             isDone = true;
             Debug.Log("Semua Papa terlepas! Akses terbuka");
         }
-
-        void DetachBoard(Rigidbody board)
+    }
+     void DetachBoard(Rigidbody board)
         {
             board.transform.SetParent(null);
             board.constraints = RigidbodyConstraints.None;
@@ -51,5 +51,4 @@ public class BoardedWall : MonoBehaviour
             board.AddForce(randomForce, ForceMode.Impulse);
             board.AddTorque(Random.insideUnitSphere * 1.5f, ForceMode.Impulse);
         }
-    }
 }

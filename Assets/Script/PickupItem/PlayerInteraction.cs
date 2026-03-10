@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -121,6 +120,7 @@ public class PlayerInteraction : MonoBehaviour
         if (!Physics.Raycast(ray, out RaycastHit hit, 2.5f)) return;
 
         IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+        if (interactable == null) interactable = hit.collider.GetComponentInParent<IInteractable>();
         if (interactable == null) return;
         if (interactable.CanInteract(equippedItem.itemType, equippedItem.keyID))
         {
@@ -150,6 +150,12 @@ public class PlayerInteraction : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit, 2.5f))
             {
                 IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+
+                if (interactable == null)
+                {
+                    interactable = hit.collider.GetComponentInParent<IInteractable>();
+                }
+
                 if (interactable != null && interactable.CanInteract(equippedItem.itemType, equippedItem.keyID))
                 {
                     interactPromptText.gameObject.SetActive(true);
