@@ -1610,6 +1610,8 @@ MonoBehaviour:
   staminaBarFill: {fileID: 0}
   hideFadeGroup: {fileID: 0}
   health: {fileID: 769955107}
+  jumpForwardForce: 5
+  jumpCooldown: 2
 --- !u!136 &769955099
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5214,7 +5216,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1474810394}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

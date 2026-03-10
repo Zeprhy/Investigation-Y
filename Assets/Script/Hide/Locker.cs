@@ -7,40 +7,84 @@ public class Locker : MonoBehaviour
     [SerializeField] private float interactionRadius = 2.5f; 
     [SerializeField] private Color gizmoColor = Color.yellow;
 
+    [Header("Hiding Timer")]
+    [SerializeField] private float maxHidingTime = 10f; 
+    private float _hidingTimer;
+
+    [Header("Peeking Constraints")]
+    [SerializeField] private float minYaw = -60f;
+    [SerializeField] private float maxYaw = 60f;
+    [SerializeField] private float minPitch = -30f;
+    [SerializeField] private float maxPitch = 30f;
+
     [Header("References")]
     [SerializeField] private Transform hidingPoint;
     [SerializeField] private Transform exitPoint;
+
+    [Header("UI Panels")]
     [SerializeField] private GameObject interactUI;
+    [SerializeField] private GameObject exitUI;
 
     private bool _isOccupied = false;
     private Transform _playerTransform;
+    private MovementPlayer _currentPlayerScript;
+    private float _currentYaw = 0f;
+    private float _currentPitch = 0f;
+
+    public bool IsOccupied => _isOccupied;
 
     private void Start()
     {
         // Mencari player satu kali saat start
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null) _playerTransform = player.transform;
-        
+
         if (interactUI != null) interactUI.SetActive(false);
+        if (exitUI != null) exitUI.SetActive(false);
     }
 
     private void Update()
     {
-        // Mencegah error jika player tidak ditemukan atau sedang di dalam loker
-        if (_playerTransform == null || _isOccupied) 
+        if (_playerTransform == null) return;
+
+        // JIKA PLAYER DI DALAM LOKER
+        if (_isOccupied)
         {
-            if (interactUI != null && interactUI.activeSelf) interactUI.SetActive(false);
+            HandleLockerTimer();
+
+            if (interactUI != null) interactUI.SetActive(false); // Sembunyikan UI Masuk
+            if (exitUI != null) exitUI.SetActive(true);        // Tampilkan UI Keluar
             return;
         }
 
-        // SEKARANG interactionRadius DIGUNAKAN DI SINI
+        // JIKA PLAYER DI LUAR LOKER
         float distance = Vector3.Distance(transform.position, _playerTransform.position);
+        bool isInRange = distance <= interactionRadius;
 
-        // UI muncul hanya jika player di dalam radius
-        if (interactUI != null)
+        if (interactUI != null) interactUI.SetActive(isInRange); // Muncul jika dekat
+        if (exitUI != null) exitUI.SetActive(false);             // Selalu mati jika di luar
+    }
+
+    private void HandleLockerTimer()
+    {
+        _hidingTimer -= Time.deltaTime;
+
+        // Jika waktu habis, keluarkan paksa
+        if (_hidingTimer <= 0)
         {
-            interactUI.SetActive(distance <= interactionRadius);
+            ExitLocker(_currentPlayerScript);
         }
+    }
+
+    public void HandleCameraPeeking(Transform camTransform, float mouseX, float mouseY)
+    {
+        _currentYaw += mouseX;
+        _currentPitch -= mouseY;
+
+        _currentYaw = Mathf.Clamp(_currentYaw, minYaw, maxYaw);
+        _currentPitch = Mathf.Clamp(_currentPitch, minPitch, maxPitch);
+
+        camTransform.localRotation = Quaternion.Euler(_currentPitch, _currentYaw, 0f);
     }
 
     public void Interact(MovementPlayer player)
@@ -54,6 +98,13 @@ public class Locker : MonoBehaviour
     private void EnterLocker(MovementPlayer player)
     {
         _isOccupied = true;
+
+        _currentPlayerScript = player;
+        _hidingTimer = maxHidingTime;
+
+        _currentYaw = 0f;
+        _currentPitch = 0f;
+
         if (interactUI != null) interactUI.SetActive(false);
 
         CharacterController cc = player.GetComponent<CharacterController>();
@@ -69,6 +120,7 @@ public class Locker : MonoBehaviour
     {
         _isOccupied = false;
 
+        if (exitUI != null) exitUI.SetActive(false);
         player.transform.position = exitPoint.position;
 
         CharacterController cc = player.GetComponent<CharacterController>();
@@ -79,7 +131,6 @@ public class Locker : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // interactionRadius juga digunakan di sini untuk visualisasi Editor
         Gizmos.color = gizmoColor;
         Gizmos.DrawWireSphere(transform.position, interactionRadius);
     }
