@@ -307,10 +307,6 @@ public class EnemyAI : MonoBehaviour
                 hp.TakeDamage(1);
                 lastAttackTime = Time.time;
             }
-            else
-            {
-                Debug.LogError("HealthManager tidak ditemukan di objek Player!");
-            }
         }
     }
 

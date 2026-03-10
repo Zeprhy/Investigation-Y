@@ -20,6 +20,8 @@ public class MovementPlayer : MonoBehaviour
     [SerializeField] private float gravity = 20f;
     [SerializeField] private float defaultHeight = 2f;
     [SerializeField] private float crouchHeight = 1f;
+    [SerializeField] private float jumpCooldown = 0.1f; 
+    [SerializeField] private float jumpForwardForce = 2f;
 
     [Header("Stealth & Hide")]
     [SerializeField] private LayerMask obstacleMask;
@@ -56,6 +58,7 @@ public class MovementPlayer : MonoBehaviour
     private Vector2 inputLook;
     private float rotationX = 0;
     private bool isCursorLocked;
+    private float lastJumpTime;
     
     // Status Karakter
     private bool isRunning;
@@ -88,7 +91,11 @@ public class MovementPlayer : MonoBehaviour
 
     void Update()
     {
-        if (IsHidden) return;
+        if (IsHidden)
+        {
+            HandleHidingLook();
+            return; 
+        }
         
         ApplyRotation();
         HandleStamina();
@@ -113,39 +120,50 @@ public class MovementPlayer : MonoBehaviour
 
         if (hideFadeGroup != null)
         {
-            hideFadeGroup.alpha = status ? 0.9f : 0f;
+            hideFadeGroup.alpha = status ? 0.8f : 0f;
+        }
+    }
+
+    private void HandleHidingLook()
+    {
+        if (currentLocker != null)
+        {
+            float sensitivityMultiplier = 0.1f;
+            float mouseX = inputLook.x * lookSpeed * sensitivityMultiplier;
+            float mouseY = inputLook.y * lookSpeed * sensitivityMultiplier;
+
+            currentLocker.HandleCameraPeeking(playerCamera.transform, mouseX, mouseY);
         }
     }
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && !IsHidden)
         {
-            Debug.Log("Tombol E ditekan!"); // Pastikan ini muncul di Console
-    
-            if (IsHidden && currentLocker != null)
-            {
-                currentLocker.Interact(this);
-                currentLocker = null;
-                return;
-            }
-    
             RaycastHit hit;
-            // Kita gunakan SphereCast dengan radius 0.2 agar lebih mudah mengenai loker
             Vector3 rayOrigin = playerCamera.transform.position;
             Vector3 rayDirection = playerCamera.transform.forward;
-    
+
             if (Physics.SphereCast(rayOrigin, 0.2f, rayDirection, out hit, 3.0f))
             {
-                Debug.Log("Menyentuh objek: " + hit.collider.name);
-    
                 if (hit.collider.TryGetComponent(out Locker locker))
                 {
-                    Debug.Log("Loker terdeteksi! Masuk...");
-                    currentLocker = locker;
-                    locker.Interact(this);
+                    if (!locker.IsOccupied) 
+                    {
+                        currentLocker = locker;
+                        locker.Interact(this);
+                    }
                 }
             }
+        }
+    }
+
+    public void OnExitHiding(InputAction.CallbackContext context)
+    {
+        if (context.performed && IsHidden && currentLocker != null)
+        {
+            currentLocker.Interact(this);
+            currentLocker = null;
         }
     }
 
@@ -239,8 +257,9 @@ public class MovementPlayer : MonoBehaviour
             return;
         }
 
+        Vector2 finalInput = characterController.isGrounded ? inputMove : Vector2.zero;
+
         // Tentukan kecepatan berdasarkan status
-        bool canRun = isRunning && currentStamina > 0 && !isExhausted;
         float currentSpeed = isCrouching ? crouchSpeed : (isRunning ? runSpeed : walkSpeed);
 
         if (health != null)
@@ -255,18 +274,33 @@ public class MovementPlayer : MonoBehaviour
             }
         }
         // Ubah input 2D menjadi arah 3D (Forward & Right)
-        Vector3 move = (transform.forward * inputMove.y) + (transform.right * inputMove.x);
+        Vector3 move = (transform.forward * finalInput.y) + (transform.right * finalInput.x);
         
         float verticalTemp = moveDirection.y; // Simpan gravitasi saat ini
-        moveDirection = move * currentSpeed;
+
+        if (characterController.isGrounded)
+        {
+            moveDirection = move * currentSpeed;
+        }
+
         moveDirection.y = verticalTemp; // Kembalikan gravitasi agar tidak hilang
     }
 
     private void ApplyJump()
     {
-        if (characterController.isGrounded)
+        // Cek apakah di tanah, sedang tidak cooldown, dan tidak lelah
+        if (characterController.isGrounded && Time.time >= lastJumpTime + jumpCooldown && !isExhausted)
         {
             moveDirection.y = jumpPower;
+            currentStamina -= 10f; // Kurangi 10 stamina setiap lompat
+            regenDelayTimer = staminaRegenDelay; // Reset delay regenerasi
+
+            // Berikan dorongan ke depan saat melompat
+            Vector3 forwardJump = transform.forward * jumpForwardForce;
+            moveDirection.x = forwardJump.x;
+            moveDirection.z = forwardJump.z;
+
+            lastJumpTime = Time.time; // Catat waktu lompat
         }
     }
 
@@ -309,7 +343,6 @@ public class MovementPlayer : MonoBehaviour
         {
             isFlashlightOn = !isFlashlightOn;
             flashlightObject.SetActive(isFlashlightOn);
-            Debug.Log("Senter: " + (isFlashlightOn ? "Menyala" : "Mati"));
         }
     }   
     private void HandleNoiseEmission()
