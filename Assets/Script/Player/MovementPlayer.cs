@@ -96,6 +96,8 @@ public class MovementPlayer : MonoBehaviour
             HandleHidingLook();
             return; 
         }
+
+        if (!characterController.enabled) return;
         
         ApplyRotation();
         HandleStamina();
@@ -109,6 +111,14 @@ public class MovementPlayer : MonoBehaviour
         characterController.Move(moveDirection * Time.deltaTime);
     }
 
+    public void UpdateFadeAlpha(float alpha)
+    {
+        if (hideFadeGroup != null)
+        {
+            hideFadeGroup.alpha = alpha;
+        }
+    }
+
     public void SetHiddenStatus(bool status)
     {
         IsHidden = status;
@@ -120,7 +130,7 @@ public class MovementPlayer : MonoBehaviour
 
         if (hideFadeGroup != null)
         {
-            hideFadeGroup.alpha = status ? 0.8f : 0f;
+            if (!status) hideFadeGroup.alpha = 0f;
         }
     }
 
@@ -140,20 +150,48 @@ public class MovementPlayer : MonoBehaviour
     {
         if (context.performed && !IsHidden)
         {
-            RaycastHit hit;
-            Vector3 rayOrigin = playerCamera.transform.position;
-            Vector3 rayDirection = playerCamera.transform.forward;
+            // 1. Cari semua collider dalam radius 3 meter
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, 3.0f);
+            Locker closestLocker = null;
+            float closestDistance = Mathf.Infinity;
 
-            if (Physics.SphereCast(rayOrigin, 0.2f, rayDirection, out hit, 3.0f))
+            foreach (var hitCollider in hitColliders)
             {
-                if (hit.collider.TryGetComponent(out Locker locker))
+                if (hitCollider.TryGetComponent(out Locker locker))
                 {
-                    if (!locker.IsOccupied) 
+                    if (!locker.IsOccupied)
                     {
-                        currentLocker = locker;
-                        locker.Interact(this);
+                        // Arah dari player ke loker
+                        Vector3 dirToLocker = (locker.transform.position - transform.position).normalized;
+                        // Arah dari loker ke player
+                        Vector3 dirToPlayer = (transform.position - locker.transform.position).normalized;
+
+                        // CHECK 1: Apakah player menghadap loker? 
+                        // (Dot > 0.5 berarti sudut pandang player ke loker sekitar 60 derajat)
+                        float playerFacingDot = Vector3.Dot(transform.forward, dirToLocker);
+
+                        // CHECK 2: Apakah player berada di depan pintu loker?
+                        // (Menggunakan forward dari loker. Pastikan panah biru/Z-axis loker menghadap ke luar pintu)
+                        float lockerFrontDot = Vector3.Dot(locker.transform.forward, dirToPlayer);
+
+                        if (playerFacingDot > 0.5f && lockerFrontDot > 0.5f)
+                        {
+                            float dist = Vector3.Distance(transform.position, locker.transform.position);
+                            if (dist < closestDistance)
+                            {
+                                closestDistance = dist;
+                                closestLocker = locker;
+                            }
+                        }
                     }
                 }
+            }
+
+            // 4. Jika ditemukan loker terdekat, masuk!
+            if (closestLocker != null)
+            {
+                currentLocker = closestLocker;
+                closestLocker.Interact(this);
             }
         }
     }

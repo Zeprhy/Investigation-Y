@@ -1,9 +1,9 @@
 using UnityEngine;
+using System.Collections;
 
 public class Locker : MonoBehaviour
 {
     [Header("Settings")]
-    // [SerializeField] memungkinkan variabel private muncul di Inspector
     [SerializeField] private float interactionRadius = 2.5f; 
     [SerializeField] private Color gizmoColor = Color.yellow;
 
@@ -16,6 +16,10 @@ public class Locker : MonoBehaviour
     [SerializeField] private float maxYaw = 60f;
     [SerializeField] private float minPitch = -30f;
     [SerializeField] private float maxPitch = 30f;
+
+    [Header("Animation Settings")]
+    [SerializeField] private Animator lockerAnimator;
+    [SerializeField] private float transitionSpeed = 5f;
 
     [Header("References")]
     [SerializeField] private Transform hidingPoint;
@@ -69,7 +73,18 @@ public class Locker : MonoBehaviour
     {
         _hidingTimer -= Time.deltaTime;
 
-        // Jika waktu habis, keluarkan paksa
+        if (_currentPlayerScript != null)
+        {
+            // 1. Hitung progress waktu (0 saat baru masuk, 1 saat waktu habis)
+            float progress = 1f - (_hidingTimer / maxHidingTime);
+
+            // 2. Map progress ke range 0.3 sampai 1.0
+            float targetAlpha = Mathf.Lerp(0.3f, 1.0f, progress);
+
+            // 3. Kirim ke script player
+            _currentPlayerScript.UpdateFadeAlpha(targetAlpha);
+        }
+
         if (_hidingTimer <= 0)
         {
             ExitLocker(_currentPlayerScript);
@@ -98,7 +113,6 @@ public class Locker : MonoBehaviour
     private void EnterLocker(MovementPlayer player)
     {
         _isOccupied = true;
-
         _currentPlayerScript = player;
         _hidingTimer = maxHidingTime;
 
@@ -106,29 +120,94 @@ public class Locker : MonoBehaviour
         _currentPitch = 0f;
 
         if (interactUI != null) interactUI.SetActive(false);
+        
+        // Mulai animasi masuk
+        StartCoroutine(SmoothEnter(player));
+    }
 
+    private IEnumerator SmoothEnter(MovementPlayer player)
+    {
+        player.SetHiddenStatus(true);
+        player.UpdateFadeAlpha(0.3f);
+        
+        // Matikan CC agar bisa dipindahkan lewat script
         CharacterController cc = player.GetComponent<CharacterController>();
         if (cc != null) cc.enabled = false;
 
+        // Buka pintu
+        if (lockerAnimator != null) lockerAnimator.SetBool("IsOpen", true);
+
+        float elapsed = 0f;
+        float duration = 1f / transitionSpeed;
+        Vector3 startPos = player.transform.position;
+        Quaternion startRot = player.transform.rotation;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            player.transform.position = Vector3.Lerp(startPos, hidingPoint.position, t);
+            player.transform.rotation = Quaternion.Slerp(startRot, hidingPoint.rotation, t);
+            yield return null;
+        }
+
         player.transform.position = hidingPoint.position;
         player.transform.rotation = hidingPoint.rotation;
+
+        // Tutup pintu setelah masuk
+        if (lockerAnimator != null) lockerAnimator.SetBool("IsOpen", false);
 
         player.SetHiddenStatus(true);
     }
 
     private void ExitLocker(MovementPlayer player)
     {
+        if (player == null) return;
+
         _isOccupied = false;
+        _currentPlayerScript = null;
 
         if (exitUI != null) exitUI.SetActive(false);
-        player.transform.position = exitPoint.position;
-
-        CharacterController cc = player.GetComponent<CharacterController>();
-        if (cc != null) cc.enabled = true;
-
+        
+        // JANGAN teleport player di sini, biarkan Coroutine yang melakukannya
+        StartCoroutine(SmoothExit(player));
         player.SetHiddenStatus(false);
     }
 
+    private IEnumerator SmoothExit(MovementPlayer player)
+    {
+        // 1. Buka pintu dulu
+        if (lockerAnimator != null) lockerAnimator.SetBool("IsOpen", true);
+        yield return new WaitForSeconds(0.2f); // Tunggu sebentar agar pintu mulai terbuka
+
+        player.SetHiddenStatus(false);
+        
+        float elapsed = 0f;
+        float duration = 1f / transitionSpeed;
+        Vector3 startPos = player.transform.position;
+        Quaternion startRot = player.transform.rotation;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            player.transform.position = Vector3.Lerp(startPos, exitPoint.position, t);
+            // Tambahkan rotasi ke arah exit point agar tidak kaku
+            player.transform.rotation = Quaternion.Slerp(startRot, exitPoint.rotation, t);
+            yield return null;
+        }
+
+        player.transform.position = exitPoint.position;
+
+        // 2. Aktifkan kembali kontrol player
+        CharacterController cc = player.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = true;
+
+        // 3. Tutup pintu setelah player di luar
+        yield return new WaitForSeconds(0.3f);
+        if (lockerAnimator != null) lockerAnimator.SetBool("IsOpen", false);
+    }
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = gizmoColor;
