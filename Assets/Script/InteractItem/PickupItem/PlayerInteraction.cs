@@ -46,6 +46,18 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
+    public void OnTryShot(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            if (equippedItem == null) return;
+            if (equippedItem.itemType != ItemType.StunGun) return;
+
+            StunGun stunGun = equippedItem.GetComponent<StunGun>();
+            if (stunGun != null) stunGun.TryShoot();
+        }
+    }
+
     void TryEquip()
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -78,6 +90,8 @@ public class PlayerInteraction : MonoBehaviour
                     equippedRb.constraints = RigidbodyConstraints.FreezeRotation;
                     equippedRb.collisionDetectionMode = CollisionDetectionMode.Continuous;
                     equippedRb.interpolation = RigidbodyInterpolation.Interpolate;
+                    StunGun stunGun = equippedItem.GetComponent<StunGun>();
+                    if (stunGun != null) stunGun.OnPickedUp();
                 }
             }
         }
@@ -109,6 +123,9 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         equippedRb.AddForce(playerCamera.transform.forward * ForcePush, ForceMode.Impulse);
+
+        StunGun stunGun = equippedItem.GetComponent<StunGun>();
+        if (stunGun != null) stunGun.OnDropped();
 
         equippedItem = null;
         equippedRb = null;
@@ -163,6 +180,7 @@ public class PlayerInteraction : MonoBehaviour
                     {
                         ItemType.Crowbar => "[E] Remove the board",
                         ItemType.doorID  => "[E] Unlock The Door",
+                        ItemType.StunGun => "",
                         _                => "[E] Equip"
                     };
                     return;
@@ -170,5 +188,11 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
         interactPromptText.gameObject.SetActive(false);
+    }
+    public StunGun GetHeldStunGun()
+    {
+        if (equippedItem == null) return null;
+        if (equippedItem.itemType != ItemType.StunGun) return null;
+        return equippedItem.GetComponent<StunGun>();
     }
 }

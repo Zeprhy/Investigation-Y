@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -45,6 +46,11 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float doorCheckDistance = 1.5f;
     [SerializeField] private LayerMask doorLayer;
 
+    
+    [Header("Stun Settings")]
+    private bool isStunned = false;
+    private float stunTimer = 0f;
+
     private float investigateTimer;
     private bool isForward = true;
 
@@ -66,6 +72,13 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
+        if (isStunned)
+        {
+            stunTimer -= Time.deltaTime;
+            if (stunTimer <= 0f) RecoverFromStun();
+            return;
+        }
+        
         if (player == null || playerScript == null) return;
 
         HandleAwareness();
@@ -73,6 +86,25 @@ public class EnemyAI : MonoBehaviour
         CheckForDoors();
     }
 
+    public void ApplyStun(float duration)
+    {
+        isStunned = true;
+        stunTimer = duration;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        currentState = EnemyState.Investigating;
+    }
+
+    private void RecoverFromStun()
+    {
+        isStunned = false;
+        agent.isStopped = false;
+
+        SetToClosestWaypoint();
+        ChangeState(EnemyState.Patrolling);
+    }
     private void CheckForDoors()
     {
         RaycastHit hit;
