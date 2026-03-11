@@ -152,7 +152,9 @@ public class MovementPlayer : MonoBehaviour
         {
             // 1. Cari semua collider dalam radius 3 meter
             Collider[] hitColliders = Physics.OverlapSphere(transform.position, 3.0f);
+
             Locker closestLocker = null;
+            NormalDoor closestDoor = null;
             float closestDistance = Mathf.Infinity;
 
             foreach (var hitCollider in hitColliders)
@@ -181,7 +183,27 @@ public class MovementPlayer : MonoBehaviour
                             {
                                 closestDistance = dist;
                                 closestLocker = locker;
+                                closestDoor = null;
                             }
+                        }
+                    }
+                }
+
+                // --- BAGIAN 2: CEK PINTU (Tambahkan Blok Ini) ---
+                else if (hitCollider.TryGetComponent(out NormalDoor door))
+                {
+                    Vector3 dirToDoor = (door.transform.position - transform.position).normalized;
+                    float playerFacingDot = Vector3.Dot(transform.forward, dirToDoor);
+
+                    // Pintu biasanya lebih fleksibel, cukup cek apakah player menghadap pintu
+                    if (playerFacingDot > 0.5f) 
+                    {
+                        float dist = Vector3.Distance(transform.position, door.transform.position);
+                        if (dist < closestDistance)
+                        {
+                            closestDistance = dist;
+                            closestDoor = door;
+                            closestLocker = null; // Pastikan locker dikosongkan jika door lebih dekat
                         }
                     }
                 }
@@ -192,6 +214,10 @@ public class MovementPlayer : MonoBehaviour
             {
                 currentLocker = closestLocker;
                 closestLocker.Interact(this);
+            }
+            else if (closestDoor != null)
+            {
+                closestDoor.Interact(transform.position);
             }
         }
     }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 using System.Collections.Generic;
 
 public class EnemyAI : MonoBehaviour
@@ -40,6 +41,10 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float investigateSpeed = 2f;
     [SerializeField] private float chaseSpeed = 6f;
 
+    [Header("Door Interaction")]
+    [SerializeField] private float doorCheckDistance = 1.5f;
+    [SerializeField] private LayerMask doorLayer;
+
     private float investigateTimer;
     private bool isForward = true;
 
@@ -65,6 +70,33 @@ public class EnemyAI : MonoBehaviour
 
         HandleAwareness();
         UpdateBrain();
+        CheckForDoors();
+    }
+
+    private void CheckForDoors()
+    {
+        RaycastHit hit;
+        // Menembakkan laser ke depan musuh untuk mencari pintu
+        if (Physics.Raycast(transform.position + Vector3.up, transform.forward, out hit, doorCheckDistance, doorLayer))
+        {
+            if (hit.collider.TryGetComponent(out NormalDoor door))
+            {
+                // Jika pintu tertutup dan tidak terkunci, musuh membukanya
+                if (!door.isOpen && !door.isLocked)
+                {
+                    // Musuh memanggil fungsi Interact (mengirim posisi musuh agar pintu terbuka menjauh)
+                    agent.isStopped = true;
+                    door.Interact(transform.position);
+                    StartCoroutine(ResumeMovementAfterDoor());
+                }
+            }
+        }
+    }
+
+    private IEnumerator ResumeMovementAfterDoor()
+    {
+        yield return new WaitForSeconds(0.5f); // Jeda agar animasi pintu mulai jalan
+        agent.isStopped = false;
     }
 
     private void HandleAwareness()
