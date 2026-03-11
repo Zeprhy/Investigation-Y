@@ -162,7 +162,7 @@ public class PlayerInteraction : MonoBehaviour
                     interactPromptText.text = equippedItem.itemType switch
                     {
                         ItemType.Crowbar => "[E] Remove the board",
-                        ItemType.Key     => "[E] Unlock The Door",
+                        ItemType.doorID  => "[E] Unlock The Door",
                         _                => "[E] Equip"
                     };
                     return;

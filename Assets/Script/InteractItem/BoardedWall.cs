@@ -27,12 +27,10 @@ public class BoardedWall : MonoBehaviour, IInteractable
         DetachBoard(board);
 
         boardsRemoved++;
-        Debug.Log($"Papan dilepas {boardsRemoved}/{boards.Count}");
 
         if (boardsRemoved >= boards.Count)
         {
             isDone = true;
-            Debug.Log("Semua Papa terlepas! Akses terbuka");
         }
     }
      void DetachBoard(Rigidbody board)

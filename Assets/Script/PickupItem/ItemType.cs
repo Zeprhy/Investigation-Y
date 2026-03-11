@@ -4,8 +4,8 @@ public enum ItemType
 {
     PhysicsOnly,
     Crowbar,
-    Key,
-    StunGun
+    StunGun,
+    doorID
 }
 
 public class Item : MonoBehaviour

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(CharacterController))]
 public class MovementPlayer : MonoBehaviour
@@ -50,6 +51,9 @@ public class MovementPlayer : MonoBehaviour
     [Header("Health Integration")]
     [SerializeField] private HealthManager health;
 
+    [Header("Inventory")]
+    public List<string> collectedKeys = new List<string>();
+
     // Komponen & Data Input internal
     private float regenDelayTimer;
     private CharacterController characterController;
@@ -60,6 +64,15 @@ public class MovementPlayer : MonoBehaviour
     private bool isCursorLocked;
     private float lastJumpTime;
     
+    public void AddKey(string keyID)
+    {
+        if (!collectedKeys.Contains(keyID))
+        {
+            collectedKeys.Add(keyID);
+            Debug.Log("Kunci ditambahkan: " + keyID);
+        }
+    }
+
     // Status Karakter
     private bool isRunning;
     private bool isCrouching;
@@ -67,6 +80,7 @@ public class MovementPlayer : MonoBehaviour
     private bool isFlashlightOn = false;
     private bool isExhausted = false;
     public bool IsHidden { get; private set; }
+    public bool HasKey(string id) => collectedKeys.Contains(id);
 
     void Start()
     {
@@ -148,77 +162,113 @@ public class MovementPlayer : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        if (context.performed && !IsHidden)
+        // Hanya eksekusi saat tombol ditekan (bukan dilepas)
+        if (!context.performed || IsHidden) return;
+
+        // 1. PRIORITAS PERTAMA: SphereCast (Apa yang dilihat player secara presisi)
+        RaycastHit hit;
+        Vector3 rayOrigin = playerCamera.transform.position;
+        Vector3 rayDirection = playerCamera.transform.forward;
+
+        if (Physics.SphereCast(rayOrigin, 0.2f, rayDirection, out hit, 3.0f))
         {
-            // 1. Cari semua collider dalam radius 3 meter
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, 3.0f);
-
-            Locker closestLocker = null;
-            NormalDoor closestDoor = null;
-            float closestDistance = Mathf.Infinity;
-
-            foreach (var hitCollider in hitColliders)
+            // Cek Item
+            if (hit.collider.TryGetComponent(out Item item))
             {
-                if (hitCollider.TryGetComponent(out Locker locker))
+                HandleItemInteraction(item);
+                return; // Berhenti di sini jika sudah berinteraksi
+            }
+
+            // Cek Pintu
+            if (hit.collider.TryGetComponent(out NormalDoor door))
+            {
+                door.Interact(this);
+                return; 
+            }
+
+            // Cek Locker
+            if (hit.collider.TryGetComponent(out Locker locker))
+            {
+                currentLocker = locker;
+                locker.Interact(this);
+                return;
+            }
+        }
+
+        // 2. PRIORITAS KEDUA: OverlapSphere (Jika SphereCast tidak kena apa-apa)
+        // Ini membantu jika player tidak tepat melihat objek tapi berada sangat dekat
+        DetectNearbyInteractables();
+    }
+
+    private void HandleItemInteraction(Item item)
+    {
+        if (item.itemType == ItemType.doorID)
+        {
+            AddKey(item.keyID);
+            Debug.Log("Mengambil: " + item.itemName);
+            Destroy(item.gameObject);
+        }
+    }
+    
+    private void DetectNearbyInteractables()
+    {
+        // Mencari semua collider dalam radius 2.5 unit
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 2.5f);
+        
+        float closestDistance = Mathf.Infinity;
+        Item closestItem = null; // Tambahkan ini
+        Locker closestLocker = null;
+        NormalDoor closestDoor = null;
+    
+        foreach (var hitCollider in hitColliders)
+        {
+            float dist = Vector3.Distance(transform.position, hitCollider.transform.position);
+    
+            // 1. CEK ITEM (Kunci, dll)
+            if (hitCollider.TryGetComponent(out Item item))
+            {
+                if (dist < closestDistance)
                 {
-                    if (!locker.IsOccupied)
-                    {
-                        // Arah dari player ke loker
-                        Vector3 dirToLocker = (locker.transform.position - transform.position).normalized;
-                        // Arah dari loker ke player
-                        Vector3 dirToPlayer = (transform.position - locker.transform.position).normalized;
-
-                        // CHECK 1: Apakah player menghadap loker? 
-                        // (Dot > 0.5 berarti sudut pandang player ke loker sekitar 60 derajat)
-                        float playerFacingDot = Vector3.Dot(transform.forward, dirToLocker);
-
-                        // CHECK 2: Apakah player berada di depan pintu loker?
-                        // (Menggunakan forward dari loker. Pastikan panah biru/Z-axis loker menghadap ke luar pintu)
-                        float lockerFrontDot = Vector3.Dot(locker.transform.forward, dirToPlayer);
-
-                        if (playerFacingDot > 0.5f && lockerFrontDot > 0.5f)
-                        {
-                            float dist = Vector3.Distance(transform.position, locker.transform.position);
-                            if (dist < closestDistance)
-                            {
-                                closestDistance = dist;
-                                closestLocker = locker;
-                                closestDoor = null;
-                            }
-                        }
-                    }
+                    closestDistance = dist;
+                    closestItem = item;
+                    closestLocker = null; closestDoor = null;
                 }
-
-                // --- BAGIAN 2: CEK PINTU (Tambahkan Blok Ini) ---
-                else if (hitCollider.TryGetComponent(out NormalDoor door))
+            }
+            // 2. CEK LOKER
+            else if (hitCollider.TryGetComponent(out Locker locker))
+            {
+                if (!locker.IsOccupied && dist < closestDistance)
                 {
-                    Vector3 dirToDoor = (door.transform.position - transform.position).normalized;
-                    float playerFacingDot = Vector3.Dot(transform.forward, dirToDoor);
-
-                    // Pintu biasanya lebih fleksibel, cukup cek apakah player menghadap pintu
-                    if (playerFacingDot > 0.5f) 
-                    {
-                        float dist = Vector3.Distance(transform.position, door.transform.position);
-                        if (dist < closestDistance)
-                        {
-                            closestDistance = dist;
-                            closestDoor = door;
-                            closestLocker = null; // Pastikan locker dikosongkan jika door lebih dekat
-                        }
-                    }
+                    closestDistance = dist;
+                    closestLocker = locker;
+                    closestItem = null; closestDoor = null;
                 }
             }
-
-            // 4. Jika ditemukan loker terdekat, masuk!
-            if (closestLocker != null)
+            // 3. CEK PINTU
+            else if (hitCollider.TryGetComponent(out NormalDoor door))
             {
-                currentLocker = closestLocker;
-                closestLocker.Interact(this);
+                if (dist < closestDistance)
+                {
+                    closestDistance = dist;
+                    closestDoor = door;
+                    closestItem = null; closestLocker = null;
+                }
             }
-            else if (closestDoor != null)
-            {
-                closestDoor.Interact(transform.position);
-            }
+        }
+    
+        // EKSEKUSI: Prioritas Item > Locker > Door
+        if (closestItem != null)
+        {
+            HandleItemInteraction(closestItem);
+        }
+        else if (closestLocker != null)
+        {
+            currentLocker = closestLocker;
+            closestLocker.Interact(this);
+        }
+        else if (closestDoor != null)
+        {
+            closestDoor.Interact(this);
         }
     }
 

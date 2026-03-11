@@ -18,6 +18,9 @@ public class NormalDoor : MonoBehaviour
     [Header("UI Panels")]
     [SerializeField] private GameObject interactUI;
 
+    [Header("Lock Settings")]
+    public string doorID = "";
+
     private Quaternion targetRotation;
     private Quaternion defaultRotation;
     private Transform _playerTransform;
@@ -56,26 +59,63 @@ public class NormalDoor : MonoBehaviour
         }
     }
     
-    public void Interact(Vector3 playerPosition)
+    // --- VERSION 1: KHUSUS PLAYER ---
+    // Fungsi ini dipanggil oleh script MovementPlayer
+    public void Interact(MovementPlayer player)
     {
-        // Jika player berinteraksi saat coroutine sedang berjalan, batalkan dulu agar tidak bentrok
+        // Cek kunci hanya berlaku untuk Player
+        if (isLocked)
+        {
+            if (player.HasKey(doorID))
+            {
+                isLocked = false;
+                Debug.Log("Pintu Terbuka dengan Kunci");
+            }
+            else
+            {
+                Debug.Log("Pintu Terkunci!");
+                return;
+            }
+        }
+    
+        // Panggil logika inti interaksi menggunakan posisi player
+        ToggleDoor(player.transform.position);
+    }
+    
+    // --- VERSION 2: KHUSUS MUSUH / UMUM ---
+    // Fungsi ini dipanggil oleh EnemyAI (mengirimkan Vector3)
+    public void Interact(Vector3 interactionPosition)
+    {
+        // Musuh biasanya tidak bisa buka pintu terkunci (atau bisa, tergantung maumu)
+        if (isLocked) return; 
+    
+        // Panggil logika inti interaksi menggunakan posisi yang dikirim
+        ToggleDoor(interactionPosition);
+    }
+    
+    // --- LOGIKA INTI (PRIVATE) ---
+    // Agar kita tidak menulis kode yang sama berulang-ulang
+    private void ToggleDoor(Vector3 interactorPosition)
+    {
         if (autoCloseCoroutine != null)
         {
             StopCoroutine(autoCloseCoroutine);
         }
-
+    
         isOpen = !isOpen;
-
+    
         if (isOpen)
         {
-            // Tentukan arah buka
-            Vector3 directionToPlayer = transform.position - playerPosition;
-            float dot = Vector3.Dot(transform.forward, directionToPlayer);
+            // LOGIKA DOT PRODUCT: Menentukan arah ayunan pintu
+            Vector3 directionToInteractor = transform.position - interactorPosition;
+            float dot = Vector3.Dot(transform.forward, directionToInteractor);
+            
+            // Jika pembuka ada di depan pintu (Dot > 0), pintu ayun ke belakang (90)
+            // Jika pembuka ada di belakang pintu (Dot < 0), pintu ayun ke depan (-90)
             float angle = dot >= 0 ? openAngle : -openAngle;
             
             targetRotation = defaultRotation * Quaternion.Euler(0, angle, 0);
-
-            // Mulai hitung mundur untuk menutup otomatis
+    
             if (useAutoClose)
             {
                 autoCloseCoroutine = StartCoroutine(AutoCloseTimer());
