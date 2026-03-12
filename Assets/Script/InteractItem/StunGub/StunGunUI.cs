@@ -24,7 +24,6 @@ public class StunGunUI : MonoBehaviour
     private void Update()
     {
         StunGun held = playerInteraction.GetHeldStunGun();
-         Debug.Log("GetHeldStunGun: " + (held != null));
 
         if (held != currentStunGun)
             currentStunGun = held;

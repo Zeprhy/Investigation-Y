@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.AI;
 
 public class DragHandler : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class DragHandler : MonoBehaviour
     private GameObject draggedObj;
     private Rigidbody draggedRb;
     private Vector3 grabOffset;
+    private int originalLayer;
+    private NavMeshObstacle navObstacle;
 
     public bool IsDragging => draggedObj != null;
 
@@ -46,6 +49,12 @@ public class DragHandler : MonoBehaviour
 
                 if (draggedRb != null)
                 {
+                    originalLayer = draggedObj.layer;
+                    SetLayerRecursive(draggedObj, LayerMask.NameToLayer("Dragging"));
+
+                    navObstacle = draggedObj.GetComponent<NavMeshObstacle>();
+                    if (navObstacle != null) navObstacle.enabled = false;
+
                     draggedRb.useGravity = false;
                     draggedRb.linearDamping = 0.5f;
 
@@ -69,10 +78,24 @@ public class DragHandler : MonoBehaviour
     {
         if (draggedObj == null) return;
 
+        SetLayerRecursive(draggedObj, originalLayer);
+
+        if (navObstacle != null) navObstacle.enabled = true;
+        navObstacle = null;
+
         draggedRb.useGravity = true;
         draggedRb.linearDamping = 0;
 
         draggedObj = null;
         draggedRb = null;
+    }
+
+    void SetLayerRecursive(GameObject obj, int layer)
+    {
+        obj.layer = layer;
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerRecursive(child.gameObject, layer);
+        }
     }
 }
