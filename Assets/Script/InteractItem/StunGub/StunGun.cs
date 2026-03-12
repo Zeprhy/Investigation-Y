@@ -5,8 +5,10 @@ public class StunGun : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Camera playerCamera;
-    [SerializeField] private MuzzleFlashSprite muzzleFlash;
+    [SerializeField] private ParticleSystem muzzleFlash;
     [SerializeField] private LineRenderer bulletTrail;
+    [SerializeField] private ElectricArc electricArc;       
+    [SerializeField] private ImpactFlashSprite impactFlash;
 
     [Header("Audio Clips")]
     [SerializeField] private AudioClip fireSound;
@@ -76,26 +78,32 @@ public class StunGun : MonoBehaviour
         holdStillTimer = 0f;
         chargingSoundPlayed = false;
 
-        //efek tembak
-        if (muzzleFlash) 
-        muzzleFlash.Play();
-        if (fireSound != null)
-        AudioManager.Instance.PlaySFX(fireSound);
+        //efek muzzle
+        if (muzzleFlash) muzzleFlash.Play();
+        if (fireSound != null) AudioManager.Instance.PlaySFX(fireSound);
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f ,0.5f ,0f ));
         RaycastHit hit;
         Vector3 endPoint = ray.origin + ray.direction * shootRange;
+
+         // Posisi awal arc = posisi muzzle flash, fallback ke posisi senjata
+        Vector3 arcStart = muzzleFlash != null ? muzzleFlash.transform.position : transform.position;
 
         if (Physics.Raycast(ray, out hit, shootRange, hitMask))
         {
             endPoint = hit.point;
 
             EnemyAI enemy = hit.collider.GetComponentInParent<EnemyAI>();
-            if (enemy != null)
-            {
-                enemy.ApplyStun(stunDuration);
-            }
+
+            if (enemy != null)  enemy.ApplyStun(stunDuration);
+            // Impact Flash di titik kena
+            if (impactFlash)    impactFlash.PlayAt(hit.point);
+               
         }
+        // Electric arc selalu tampil (kena/tidak)
+        if (electricArc)
+        electricArc.Play(arcStart, endPoint);
+
         if (bulletTrail)
         StartCoroutine(ShowTrail(bulletTrail, transform.position, endPoint));
     }

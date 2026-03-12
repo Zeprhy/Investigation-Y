@@ -1707,8 +1707,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -46.43}
-  m_SizeDelta: {x: 160, y: 20}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 200, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &421144401
 MonoBehaviour:
@@ -5610,7 +5610,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -47.47, y: -68.14}
+  m_AnchoredPosition: {x: -50, y: -20}
   m_SizeDelta: {x: 1920, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1331335348
@@ -5909,9 +5909,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1393200533}
-  - component: {fileID: 1393200534}
   m_Layer: 5
-  m_Name: BatreryPanel
+  m_Name: BatteryPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5934,32 +5933,11 @@ RectTransform:
   - {fileID: 1537001157}
   m_Father: {fileID: 1624910404}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1393200534
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1393200532}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58a0e69bd18971d44a8a4882b1b938a4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StunGunUI
-  playerInteraction: {fileID: 769955106}
-  batteryPanel: {fileID: 1393200532}
-  batterySlider: {fileID: 421144401}
-  batteryText: {fileID: 1331335348}
-  statusText: {fileID: 1331335348}
-  sliderFill: {fileID: 1535261469}
-  readyColor: {r: 0.2, g: 0.9, b: 0.2, a: 1}
-  chargingColor: {r: 0.3, g: 0.6, b: 1, a: 1}
-  emptyColor: {r: 0.9, g: 0.1, b: 0.1, a: 1}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -120, y: 60}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 1, y: 0}
 --- !u!1 &1403439680
 GameObject:
   m_ObjectHideFlags: 0
@@ -6956,7 +6934,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 60.7, y: -68.14}
+  m_AnchoredPosition: {x: 50, y: -20}
   m_SizeDelta: {x: 1920, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1537001158
@@ -7208,7 +7186,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4004725202885986966, guid: ca420cee08bbed545bae1755add817f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.93847
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4004725202885986966, guid: ca420cee08bbed545bae1755add817f0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -7484,6 +7462,7 @@ GameObject:
   - component: {fileID: 1624910407}
   - component: {fileID: 1624910406}
   - component: {fileID: 1624910405}
+  - component: {fileID: 1624910408}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -7579,6 +7558,27 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1624910408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624910403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58a0e69bd18971d44a8a4882b1b938a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StunGunUI
+  playerInteraction: {fileID: 769955106}
+  batteryPanel: {fileID: 1393200532}
+  batterySlider: {fileID: 421144401}
+  batteryText: {fileID: 1331335348}
+  statusText: {fileID: 1537001158}
+  sliderFill: {fileID: 1535261469}
+  readyColor: {r: 0.2, g: 0.9, b: 0.2, a: 1}
+  chargingColor: {r: 0.3, g: 0.6, b: 1, a: 1}
+  emptyColor: {r: 0.9, g: 0.1, b: 0.1, a: 1}
 --- !u!1 &1637818196
 GameObject:
   m_ObjectHideFlags: 0
