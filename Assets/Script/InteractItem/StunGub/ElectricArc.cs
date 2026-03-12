@@ -18,7 +18,8 @@ public class ElectricArc : MonoBehaviour
     [SerializeField] private float branchLength = 0.4f;     // panjang cabang relatif ke bolt utama
 
     [Header("Visuals")]
-    [SerializeField] private Material arcMaterial;             [SerializeField] private float mainWidth = 0.04f;
+    [SerializeField] private Material arcMaterial;             
+    [SerializeField] private float mainWidth = 0.04f;
     [SerializeField] private float branchWidth = 0.015f;
     [SerializeField] private Color mainColor   = new Color(0.5f, 0.8f, 1f, 1f);
     [SerializeField] private Color branchColor = new Color(0.3f, 0.6f, 1f, 0.7f);

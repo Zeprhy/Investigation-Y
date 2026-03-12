@@ -1,10 +1,4 @@
 using UnityEngine;
-
-/// <summary>
-/// Efek flash saat peluru stun gun kena enemy.
-/// Sama seperti MuzzleFlashSprite tapi di-spawn di titik impact.
-/// Attach ke Quad child, posisinya diset dari StunGun.cs saat hit.
-/// </summary>
 public class ImpactFlashSprite : MonoBehaviour
 {
     [Header("Sprite Sheet Settings")]
@@ -63,10 +57,6 @@ public class ImpactFlashSprite : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Panggil dari StunGun.cs saat raycast kena enemy.
-    /// Posisi di-set dari luar sebelum Play() dipanggil.
-    /// </summary>
     public void PlayAt(Vector3 worldPosition)
     {
         transform.position = worldPosition;

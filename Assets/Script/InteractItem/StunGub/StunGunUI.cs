@@ -2,21 +2,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// Attach script ini ke GameObject UI panel baterai.
-/// Otomatis muncul/sembunyi tergantung apakah player sedang pegang StunGun.
-/// </summary>
 public class StunGunUI : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerInteraction playerInteraction;
 
     [Header("UI Elements")]
-    [SerializeField] private GameObject batteryPanel;       // Panel utama (parent semua elemen)
-    [SerializeField] private Slider batterySlider;          // Slider fill baterai
-    [SerializeField] private TextMeshProUGUI batteryText;   // Teks persen "75%"
-    [SerializeField] private TextMeshProUGUI statusText;    // Teks "READY" / "EMPTY" / "CHARGING..."
-    [SerializeField] private Image sliderFill;              // Image fill di dalam Slider
+    [SerializeField] private GameObject batteryPanel;       
+    [SerializeField] private Slider batterySlider;          
+    [SerializeField] private TextMeshProUGUI batteryText;   
+    [SerializeField] private TextMeshProUGUI statusText;    
+    [SerializeField] private Image sliderFill;              
 
     [Header("Colors")]
     [SerializeField] private Color readyColor    = new Color(0.2f, 0.9f, 0.2f);

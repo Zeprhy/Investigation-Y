@@ -1,14 +1,4 @@
 using UnityEngine;
-
-/// <summary>
-/// Attach ke Quad child dari StunGun.
-/// Quad selalu menghadap kamera (billboard) dan memainkan sprite sheet saat dipanggil Play().
-/// 
-/// Setup di Inspector:
-///   - Columns : 4
-///   - Rows    : 2
-///   - FPS     : 24
-/// </summary>
 public class MuzzleFlashSprite : MonoBehaviour
 {
     [Header("Sprite Sheet Settings")]
@@ -32,7 +22,7 @@ public class MuzzleFlashSprite : MonoBehaviour
         mainCam   = Camera.main;
         totalFrames = columns * rows;
 
-        // Set tiling awal sesuai grid
+        
         mat.mainTextureScale = new Vector2(1f / columns, 1f / rows);
 
         // Sembunyikan di awal
