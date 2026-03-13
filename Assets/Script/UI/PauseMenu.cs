@@ -2,7 +2,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PauseMenu : MonoBehaviour
-{[Header("UI Panels")]
+{
+    public static bool isPausedStatic = false;
+
+    [Header("UI Panels")]
     public GameObject backgroundPanel; // Folder Background yang berisi tombol-tombol utama
     public GameObject settingsPanel;
     public GameObject confirmationPanel; // PanelPemilihanY/N
@@ -37,6 +40,7 @@ public class PauseMenu : MonoBehaviour
     public void PauseGame()
     {
         isPaused = true;
+        isPausedStatic = true;
         Time.timeScale = 0f; 
         blurOverlay.SetActive(true);
 
@@ -50,6 +54,7 @@ public class PauseMenu : MonoBehaviour
     public void ResumeGame()
     {
         isPaused = false;
+        isPausedStatic = false;
         Time.timeScale = 1f;
         blurOverlay.SetActive(false);
 

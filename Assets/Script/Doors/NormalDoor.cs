@@ -5,7 +5,7 @@ public class NormalDoor : MonoBehaviour
 {
     [Header("Settings")]
     public bool isOpen = false;
-    public bool isLocked = false;
+    public bool isLocked = true;
     [SerializeField] private float openAngle = 90f;
     [SerializeField] private float smoothSpeed = 5f;
     [SerializeField] private float interactionRadius = 2.5f;
@@ -19,7 +19,7 @@ public class NormalDoor : MonoBehaviour
     [SerializeField] private GameObject interactUI;
 
     [Header("Lock Settings")]
-    public string doorID = "";
+    [SerializeField] private string doorID = "";
 
     private Quaternion targetRotation;
     private Quaternion defaultRotation;
@@ -37,7 +37,6 @@ public class NormalDoor : MonoBehaviour
 
     void Update()
     {
-        // Pergerakan pintu yang halus
         transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, Time.deltaTime * smoothSpeed);
         HandleUI();
     }
@@ -47,8 +46,7 @@ public class NormalDoor : MonoBehaviour
         if (_playerTransform == null || interactUI == null) return;
 
         float distance = Vector3.Distance(transform.position, _playerTransform.position);
-        
-        // Munculkan UI jika player dekat dan pintu tidak sedang "sibuk" (opsional)
+
         if (distance <= interactionRadius)
         {
             interactUI.SetActive(true);
@@ -59,31 +57,38 @@ public class NormalDoor : MonoBehaviour
         }
     }
     
-    // --- VERSION 1: KHUSUS PLAYER ---
-    // Fungsi ini dipanggil oleh script MovementPlayer
-    public void Interact(MovementPlayer player)
+    public void Interact(GameObject player)
     {
-        // Cek kunci hanya berlaku untuk Player
-        if (isLocked)
+        if (!isLocked)
         {
-            if (player.HasKey(doorID))
-            {
-                isLocked = false;
-                Debug.Log("Pintu Terbuka dengan Kunci");
-            }
-            else
-            {
-                Debug.Log("Pintu Terkunci!");
-                return;
-            }
+            ToggleDoor(player.transform.position);
+            return;
         }
-    
-        // Panggil logika inti interaksi menggunakan posisi player
-        ToggleDoor(player.transform.position);
+
+        PlayerInventory inv = player.GetComponent<PlayerInventory>();
+        PlayerInteraction interaction = player.GetComponent<PlayerInteraction>();
+
+        bool hasKeyInInventory = (inv != null && inv.HasKey(doorID));
+        bool isHoldingKey = (interaction != null && interaction.IsHoldingKey(doorID));
+
+        if (hasKeyInInventory || isHoldingKey)
+        {
+            UnlockDoor();
+            Debug.Log("Pintu Berhasil Dibuka!");
+        
+            ToggleDoor(player.transform.position);
+        }
+        else
+        {
+            Debug.Log("Pintu Terkunci, butuh kunci dengan ID: " + doorID);
+        }
+}
+
+    private void UnlockDoor()
+    {
+        isLocked = false;   
     }
-    
-    // --- VERSION 2: KHUSUS MUSUH / UMUM ---
-    // Fungsi ini dipanggil oleh EnemyAI (mengirimkan Vector3)
+
     public void Interact(Vector3 interactionPosition)
     {
         // Musuh biasanya tidak bisa buka pintu terkunci (atau bisa, tergantung maumu)
@@ -92,9 +97,7 @@ public class NormalDoor : MonoBehaviour
         // Panggil logika inti interaksi menggunakan posisi yang dikirim
         ToggleDoor(interactionPosition);
     }
-    
-    // --- LOGIKA INTI (PRIVATE) ---
-    // Agar kita tidak menulis kode yang sama berulang-ulang
+
     private void ToggleDoor(Vector3 interactorPosition)
     {
         if (autoCloseCoroutine != null)

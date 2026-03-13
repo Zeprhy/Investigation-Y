@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -45,7 +44,6 @@ public class EnemyAI : MonoBehaviour
     [Header("Door Interaction")]
     [SerializeField] private float doorCheckDistance = 1.5f;
     [SerializeField] private LayerMask doorLayer;
-
     
     [Header("Stun Settings")]
     private bool isStunned = false;

@@ -26,7 +26,6 @@ public class MovementPlayer : MonoBehaviour
 
     [Header("Stealth & Hide")]
     [SerializeField] private LayerMask obstacleMask;
-    private Locker currentLocker;
     
     [Header("Flashlight Settings")]
     [SerializeField] private GameObject flashlightObject;
@@ -45,16 +44,16 @@ public class MovementPlayer : MonoBehaviour
     [SerializeField] private float staminaRegenDelay = 2f;
     [SerializeField] private Image staminaBarFill;
 
-    [Header("UI Effects")]
-    [SerializeField] private CanvasGroup hideFadeGroup;
-
     [Header("Health Integration")]
     [SerializeField] private HealthManager health;
 
-    [Header("Inventory")]
-    public List<string> collectedKeys = new List<string>();
+    [Header("Optimization Settings")]
+    [SerializeField] private float noiseUpdateFrequency = 0.2f;
+    private float noiseTimer;
+    private Collider[] enemyBuffer = new Collider[5]; 
 
-    // Komponen & Data Input internal
+    private Transform myTransform;
+    private float lastStaminaPercent = -1f;
     private float regenDelayTimer;
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
@@ -63,40 +62,28 @@ public class MovementPlayer : MonoBehaviour
     private float rotationX = 0;
     private bool isCursorLocked;
     private float lastJumpTime;
-    
-    public void AddKey(string keyID)
-    {
-        if (!collectedKeys.Contains(keyID))
-        {
-            collectedKeys.Add(keyID);
-            Debug.Log("Kunci ditambahkan: " + keyID);
-        }
-    }
 
-    // Status Karakter
     private bool isRunning;
     private bool isCrouching;
     private bool isBlockedAbove;
     private bool isFlashlightOn = false;
     private bool isExhausted = false;
-    public bool IsHidden { get; private set; }
-    public bool HasKey(string id) => collectedKeys.Contains(id);
+    public bool IsHidden { get; set; }
 
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        myTransform = transform;
         currentStamina = maxStamina;
-        
-        // Kunci kursor agar tidak keluar layar
+
         SetCursorState(false);
 
         if (flashlightObject != null)
         {
-            flashlightObject.SetActive(false); // Senter mulai dalam keadaan mati
+            flashlightObject.SetActive(false);
         }
     }
 
-    // BAGIAN INPUT (Dihubungkan ke Player Input Component)
     public void OnMove(InputAction.CallbackContext context) => inputMove = context.ReadValue<Vector2>();
     public void OnLook(InputAction.CallbackContext context) => inputLook = context.ReadValue<Vector2>();
     public void OnJump(InputAction.CallbackContext context) { if (context.performed) ApplyJump(); }
@@ -105,12 +92,7 @@ public class MovementPlayer : MonoBehaviour
 
     void Update()
     {
-        if (IsHidden)
-        {
-            HandleHidingLook();
-            return; 
-        }
-
+        if (PauseMenu.isPausedStatic) return;
         if (!characterController.enabled) return;
         
         ApplyRotation();
@@ -119,174 +101,18 @@ public class MovementPlayer : MonoBehaviour
         ApplyMovement();
         ApplyGravity();
         ApplyCrouch();
-        HandleNoiseEmission();
 
-        // Eksekusi pergerakan akhir
+        noiseTimer += Time.deltaTime;
+        if (noiseTimer >= noiseUpdateFrequency)
+        {
+            HandleNoiseEmission();
+            noiseTimer = 0;    
+        }
+
+        float targetFOV = (isRunning && !isExhausted && inputMove.magnitude > 0.1f) ? 70f : 60f;
+        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * 5f);
+
         characterController.Move(moveDirection * Time.deltaTime);
-    }
-
-    public void UpdateFadeAlpha(float alpha)
-    {
-        if (hideFadeGroup != null)
-        {
-            hideFadeGroup.alpha = alpha;
-        }
-    }
-
-    public void SetHiddenStatus(bool status)
-    {
-        IsHidden = status;
-
-        if (IsHidden && isFlashlightOn)
-        {
-            ToggleFlashlight();
-        }
-
-        if (hideFadeGroup != null)
-        {
-            if (!status) hideFadeGroup.alpha = 0f;
-        }
-    }
-
-    private void HandleHidingLook()
-    {
-        if (currentLocker != null)
-        {
-            float sensitivityMultiplier = 0.1f;
-            float mouseX = inputLook.x * lookSpeed * sensitivityMultiplier;
-            float mouseY = inputLook.y * lookSpeed * sensitivityMultiplier;
-
-            currentLocker.HandleCameraPeeking(playerCamera.transform, mouseX, mouseY);
-        }
-    }
-
-    public void OnInteract(InputAction.CallbackContext context)
-    {
-        // Hanya eksekusi saat tombol ditekan (bukan dilepas)
-        if (!context.performed || IsHidden) return;
-
-        // 1. PRIORITAS PERTAMA: SphereCast (Apa yang dilihat player secara presisi)
-        RaycastHit hit;
-        Vector3 rayOrigin = playerCamera.transform.position;
-        Vector3 rayDirection = playerCamera.transform.forward;
-
-        if (Physics.SphereCast(rayOrigin, 0.2f, rayDirection, out hit, 3.0f))
-        {
-            // Cek Item
-            if (hit.collider.TryGetComponent(out Item item))
-            {
-                HandleItemInteraction(item);
-                return; // Berhenti di sini jika sudah berinteraksi
-            }
-
-            // Cek Pintu
-            if (hit.collider.TryGetComponent(out NormalDoor door))
-            {
-                door.Interact(this);
-                return; 
-            }
-
-            // Cek Locker
-            if (hit.collider.TryGetComponent(out Locker locker))
-            {
-                currentLocker = locker;
-                locker.Interact(this);
-                return;
-            }
-        }
-
-        // 2. PRIORITAS KEDUA: OverlapSphere (Jika SphereCast tidak kena apa-apa)
-        // Ini membantu jika player tidak tepat melihat objek tapi berada sangat dekat
-        DetectNearbyInteractables();
-    }
-
-    private void HandleItemInteraction(Item item)
-    {
-        if (item.itemType == ItemType.doorID)
-        {
-            AddKey(item.keyID);
-            Debug.Log("Mengambil: " + item.itemName);
-            Destroy(item.gameObject);
-        }
-    }
-    
-    private void DetectNearbyInteractables()
-    {
-        // Mencari semua collider dalam radius 2.5 unit
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, 2.5f);
-        
-        float closestDistance = Mathf.Infinity;
-        Item closestItem = null; // Tambahkan ini
-        Locker closestLocker = null;
-        NormalDoor closestDoor = null;
-    
-        foreach (var hitCollider in hitColliders)
-        {
-            float dist = Vector3.Distance(transform.position, hitCollider.transform.position);
-    
-            // 1. CEK ITEM (Kunci, dll)
-            if (hitCollider.TryGetComponent(out Item item))
-            {
-                if (dist < closestDistance)
-                {
-                    closestDistance = dist;
-                    closestItem = item;
-                    closestLocker = null; closestDoor = null;
-                }
-            }
-            // 2. CEK LOKER
-            else if (hitCollider.TryGetComponent(out Locker locker))
-            {
-                if (!locker.IsOccupied && dist < closestDistance)
-                {
-                    closestDistance = dist;
-                    closestLocker = locker;
-                    closestItem = null; closestDoor = null;
-                }
-            }
-            // 3. CEK PINTU
-            else if (hitCollider.TryGetComponent(out NormalDoor door))
-            {
-                if (dist < closestDistance)
-                {
-                    closestDistance = dist;
-                    closestDoor = door;
-                    closestItem = null; closestLocker = null;
-                }
-            }
-        }
-    
-        // EKSEKUSI: Prioritas Item > Locker > Door
-        if (closestItem != null)
-        {
-            HandleItemInteraction(closestItem);
-        }
-        else if (closestLocker != null)
-        {
-            currentLocker = closestLocker;
-            closestLocker.Interact(this);
-        }
-        else if (closestDoor != null)
-        {
-            closestDoor.Interact(this);
-        }
-    }
-
-    public void OnExitHiding(InputAction.CallbackContext context)
-    {
-        if (context.performed && IsHidden && currentLocker != null)
-        {
-            currentLocker.Interact(this);
-            currentLocker = null;
-        }
-    }
-
-    public void OnToggleCursor(InputAction.CallbackContext context)
-    {
-        if (context.started)
-        {
-            SetCursorState(!isCursorLocked);
-        }
     }
 
     private void SetCursorState(bool locked)
@@ -295,18 +121,25 @@ public class MovementPlayer : MonoBehaviour
         Cursor.lockState = locked ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = locked;
     }
+
+    public void SetHiddenStatus(bool status)
+    {
+        IsHidden = status;
+        if (characterController != null) 
+            characterController.enabled = !status;
+    }
+
     private void HandleStamina()
     {
         bool isMoving = inputMove.magnitude > 0.1f;
 
-        // Jika sedang berlari, bergerak, dan tidak lelah
         if (isRunning && isMoving && !isExhausted && !isCrouching)
         {
             currentStamina -= staminaDrain * Time.deltaTime;
             if (currentStamina <= 0)
             {
                 currentStamina = 0;
-                isExhausted = true; // Masuk status sangat lelah
+                isExhausted = true;
 
                 regenDelayTimer = staminaRegenDelay;
             }
@@ -338,33 +171,35 @@ public class MovementPlayer : MonoBehaviour
     {
         if (staminaBarFill != null)
         {
-            // Mengubah nilai fill amount (0 sampai 1) berdasarkan persentase stamina
-            staminaBarFill.fillAmount = currentStamina / maxStamina;
+            float currentPercent = currentStamina / maxStamina;
+
+            if (Mathf.Abs(lastStaminaPercent - currentPercent) > 0.001f)
+            {
+                staminaBarFill.fillAmount = currentPercent;
+                lastStaminaPercent = currentPercent;
+            }
         }
     }
 
     private void ApplyRotation()
     {
-        if (health != null && health.currentHealth <= 0) return;
-        
+        if (health != null && health.currentHealth <= 0 || PauseMenu.isPausedStatic) return;
+         
         if (!isCursorLocked)
         {
 
         float sensitivityMultiplier = 0.1f;
         
-        // Putar Kamera (Atas - Bawah)
         rotationX -= inputLook.y * lookSpeed * sensitivityMultiplier;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
         playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
 
-        // Putar Badan (Kiri - Kanan)
         transform.Rotate(Vector3.up * inputLook.x * lookSpeed * sensitivityMultiplier);
         }
     }
 
     private void ApplyMovement()
     {
-        // Jika sembunyi, jangan biarkan ada pergerakan fisik
         if (IsHidden) 
         {
             moveDirection = Vector3.zero;
@@ -373,8 +208,8 @@ public class MovementPlayer : MonoBehaviour
 
         Vector2 finalInput = characterController.isGrounded ? inputMove : Vector2.zero;
 
-        // Tentukan kecepatan berdasarkan status
-        float currentSpeed = isCrouching ? crouchSpeed : (isRunning ? runSpeed : walkSpeed);
+        bool canRun = isRunning && !isExhausted && !isCrouching;
+        float currentSpeed = isCrouching ? crouchSpeed : (canRun ? runSpeed : walkSpeed);
 
         if (health != null)
         {
@@ -384,20 +219,20 @@ public class MovementPlayer : MonoBehaviour
             }
             else if (health.currentHealth <= 0)
             {
-                currentSpeed = 0; //pemain gk bisa gerak ketika health 0
+                currentSpeed = 0;
             }
         }
-        // Ubah input 2D menjadi arah 3D (Forward & Right)
+
         Vector3 move = (transform.forward * finalInput.y) + (transform.right * finalInput.x);
         
-        float verticalTemp = moveDirection.y; // Simpan gravitasi saat ini
+        float verticalTemp = moveDirection.y;
 
         if (characterController.isGrounded)
         {
             moveDirection = move * currentSpeed;
         }
 
-        moveDirection.y = verticalTemp; // Kembalikan gravitasi agar tidak hilang
+        moveDirection.y = verticalTemp;
     }
 
     private void ApplyJump()
@@ -461,35 +296,22 @@ public class MovementPlayer : MonoBehaviour
     }   
     private void HandleNoiseEmission()
     {
-        Vector3 horizontalVelocity = new Vector3(characterController.velocity.x, 0, characterController.velocity.z);
-        float currentMoveSpeed = horizontalVelocity.magnitude;
-
-        if (currentMoveSpeed > 0.1f)
+        if (characterController.velocity.sqrMagnitude > 0.01f)
         {
-            // Tentukan radius berdasarkan status gerak
-            float multiplier = 1f;
-            bool actuallyRunning = isRunning && currentStamina > 0 && !isExhausted;
-            if (isCrouching) multiplier = crouchNoiseMultiplier;
-            else if (isRunning) multiplier = sprintNoiseMultiplier;
-
-            float finalRadius = baseNoiseRadius * multiplier;
-
-            // Panggil fungsi kirim sinyal suara
-            EmitNoise(finalRadius);
+            float multiplier = isCrouching ? crouchNoiseMultiplier : (isRunning ? sprintNoiseMultiplier : 1f);
+            EmitNoise(baseNoiseRadius * multiplier);
         }
     }
 
     private void EmitNoise(float radius)
     {
-        // Mencari Enemy di sekitar menggunakan OverlapSphere
-        Collider[] enemies = Physics.OverlapSphere(transform.position, radius, enemyLayer);
+        int numEnemies = Physics.OverlapSphereNonAlloc(myTransform.position, radius, enemyBuffer, enemyLayer);
         
-        foreach (var enemyCollider in enemies)
+        for (int i = 0; i < numEnemies; i++)
         {
-            // Mencoba mengambil script EnemyAI dari objek yang terkena radius
-            if (enemyCollider.TryGetComponent(out EnemyAI enemyScript))
+            if (enemyBuffer[i].TryGetComponent(out EnemyAI enemyScript))
             {
-                enemyScript.OnHeardNoise(transform.position);
+                enemyScript.OnHeardNoise(myTransform.position);
             }
         }
     }

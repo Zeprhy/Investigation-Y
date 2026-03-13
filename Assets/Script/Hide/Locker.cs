@@ -32,6 +32,7 @@ public class Locker : MonoBehaviour
     private bool _isOccupied = false;
     private Transform _playerTransform;
     private MovementPlayer _currentPlayerScript;
+    private PlayerInteraction _playerInteraction;
     private float _currentYaw = 0f;
     private float _currentPitch = 0f;
 
@@ -51,38 +52,31 @@ public class Locker : MonoBehaviour
     {
         if (_playerTransform == null) return;
 
-        // JIKA PLAYER DI DALAM LOKER
         if (_isOccupied)
         {
             HandleLockerTimer();
 
-            if (interactUI != null) interactUI.SetActive(false); // Sembunyikan UI Masuk
-            if (exitUI != null) exitUI.SetActive(true);        // Tampilkan UI Keluar
+            if (interactUI != null) interactUI.SetActive(false);
+            if (exitUI != null) exitUI.SetActive(true);
             return;
         }
 
-        // JIKA PLAYER DI LUAR LOKER
         float distance = Vector3.Distance(transform.position, _playerTransform.position);
         bool isInRange = distance <= interactionRadius;
 
-        if (interactUI != null) interactUI.SetActive(isInRange); // Muncul jika dekat
-        if (exitUI != null) exitUI.SetActive(false);             // Selalu mati jika di luar
+        if (interactUI != null) interactUI.SetActive(isInRange);
+        if (exitUI != null) exitUI.SetActive(false);
     }
 
     private void HandleLockerTimer()
     {
         _hidingTimer -= Time.deltaTime;
 
-        if (_currentPlayerScript != null)
+        if (_currentPlayerScript != null && _playerInteraction != null)
         {
-            // 1. Hitung progress waktu (0 saat baru masuk, 1 saat waktu habis)
             float progress = 1f - (_hidingTimer / maxHidingTime);
-
-            // 2. Map progress ke range 0.3 sampai 1.0
             float targetAlpha = Mathf.Lerp(0.3f, 1.0f, progress);
-
-            // 3. Kirim ke script player
-            _currentPlayerScript.UpdateFadeAlpha(targetAlpha);
+            _playerInteraction.UpdateFadeAlpha(targetAlpha);
         }
 
         if (_hidingTimer <= 0)
@@ -105,9 +99,13 @@ public class Locker : MonoBehaviour
     public void Interact(MovementPlayer player)
     {
         if (!_isOccupied)
+        {
             EnterLocker(player);
+        }
         else
+        {
             ExitLocker(player);
+        }
     }
 
     private void EnterLocker(MovementPlayer player)
@@ -116,25 +114,50 @@ public class Locker : MonoBehaviour
         _currentPlayerScript = player;
         _hidingTimer = maxHidingTime;
 
+        _playerInteraction = player.GetComponent<PlayerInteraction>();
+
+        if (player != null)
+        {
+            player.GetComponent<PlayerInteraction>().SetHiddenStatus(true);
+        }
+
+        if (_playerInteraction != null)
+        {
+            _playerInteraction.SetCurrentLocker(this);
+            _playerInteraction.SetHiddenStatus(true);
+            _playerInteraction.UpdateFadeAlpha(0.3f);
+        }
+
         _currentYaw = 0f;
         _currentPitch = 0f;
-
         if (interactUI != null) interactUI.SetActive(false);
-        
-        // Mulai animasi masuk
+
         StartCoroutine(SmoothEnter(player));
+    }
+
+    public void ExitLocker(MovementPlayer player)
+    {
+        if (player == null || !_isOccupied) return;
+
+        _isOccupied = false;
+        
+        if (_playerInteraction != null)
+        {
+            _playerInteraction.UpdateFadeAlpha(0f);
+            _playerInteraction.SetHiddenStatus(false);
+            _playerInteraction.ClearLocker();
+        }
+
+        StartCoroutine(SmoothExit(player));
     }
 
     private IEnumerator SmoothEnter(MovementPlayer player)
     {
-        player.SetHiddenStatus(true);
-        player.UpdateFadeAlpha(0.3f);
-        
-        // Matikan CC agar bisa dipindahkan lewat script
+        player.GetComponent<PlayerInteraction>().SetHiddenStatus(true);
+
         CharacterController cc = player.GetComponent<CharacterController>();
         if (cc != null) cc.enabled = false;
 
-        // Buka pintu
         if (lockerAnimator != null) lockerAnimator.SetBool("IsOpen", true);
 
         float elapsed = 0f;
@@ -154,33 +177,17 @@ public class Locker : MonoBehaviour
         player.transform.position = hidingPoint.position;
         player.transform.rotation = hidingPoint.rotation;
 
-        // Tutup pintu setelah masuk
         if (lockerAnimator != null) lockerAnimator.SetBool("IsOpen", false);
 
-        player.SetHiddenStatus(true);
-    }
-
-    private void ExitLocker(MovementPlayer player)
-    {
-        if (player == null) return;
-
-        _isOccupied = false;
-        _currentPlayerScript = null;
-
-        if (exitUI != null) exitUI.SetActive(false);
-        
-        // JANGAN teleport player di sini, biarkan Coroutine yang melakukannya
-        StartCoroutine(SmoothExit(player));
-        player.SetHiddenStatus(false);
+        player.GetComponent<PlayerInteraction>().SetHiddenStatus(true);
     }
 
     private IEnumerator SmoothExit(MovementPlayer player)
     {
-        // 1. Buka pintu dulu
         if (lockerAnimator != null) lockerAnimator.SetBool("IsOpen", true);
-        yield return new WaitForSeconds(0.2f); // Tunggu sebentar agar pintu mulai terbuka
+        yield return new WaitForSeconds(0.2f);
 
-        player.SetHiddenStatus(false);
+        player.GetComponent<PlayerInteraction>().SetHiddenStatus(false);
         
         float elapsed = 0f;
         float duration = 1f / transitionSpeed;
@@ -192,18 +199,15 @@ public class Locker : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
             player.transform.position = Vector3.Lerp(startPos, exitPoint.position, t);
-            // Tambahkan rotasi ke arah exit point agar tidak kaku
             player.transform.rotation = Quaternion.Slerp(startRot, exitPoint.rotation, t);
             yield return null;
         }
 
         player.transform.position = exitPoint.position;
 
-        // 2. Aktifkan kembali kontrol player
         CharacterController cc = player.GetComponent<CharacterController>();
         if (cc != null) cc.enabled = true;
 
-        // 3. Tutup pintu setelah player di luar
         yield return new WaitForSeconds(0.3f);
         if (lockerAnimator != null) lockerAnimator.SetBool("IsOpen", false);
     }
