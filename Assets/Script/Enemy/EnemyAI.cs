@@ -111,18 +111,31 @@ public class EnemyAI : MonoBehaviour
     private void CheckForDoors()
     {
         RaycastHit hit;
-        // Menembakkan laser ke depan musuh untuk mencari pintu
         if (Physics.Raycast(transform.position + Vector3.up, transform.forward, out hit, doorCheckDistance, doorLayer))
         {
             if (hit.collider.TryGetComponent(out NormalDoor door))
             {
-                // Jika pintu tertutup dan tidak terkunci, musuh membukanya
-                if (!door.isOpen && !door.isLocked)
+                if (!door.isOpen)
                 {
-                    // Musuh memanggil fungsi Interact (mengirim posisi musuh agar pintu terbuka menjauh)
-                    agent.isStopped = true;
-                    door.Interact(transform.position);
-                    StartCoroutine(ResumeMovementAfterDoor());
+                    if (door.isLocked)
+                    {
+                        agent.isStopped = true;
+
+                        if (currentState == EnemyState.Chasing)
+                        {
+                            ChangeState(EnemyState.Investigating);
+                        }
+                        else
+                        {
+                            MoveToNextWaypoint();
+                        }
+                    }
+                    else
+                    {
+                        agent.isStopped = true;
+                        door.Interact(transform.position);
+                        StartCoroutine(ResumeMovementAfterDoor());
+                    }
                 }
             }
         }
@@ -130,7 +143,7 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator ResumeMovementAfterDoor()
     {
-        yield return new WaitForSeconds(0.5f); // Jeda agar animasi pintu mulai jalan
+        yield return new WaitForSeconds(0.5f);
         agent.isStopped = false;
     }
 

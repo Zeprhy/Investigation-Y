@@ -5,42 +5,36 @@ using UnityEngine.AI;
 public class DragHandler : MonoBehaviour
 {
     public Camera playerCamera;
-    public float followSpeed;
+    [SerializeField] private float maxDistance = 3f;
+    [SerializeField] private float lerpSpeed = 20f;
 
     private GameObject draggedObj;
     private Rigidbody draggedRb;
-    private Vector3 grabOffset;
+    private float targetDistance; 
     private int originalLayer;
     private NavMeshObstacle navObstacle;
 
     public bool IsDragging => draggedObj != null;
 
-    void Update()
+    void FixedUpdate()
     {
-        if (draggedObj != null)
+        if (draggedObj != null && draggedRb != null)
         {
-            DragObject();
+            DragObjectMovePosition();
         }
     }
 
     public void OnDrag(InputAction.CallbackContext context)
     {
-        if (context.started)
-        {
-            TryStartDrag();
-        }
-
-        if (context.canceled)
-        {
-            StopDrag();
-        }
+        if (context.started) TryStartDrag();
+        if (context.canceled) StopDrag();
     }
 
     void TryStartDrag()
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 3f))
+        if (Physics.Raycast(ray, out RaycastHit hit, maxDistance))
         {
             if (hit.collider.CompareTag("Draggable"))
             {
@@ -52,26 +46,27 @@ public class DragHandler : MonoBehaviour
                     originalLayer = draggedObj.layer;
                     SetLayerRecursive(draggedObj, LayerMask.NameToLayer("Dragging"));
 
-                    navObstacle = draggedObj.GetComponent<NavMeshObstacle>();
-                    if (navObstacle != null) navObstacle.enabled = false;
-
+                    draggedRb.isKinematic = false;
                     draggedRb.useGravity = false;
-                    draggedRb.linearDamping = 0.5f;
+                    draggedRb.interpolation = RigidbodyInterpolation.Interpolate;
 
-                    grabOffset = draggedObj.transform.position - ray.origin;
+                    draggedRb.linearDamping = 10f; 
+                    draggedRb.angularDamping = 10f;
+
+                    targetDistance = Vector3.Distance(ray.origin, hit.point);
                 }
             }
         }
     }
 
-    void DragObject()
+    void DragObjectMovePosition()
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        Vector3 targetPosition = ray.origin + (ray.direction * grabOffset.magnitude);
+        Vector3 targetPosition = ray.origin + (ray.direction * targetDistance);
 
-        Vector3 desireVelocity = (targetPosition - draggedObj.transform.position) * followSpeed;
+        Vector3 nextPosition = Vector3.Lerp(draggedRb.position, targetPosition, Time.fixedDeltaTime * lerpSpeed);
 
-        draggedRb.linearVelocity = Vector3.ClampMagnitude(desireVelocity, 50f);
+        draggedRb.MovePosition(nextPosition);
     }
 
     void StopDrag()
@@ -80,11 +75,12 @@ public class DragHandler : MonoBehaviour
 
         SetLayerRecursive(draggedObj, originalLayer);
 
-        if (navObstacle != null) navObstacle.enabled = true;
-        navObstacle = null;
-
+        draggedRb.isKinematic = false;
         draggedRb.useGravity = true;
-        draggedRb.linearDamping = 0;
+        
+        draggedRb.linearDamping = 0.5f; 
+        draggedRb.angularDamping = 0.5f;
+        draggedRb.interpolation = RigidbodyInterpolation.None;
 
         draggedObj = null;
         draggedRb = null;

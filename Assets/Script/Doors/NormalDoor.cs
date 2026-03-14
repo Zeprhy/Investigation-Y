@@ -27,11 +27,15 @@ public class NormalDoor : MonoBehaviour
     private Quaternion targetRotation;
     private Quaternion defaultRotation;
     private Transform _playerTransform;
+    private UnityEngine.AI.NavMeshObstacle doorObstacle;
     private bool _isPlayerNear = false;
 
     void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        doorObstacle = GetComponent<UnityEngine.AI.NavMeshObstacle>();
+
+        if (doorObstacle != null) doorObstacle.enabled = !isOpen;
         if (playerObj != null) _playerTransform = playerObj.transform;
 
         if (globalInteractText != null) globalInteractText.text = "";
@@ -117,6 +121,11 @@ public class NormalDoor : MonoBehaviour
     
         isOpen = !isOpen;
     
+        if (doorObstacle != null) 
+        {
+            doorObstacle.enabled = !isOpen; 
+        }
+
         if (isOpen)
         {
             Vector3 directionToInteractor = transform.position - interactorPosition;
@@ -137,6 +146,7 @@ public class NormalDoor : MonoBehaviour
     {
         isOpen = false;
         targetRotation = defaultRotation;
+        if (doorObstacle != null) doorObstacle.enabled = true;
     }
 
     private IEnumerator AutoCloseTimer()

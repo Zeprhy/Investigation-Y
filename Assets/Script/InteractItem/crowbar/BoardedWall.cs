@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.AI;
 using TMPro;
 
 public class BoardedWall : MonoBehaviour, IInteractable
@@ -19,10 +20,19 @@ public class BoardedWall : MonoBehaviour, IInteractable
    private bool isDone = false;
     private bool _isPlayerNear = false;
     private Transform _playerTransform;
+    private NavMeshObstacle wallObstacle;
 
     void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        wallObstacle = GetComponent<NavMeshObstacle>();
+
+        if (wallObstacle != null)
+        {
+            wallObstacle.enabled = true;
+            wallObstacle.carving = true;
+        }
+
         if (playerObj != null) _playerTransform = playerObj.transform;
 
         if (globalInteractText != null) globalInteractText.text = "";
@@ -87,6 +97,12 @@ public class BoardedWall : MonoBehaviour, IInteractable
         if (boardsRemoved >= boards.Count)
         {
             isDone = true;
+
+            if (wallObstacle != null) 
+            {
+                wallObstacle.enabled = false;
+            }
+
             if (globalInteractText != null) globalInteractText.text = "";
         }
     }

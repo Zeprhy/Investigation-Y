@@ -198,7 +198,8 @@ public class PlayerInteraction : MonoBehaviour
                 if (equippedRb != null)
                 {
                     equippedRb.useGravity = false;
-                    equippedRb.isKinematic = true;
+                    equippedRb.isKinematic = false;
+                    equippedRb.interpolation = RigidbodyInterpolation.Interpolate;
                 }
 
                 equippedItem.transform.SetParent(handPoint);
