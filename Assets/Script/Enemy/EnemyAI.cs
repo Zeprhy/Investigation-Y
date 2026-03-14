@@ -33,8 +33,11 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Attack Settings")]
     [SerializeField] private float attackRange = 2.5f;
+    [SerializeField] private float preAttackDelay = 1.0f;
+    [SerializeField] private float postAttackDelay = 1.5f;
     [SerializeField] private float attackCooldown = 2f;
     private float lastAttackTime;
+    private bool isAttackingSequence = false;
 
     [Header("Speed Settings")]
     [SerializeField] private float patrolSpeed = 3.5f;
@@ -87,8 +90,10 @@ public class EnemyAI : MonoBehaviour
     public void ApplyStun(float duration)
     {
         isStunned = true;
-        stunTimer = duration;
+        isAttackingSequence = false;
+        StopAllCoroutines();
 
+        stunTimer = duration;
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
 
@@ -106,18 +111,31 @@ public class EnemyAI : MonoBehaviour
     private void CheckForDoors()
     {
         RaycastHit hit;
-        // Menembakkan laser ke depan musuh untuk mencari pintu
         if (Physics.Raycast(transform.position + Vector3.up, transform.forward, out hit, doorCheckDistance, doorLayer))
         {
             if (hit.collider.TryGetComponent(out NormalDoor door))
             {
-                // Jika pintu tertutup dan tidak terkunci, musuh membukanya
-                if (!door.isOpen && !door.isLocked)
+                if (!door.isOpen)
                 {
-                    // Musuh memanggil fungsi Interact (mengirim posisi musuh agar pintu terbuka menjauh)
-                    agent.isStopped = true;
-                    door.Interact(transform.position);
-                    StartCoroutine(ResumeMovementAfterDoor());
+                    if (door.isLocked)
+                    {
+                        agent.isStopped = true;
+
+                        if (currentState == EnemyState.Chasing)
+                        {
+                            ChangeState(EnemyState.Investigating);
+                        }
+                        else
+                        {
+                            MoveToNextWaypoint();
+                        }
+                    }
+                    else
+                    {
+                        agent.isStopped = true;
+                        door.Interact(transform.position);
+                        StartCoroutine(ResumeMovementAfterDoor());
+                    }
                 }
             }
         }
@@ -125,7 +143,7 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator ResumeMovementAfterDoor()
     {
-        yield return new WaitForSeconds(0.5f); // Jeda agar animasi pintu mulai jalan
+        yield return new WaitForSeconds(0.5f);
         agent.isStopped = false;
     }
 
@@ -171,6 +189,8 @@ public class EnemyAI : MonoBehaviour
 
     private void UpdateBrain()
     {
+        if (isAttackingSequence || isStunned) return;
+
         float dist = Vector3.Distance(transform.position, player.position);
         bool aware = awarenessMeter >= awarenessThreshold;
 
@@ -178,10 +198,10 @@ public class EnemyAI : MonoBehaviour
         if (aware && !playerScript.IsHidden)
         {
             // Logika Hierarki State
-            if (dist <= attackRange)
+            if (dist <= attackRange && Time.time >= lastAttackTime + attackCooldown)
             {
                 ChangeState(EnemyState.Attacking);
-                ExecuteAttack();
+                StartCoroutine(AttackRoutine());
             }
             else
             {
@@ -241,8 +261,6 @@ public class EnemyAI : MonoBehaviour
             awarenessMeter = Mathf.Max(awarenessMeter, awarenessThreshold * 0.6f);
         }
     }
-
-    // --- LOGIKA EKSEKUSI ---
 
     void ExecutePatrol()
     {
@@ -350,26 +368,36 @@ public class EnemyAI : MonoBehaviour
         agent.SetDestination(player.position);
     }
 
-    void ExecuteAttack()
+    private IEnumerator AttackRoutine()
     {
-        // Menghadap Player dengan halus
-        Vector3 dir = (player.position - transform.position).normalized;
-        dir.y = 0;
-        if (dir != Vector3.zero)
-        {
-            Quaternion lookRot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 10f);
-        }
+        isAttackingSequence = true;
+        agent.isStopped = true; // Musuh berhenti total
+        agent.velocity = Vector3.zero;
 
-        if (Time.time >= lastAttackTime + attackCooldown)
+        // --- 1. JEDA SEBELUM MENYERANG (Ancang-ancang) ---
+        // Di sini kamu bisa memicu animasi "Prepare Attack" jika ada
+        yield return new WaitForSeconds(preAttackDelay);
+
+        // Cek kembali apakah player masih dalam jangkauan setelah jeda
+        float dist = Vector3.Distance(transform.position, player.position);
+        if (dist <= attackRange + 0.5f) 
         {
             HealthManager hp = player.GetComponent<HealthManager>();
-            if (hp != null)
-            {
-                hp.TakeDamage(1);
-                lastAttackTime = Time.time;
-            }
+            if (hp != null) hp.TakeDamage(1);
         }
+
+        // --- 2. JEDA SETELAH MENYERANG (Recovery) ---
+        // Musuh diam sejenak setelah memukul (lelah/reset posisi)
+        yield return new WaitForSeconds(postAttackDelay);
+
+        lastAttackTime = Time.time;
+        
+        // --- 3. SELESAI ---
+        isAttackingSequence = false;
+        agent.isStopped = false; // Musuh boleh bergerak lagi
+
+        // Paksa kembali ke Chasing agar dia mengejar lagi
+        ChangeState(EnemyState.Chasing);
     }
 
     private void OnDrawGizmos()
