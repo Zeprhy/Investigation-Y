@@ -93,11 +93,19 @@ public class MovementPlayer : MonoBehaviour
     void Update()
     {
         if (PauseMenu.isPausedStatic) return;
+
+        HandleStamina();
+        UpdateStaminaUI();
+
+        if (IsHidden) 
+        {
+            moveDirection = Vector3.zero;
+            return; 
+        }
+
         if (!characterController.enabled) return;
         
         ApplyRotation();
-        HandleStamina();
-        UpdateStaminaUI();
         ApplyMovement();
         ApplyGravity();
         ApplyCrouch();
@@ -125,39 +133,38 @@ public class MovementPlayer : MonoBehaviour
     public void SetHiddenStatus(bool status)
     {
         IsHidden = status;
+
         if (characterController != null) 
+        {
             characterController.enabled = !status;
+        }
     }
 
     private void HandleStamina()
     {
         bool isMoving = inputMove.magnitude > 0.1f;
 
-        if (isRunning && isMoving && !isExhausted && !isCrouching)
+        if (isRunning && isMoving && !isExhausted && !isCrouching && !IsHidden)
         {
             currentStamina -= staminaDrain * Time.deltaTime;
             if (currentStamina <= 0)
             {
                 currentStamina = 0;
                 isExhausted = true;
-
                 regenDelayTimer = staminaRegenDelay;
             }
         }
         else
         {
-            // Jika masih ada waktu jeda, kurangi timernya
             if (regenDelayTimer > 0)
             {
                 regenDelayTimer -= Time.deltaTime;
             }
             else
             {
-                // Jika timer sudah habis (<= 0), barulah stamina boleh terisi
                 currentStamina += staminaRegen * Time.deltaTime;
             }
 
-            // Pemain bisa lari lagi jika stamina sudah cukup pulih (misal di atas 20%)
             if (isExhausted && currentStamina >= (maxStamina * 0.2f))
             {
                 isExhausted = false;
@@ -316,7 +323,6 @@ public class MovementPlayer : MonoBehaviour
         }
     }
 
-    // Untuk membantu visualisasi radius suara di Editor (Garis Kuning)
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;

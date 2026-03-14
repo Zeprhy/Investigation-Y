@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal; // Wajib untuk Brightness URP
+using UnityEngine.Rendering.Universal;
 
 public class SettingsManager : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class SettingsManager : MonoBehaviour
 
     [Header("Brightness Settings (URP)")]
     [SerializeField] private Slider brightnessSlider;
-    [SerializeField] private Volume globalVolume; // Tarik Global Volume ke sini
+    [SerializeField] private Volume globalVolume;
     private ColorAdjustments colorAdjustments;
 
     void Start()

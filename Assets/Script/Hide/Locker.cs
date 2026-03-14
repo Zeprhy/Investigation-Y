@@ -1,10 +1,12 @@
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class Locker : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float interactionRadius = 2.5f; 
+    [SerializeField] private float uiDisplayDistance = 3.0f;
     [SerializeField] private Color gizmoColor = Color.yellow;
 
     [Header("Hiding Timer")]
@@ -25,11 +27,11 @@ public class Locker : MonoBehaviour
     [SerializeField] private Transform hidingPoint;
     [SerializeField] private Transform exitPoint;
 
-    [Header("UI Panels")]
-    [SerializeField] private GameObject interactUI;
-    [SerializeField] private GameObject exitUI;
+    [Header("UI System (Direct TMP)")]
+    [SerializeField] private TextMeshProUGUI globalInteractText;
 
     private bool _isOccupied = false;
+    private bool _isPlayerNear = false;
     private Transform _playerTransform;
     private MovementPlayer _currentPlayerScript;
     private PlayerInteraction _playerInteraction;
@@ -40,32 +42,52 @@ public class Locker : MonoBehaviour
 
     private void Start()
     {
-        // Mencari player satu kali saat start
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null) _playerTransform = player.transform;
 
-        if (interactUI != null) interactUI.SetActive(false);
-        if (exitUI != null) exitUI.SetActive(false);
+        if (globalInteractText != null) globalInteractText.text = "";
     }
 
     private void Update()
     {
         if (_playerTransform == null) return;
 
+        HandleUIDisplay();
+
         if (_isOccupied)
         {
             HandleLockerTimer();
-
-            if (interactUI != null) interactUI.SetActive(false);
-            if (exitUI != null) exitUI.SetActive(true);
-            return;
         }
+    }
+
+    private void HandleUIDisplay()
+    {
+        if (globalInteractText == null) return;
 
         float distance = Vector3.Distance(transform.position, _playerTransform.position);
-        bool isInRange = distance <= interactionRadius;
 
-        if (interactUI != null) interactUI.SetActive(isInRange);
-        if (exitUI != null) exitUI.SetActive(false);
+        if (distance <= uiDisplayDistance)
+        {
+            _isPlayerNear = true;
+            UpdateLockerUIText();
+        }
+        else if (_isPlayerNear)
+        {
+            _isPlayerNear = false;
+            globalInteractText.text = "";
+        }
+    }
+
+    private void UpdateLockerUIText()
+    {
+        if (_isOccupied)
+        {
+            globalInteractText.text = "Press [Q] To Leave";
+        }
+        else
+        {
+            globalInteractText.text = "Press [F] To Hide";
+        }
     }
 
     private void HandleLockerTimer()
@@ -113,13 +135,7 @@ public class Locker : MonoBehaviour
         _isOccupied = true;
         _currentPlayerScript = player;
         _hidingTimer = maxHidingTime;
-
         _playerInteraction = player.GetComponent<PlayerInteraction>();
-
-        if (player != null)
-        {
-            player.GetComponent<PlayerInteraction>().SetHiddenStatus(true);
-        }
 
         if (_playerInteraction != null)
         {
@@ -130,7 +146,6 @@ public class Locker : MonoBehaviour
 
         _currentYaw = 0f;
         _currentPitch = 0f;
-        if (interactUI != null) interactUI.SetActive(false);
 
         StartCoroutine(SmoothEnter(player));
     }

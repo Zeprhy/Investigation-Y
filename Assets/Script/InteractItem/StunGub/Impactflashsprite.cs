@@ -3,11 +3,11 @@ public class ImpactFlashSprite : MonoBehaviour
 {
     [Header("Sprite Sheet Settings")]
     [SerializeField] private int columns = 4;
-    [SerializeField] private int rows    = 2;
-    [SerializeField] private int fps     = 30;              // sedikit lebih cepat dari muzzle
+    [SerializeField] private int rows = 2;
+    [SerializeField] private int fps = 30;
 
     [Header("Scale")]
-    [SerializeField] private float flashScale = 0.5f;       // lebih besar dari muzzleflash
+    [SerializeField] private float flashScale = 0.5f;
 
     private Renderer quad;
     private Material  mat;
@@ -33,7 +33,6 @@ public class ImpactFlashSprite : MonoBehaviour
 
     private void Update()
     {
-        // Billboard — selalu hadap kamera
         transform.LookAt(transform.position + mainCam.transform.forward);
 
         if (!isPlaying) return;

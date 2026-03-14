@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class NormalDoor : MonoBehaviour
 {
@@ -8,29 +9,33 @@ public class NormalDoor : MonoBehaviour
     public bool isLocked = true;
     [SerializeField] private float openAngle = 90f;
     [SerializeField] private float smoothSpeed = 5f;
-    [SerializeField] private float interactionRadius = 2.5f;
+    [SerializeField] private float interactionRadius = 3f;
 
     [Header("Auto Close")]
     [SerializeField] private bool useAutoClose = true;
     [SerializeField] private float autoCloseDelay = 3f;
     private Coroutine autoCloseCoroutine;
 
-    [Header("UI Panels")]
-    [SerializeField] private GameObject interactUI;
+    [Header("UI System (Direct TMP)")]
+    [SerializeField] private TextMeshProUGUI globalInteractText;
+    [SerializeField] private float uiDisplayDistance = 3.0f;
 
     [Header("Lock Settings")]
     [SerializeField] private string doorID = "";
+    [SerializeField] private string keyNameForUI = "Kunci Laboratorium";
 
     private Quaternion targetRotation;
     private Quaternion defaultRotation;
     private Transform _playerTransform;
+    private bool _isPlayerNear = false;
 
     void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null) _playerTransform = playerObj.transform;
 
-        if (interactUI != null) interactUI.SetActive(false);
+        if (globalInteractText != null) globalInteractText.text = "";
+        
         defaultRotation = transform.localRotation;
         targetRotation = defaultRotation;
     }
@@ -38,91 +43,89 @@ public class NormalDoor : MonoBehaviour
     void Update()
     {
         transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, Time.deltaTime * smoothSpeed);
-        HandleUI();
+        
+        HandleUIDisplay();
     }
 
-    private void HandleUI()
+    private void HandleUIDisplay()
     {
-        if (_playerTransform == null || interactUI == null) return;
+        if (_playerTransform == null || globalInteractText == null) return;
 
         float distance = Vector3.Distance(transform.position, _playerTransform.position);
 
-        if (distance <= interactionRadius)
+        if (distance <= uiDisplayDistance)
         {
-            interactUI.SetActive(true);
+            _isPlayerNear = true;
+            UpdateUIText();
+        }
+
+        else if (_isPlayerNear)
+        {
+            _isPlayerNear = false;
+            globalInteractText.text = "";
+        }
+    }
+
+    private void UpdateUIText()
+    {
+        if (isLocked)
+        {
+            globalInteractText.text = $"[Locked] Need {keyNameForUI.ToUpper()}";
         }
         else
         {
-            interactUI.SetActive(false);
+            string action = isOpen ? "Closed" : "Open";
+            globalInteractText.text = $"Press [F] To {action} The Door";
         }
     }
     
     public void Interact(GameObject player)
     {
+        float distance = Vector3.Distance(transform.position, player.transform.position);
+        if (distance > interactionRadius) return;
+
         if (!isLocked)
         {
             ToggleDoor(player.transform.position);
             return;
         }
 
-        PlayerInventory inv = player.GetComponent<PlayerInventory>();
         PlayerInteraction interaction = player.GetComponent<PlayerInteraction>();
 
-        bool hasKeyInInventory = (inv != null && inv.HasKey(doorID));
-        bool isHoldingKey = (interaction != null && interaction.IsHoldingKey(doorID));
-
-        if (hasKeyInInventory || isHoldingKey)
+        if (interaction != null && interaction.IsHoldingKey(doorID))
         {
             UnlockDoor();
-            Debug.Log("Pintu Berhasil Dibuka!");
-        
             ToggleDoor(player.transform.position);
         }
-        else
-        {
-            Debug.Log("Pintu Terkunci, butuh kunci dengan ID: " + doorID);
-        }
-}
+    }
+
+    public void Interact(Vector3 interactorPosition)
+    {
+        if (isLocked) return;
+
+        ToggleDoor(interactorPosition);
+    }
 
     private void UnlockDoor()
     {
         isLocked = false;   
     }
 
-    public void Interact(Vector3 interactionPosition)
-    {
-        // Musuh biasanya tidak bisa buka pintu terkunci (atau bisa, tergantung maumu)
-        if (isLocked) return; 
-    
-        // Panggil logika inti interaksi menggunakan posisi yang dikirim
-        ToggleDoor(interactionPosition);
-    }
-
     private void ToggleDoor(Vector3 interactorPosition)
     {
-        if (autoCloseCoroutine != null)
-        {
-            StopCoroutine(autoCloseCoroutine);
-        }
+        if (autoCloseCoroutine != null) StopCoroutine(autoCloseCoroutine);
     
         isOpen = !isOpen;
     
         if (isOpen)
         {
-            // LOGIKA DOT PRODUCT: Menentukan arah ayunan pintu
             Vector3 directionToInteractor = transform.position - interactorPosition;
             float dot = Vector3.Dot(transform.forward, directionToInteractor);
-            
-            // Jika pembuka ada di depan pintu (Dot > 0), pintu ayun ke belakang (90)
-            // Jika pembuka ada di belakang pintu (Dot < 0), pintu ayun ke depan (-90)
             float angle = dot >= 0 ? openAngle : -openAngle;
             
             targetRotation = defaultRotation * Quaternion.Euler(0, angle, 0);
     
-            if (useAutoClose)
-            {
-                autoCloseCoroutine = StartCoroutine(AutoCloseTimer());
-            }
+            if (useAutoClose) autoCloseCoroutine = StartCoroutine(AutoCloseTimer());
         }
         else
         {
@@ -138,15 +141,8 @@ public class NormalDoor : MonoBehaviour
 
     private IEnumerator AutoCloseTimer()
     {
-        // Tunggu selama durasi yang ditentukan
         yield return new WaitForSeconds(autoCloseDelay);
-
-        // Tutup pintu jika masih terbuka
-        if (isOpen)
-        {
-            CloseDoor();
-        }
-        
+        if (isOpen) CloseDoor();
         autoCloseCoroutine = null;
     }
 }

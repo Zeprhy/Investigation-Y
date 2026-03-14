@@ -23,8 +23,6 @@ public class PlayerInteraction : MonoBehaviour
     private DragHandler dragHandler;
     private MovementPlayer player;
     private Locker currentLocker;
-    private PlayerInventory iventory;
-    private string lastItemName = "";
 
     private bool isHidden;
     private bool isInsideLocker = false;
@@ -33,7 +31,6 @@ public class PlayerInteraction : MonoBehaviour
     {
         dragHandler = GetComponent<DragHandler>();
         player = GetComponent<MovementPlayer>();
-        iventory = GetComponent<PlayerInventory>();
     }
 
     void Update()
@@ -45,81 +42,10 @@ public class PlayerInteraction : MonoBehaviour
         rayTimer += Time.deltaTime;
         if (rayTimer >= raycastFrequency)
         {
-            UpdateInteractionLogic();
             rayTimer = 0;
         }
 
         if (equippedItem != null) FollowHand();
-    }
-
-    private void UpdateInteractionLogic()
-    {
-        UpdateItemText();
-        UpdateInteractPrompt();
-    }
-
-    private void UpdateItemText()
-    {
-        if (equipppedItemText == null) return;
-
-        string currentName = equippedItem != null ? equippedItem.itemName : "-";
-
-        if (lastItemName != currentName)
-        {
-            equipppedItemText.text = $"Item: {currentName}";
-            lastItemName = currentName;
-        }
-    }
-
-    private void UpdateInteractPrompt()
-    {
-        if (interactPromptText == null) return;
-
-        if (equippedItem == null)
-        {
-            if (interactPromptText.gameObject.activeSelf) 
-                interactPromptText.gameObject.SetActive(false);
-            return;
-        }
-
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        if (Physics.Raycast(ray, out RaycastHit hit, 2.5f))
-        {
-            if (hit.collider.TryGetComponent(out IInteractable interactable))
-            {
-                if (interactable.CanInteract(equippedItem.itemType, equippedItem.keyID))
-                {
-                    ShowPrompt(equippedItem.itemType);
-                    return;
-                }
-            }
-
-            else if (hit.collider.transform.parent != null && 
-                     hit.collider.transform.parent.TryGetComponent(out interactable))
-            {
-                 if (interactable.CanInteract(equippedItem.itemType, equippedItem.keyID))
-                {
-                    ShowPrompt(equippedItem.itemType);
-                    return;
-                }
-            }
-        }
-        
-        if (interactPromptText.gameObject.activeSelf)
-            interactPromptText.gameObject.SetActive(false);
-    }
-
-    private void ShowPrompt(ItemType type)
-    {
-        interactPromptText.gameObject.SetActive(true);
-        // Menggunakan switch expression (C# 8+) yang lebih efisien
-        interactPromptText.text = type switch
-        {
-            ItemType.Crowbar => "[E] Remove the board",
-            ItemType.doorID  => "[E] Unlock The Door",
-            ItemType.StunGun => "",
-            _                => "[E] Interact"
-        };
     }
 
     private void ToggleEquippedColliders(bool state)
@@ -148,20 +74,6 @@ public class PlayerInteraction : MonoBehaviour
 
         if (hit.collider.TryGetComponent(out Item item))
         {
-            if (item.itemType == ItemType.Key) 
-            {
-                if (iventory != null)
-                {
-                    iventory.AddKey(item.keyID);
-                    Debug.Log("Mengambil kunci: " + item.keyID);
-                }
-                else
-                {
-                    Debug.LogError("PlayerInventory tidak ditemukan pada Player!");
-                }
-                return;
-            }
-            
             TryEquip();
             return;
         }
@@ -187,8 +99,8 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (equippedItem == null) return false;
 
-        bool isKeyType = equippedItem.itemType == ItemType.Key || equippedItem.itemType == ItemType.doorID;
-        return isKeyType && equippedItem.keyID == requiredKeyID;
+        return (equippedItem.itemType == ItemType.Key || equippedItem.itemType == ItemType.doorID) 
+            && equippedItem.keyID == requiredKeyID;
     }
 
     public void UpdateFadeAlpha(float alpha) 
@@ -283,19 +195,21 @@ public class PlayerInteraction : MonoBehaviour
                 equippedItem = item;
                 equippedRb = item.GetComponent<Rigidbody>();
 
+                if (equippedRb != null)
+                {
+                    equippedRb.useGravity = false;
+                    equippedRb.isKinematic = true;
+                }
+
                 equippedItem.transform.SetParent(handPoint);
                 equippedItem.transform.localPosition = Vector3.zero;
                 equippedItem.transform.localRotation = Quaternion.identity;
 
                 ToggleEquippedColliders(false);
 
-                if (equippedRb != null)
+                if (equippedItem.TryGetComponent(out StunGun stunGun))
                 {
-                    equippedRb.useGravity = false;
-                    equippedRb.isKinematic = true;
-
-                    StunGun stunGun = equippedItem.GetComponent<StunGun>();
-                    if (stunGun != null) stunGun.OnPickedUp();
+                    stunGun.OnPickedUp();
                 }
             }
         }
@@ -341,20 +255,24 @@ public class PlayerInteraction : MonoBehaviour
 
         equippedItem.transform.SetParent(null);
 
-        equippedRb.useGravity = true;
-        equippedRb.isKinematic = false;
-        equippedRb.constraints = RigidbodyConstraints.None;
+        ToggleEquippedColliders(true);
 
-        foreach (Collider col in equippedItem.GetComponentsInChildren<Collider>())
+        if (equippedRb != null)
         {
-            col.enabled = true;
+            equippedRb.isKinematic = false;
+            equippedRb.useGravity = true;
+            equippedRb.constraints = RigidbodyConstraints.None;
+
+            Vector3 pushDirection = playerCamera.transform.forward;
+            equippedRb.AddForce(pushDirection * ForcePush, ForceMode.Impulse);
         }
 
-        equippedRb.AddForce(playerCamera.transform.forward * ForcePush, ForceMode.Impulse);
+        if (equippedItem.TryGetComponent(out StunGun stunGun))
+        {
+            stunGun.OnDropped();
+        }
 
-        StunGun stunGun = equippedItem.GetComponent<StunGun>();
-        if (stunGun != null) stunGun.OnDropped();
-
+        cachedColliders = null; 
         equippedItem = null;
         equippedRb = null;
     }
