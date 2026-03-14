@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Draggable
   - Enemy
+  - Ground
+  - Floor
   layers:
   - Default
   - TransparentFX
