@@ -250,7 +250,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    void DropEquipped()
+    public void DropEquipped()
     {
         if (equippedItem == null) return;
 

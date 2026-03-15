@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -63,7 +64,6 @@ public class PauseMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;  
     }
-
    
     public void OpenSettings()
     {
@@ -94,5 +94,16 @@ public class PauseMenu : MonoBehaviour
     {
         settingsPanel.SetActive(false);
         backgroundPanel.SetActive(true);
+    }
+
+    public void ExitToMainMenu()
+    {
+        Time.timeScale = 1f;
+        isPausedStatic = false;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        SceneManager.LoadScene("MainMenu");
     }
 }
