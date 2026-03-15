@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class EnemyAI : MonoBehaviour
 {
-    public enum EnemyState { Patrolling, Chasing, Attacking, Investigating }
+    public enum EnemyState { Patrolling, Chasing, Attacking, Investigating , Idle}
     public EnemyState currentState = EnemyState.Patrolling;
 
     [Header("Components")]
@@ -215,6 +215,10 @@ public class EnemyAI : MonoBehaviour
             ChangeState(EnemyState.Investigating);
             ExecuteInvestigate();
         }
+        else if (currentState == EnemyState.Idle)
+        {
+            ExecutePatrol();
+        }
         else
         {
             ChangeState(EnemyState.Patrolling);
@@ -249,6 +253,10 @@ public class EnemyAI : MonoBehaviour
             case EnemyState.Attacking:
                 agent.isStopped = true;
                 break;
+            case EnemyState.Idle:
+                agent.isStopped = true;
+                agent.speed = 0;
+                break;
         }
     }
 
@@ -270,10 +278,25 @@ public class EnemyAI : MonoBehaviour
         // Cek apakah sudah sampai
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.3f)
         {
+            if (currentState != EnemyState.Idle)
+            {
+                ChangeState(EnemyState.Idle);
+            }
+
             waypointTimer += Time.deltaTime;
             if (waypointTimer >= waypointWaitTime)
             {
+                waypointTimer = 0;
+                agent.isStopped = false;
+                ChangeState(EnemyState.Patrolling);
                 MoveToNextWaypoint();
+            }
+        }
+        else
+        {
+            if (currentState == EnemyState.Idle)
+            {
+                ChangeState(EnemyState.Patrolling);
             }
         }
     }
