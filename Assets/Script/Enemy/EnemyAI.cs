@@ -199,15 +199,19 @@ public class EnemyAI : MonoBehaviour
         {
             // Logika Hierarki State
             if (dist <= attackRange && Time.time >= lastAttackTime + attackCooldown)
-            {
-                ChangeState(EnemyState.Attacking);
-                StartCoroutine(AttackRoutine());
+            {   
+                if (currentState != EnemyState.Attacking)
+                {
+                    ChangeState(EnemyState.Attacking);
+                    StartCoroutine(AttackRoutine());
+                }    
             }
-            else
+            else if (dist > attackRange)
             {
-                ChangeState(EnemyState.Chasing);
-                ExecuteChase();
+                    ChangeState(EnemyState.Chasing);
+                    ExecuteChase();
             }
+
         }
         
         else if (currentState == EnemyState.Chasing || currentState == EnemyState.Attacking || currentState == EnemyState.Investigating)
