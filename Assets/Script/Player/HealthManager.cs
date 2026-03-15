@@ -1,11 +1,13 @@
 using UnityEngine.UI;
 using UnityEngine;
+using System.Collections;
 
 public class HealthManager : MonoBehaviour
 {
     [Header("Health Settings")]
     public int maxHealth = 3;
     public int currentHealth;
+    private bool isDead = false;
 
     [Header("UI Element")]
     public Image BloodScreenImage;
@@ -32,24 +34,50 @@ public class HealthManager : MonoBehaviour
     {
         if (BloodScreenImage != null)
         {
-            Color curColor = BloodScreenImage.color;//Transisi ke targetalpha
+            Color curColor = BloodScreenImage.color;
             curColor.a = Mathf.MoveTowards(curColor.a, targetAlpha, fadeSpeed * Time.deltaTime);
             BloodScreenImage.color = curColor;
         }
     }
     public void TakeDamage(int amount)
     {
+        if (isDead) return;
+
         Debug.Log("Healthmanager: player terkena hit! Damage:" + amount);
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         targetAlpha = (1f - ((float) currentHealth / maxHealth)) * maxAlpha;
+
         if (currentHealth <= 0)
         {
-            Die();
+            StartCoroutine(RespawnSequence());
         }
     }
-    void Die()
+    IEnumerator RespawnSequence()
     {
-        Debug.Log("Player Mati");
+        isDead = true;
+
+        PlayerInteraction interactScript = GetComponent<PlayerInteraction>();
+        if (interactScript != null) interactScript.DropEquipped();
+
+        DragHandler dragScript = GetComponent<DragHandler>();
+        if (dragScript != null) dragScript.DropItem();
+
+        targetAlpha = maxAlpha;
+        yield return new WaitForSeconds(1.0f);
+
+        CheckpointManager.Instance.LoadCheckpoint();
+
+        currentHealth = maxHealth;
+        targetAlpha = 0;
+
+        EnemyAI[] allEnemies = FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
+        foreach (EnemyAI enemy in allEnemies)
+        {
+            enemy.ApplyStun(1.0f);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        isDead = false;
     }
 }

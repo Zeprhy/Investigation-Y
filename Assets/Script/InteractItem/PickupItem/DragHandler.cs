@@ -78,6 +78,9 @@ public class DragHandler : MonoBehaviour
         draggedRb.isKinematic = false;
         draggedRb.useGravity = true;
         
+        draggedRb.linearVelocity = Vector3.zero; 
+        draggedRb.angularVelocity = Vector3.zero;
+
         draggedRb.linearDamping = 0.5f; 
         draggedRb.angularDamping = 0.5f;
         draggedRb.interpolation = RigidbodyInterpolation.None;
@@ -92,6 +95,37 @@ public class DragHandler : MonoBehaviour
         foreach (Transform child in obj.transform)
         {
             SetLayerRecursive(child.gameObject, layer);
+        }
+    }
+
+    public void DropItem()
+    {
+        if (draggedObj != null)
+        {
+            // Ambil referensi sementara
+            Rigidbody targetRb = draggedRb;
+            GameObject targetObj = draggedObj;
+            
+            // 1. PUTUS HUBUNGAN HIERARKI (Kunci Utama)
+            targetObj.transform.SetParent(null);
+
+            // 2. Langsung putus referensi utama agar FixedUpdate berhenti
+            draggedObj = null; 
+            draggedRb = null;
+
+            // 3. Jalankan logika pelepasan pada referensi sementara
+            if (targetRb != null)
+            {
+                targetRb.isKinematic = false;
+                targetRb.useGravity = true;
+                targetRb.linearVelocity = Vector3.zero;
+
+                // Beri gaya jatuh yang sedikit lebih kuat ke bawah
+                targetRb.AddForce(Vector3.down * 2f, ForceMode.Impulse); 
+            }
+
+            // 4. Kembalikan Layer (agar bisa diambil lagi nanti)
+            SetLayerRecursive(targetObj, originalLayer);
         }
     }
 }
