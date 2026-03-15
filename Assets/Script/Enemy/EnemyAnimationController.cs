@@ -20,17 +20,30 @@ public class EnemyAnimationController : MonoBehaviour
     void Update()
     {
         if( enemyAI == null) return;
-        float currentSpeed = agent.velocity.magnitude;
         EnemyAI.EnemyState state = enemyAI.currentState;
-
-        anim.SetFloat("Speed", currentSpeed);
-
+        float currentSpeed = agent.velocity.magnitude;
+        
+        //Walk/Run
+        if (state == EnemyAI.EnemyState.Investigating || state == EnemyAI.EnemyState.Attacking)
+        {
+            anim.SetFloat("Speed", 0f);
+        }
+        else
+        {
+            anim.SetFloat("Speed", currentSpeed); 
+        }
+        
+        //Attack
         if (state == EnemyAI.EnemyState.Attacking && previousState != EnemyAI.EnemyState.Attacking)
         {
            anim.SetTrigger("Attack");
         }
-        
-        anim.SetBool("Investigating", state == EnemyAI.EnemyState.Investigating);
+
+        //investigation
+        if (state == EnemyAI.EnemyState.Investigating && previousState != EnemyAI.EnemyState.Investigating)
+        {
+            anim.SetTrigger("Investigating");
+        }
         previousState = state;
     }
 }

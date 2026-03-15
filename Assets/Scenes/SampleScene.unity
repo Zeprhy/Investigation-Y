@@ -9815,6 +9815,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 5cce5824d10f2b44bbc21610d821bc69, type: 2}
+    - target: {fileID: 5866666021909216657, guid: fbfeeff405f30e446a4705c6e8981c7a, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6036979242796547538, guid: fbfeeff405f30e446a4705c6e8981c7a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.000000013969833
@@ -12925,7 +12929,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
+  m_VoxelSize: 0.1
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 0b8d26932fe64d356820006980361a21, type: 2}
   m_BuildHeightMesh: 0
