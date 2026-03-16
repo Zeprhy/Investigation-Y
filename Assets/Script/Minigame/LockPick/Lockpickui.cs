@@ -88,19 +88,11 @@ public class LockpickUI : MonoBehaviour
         // needleTransform.localRotation = minigame.needle.localRotation;
     }
 
-    /// <summary>
-    /// Tampilkan feedback sukses di UI.
-    /// Dipanggil manual dari LockpickMinigame jika ingin event terpisah,
-    /// atau bisa pakai onProgress sebagai trigger.
-    /// </summary>
+   
     public void ShowSuccessFeedback()
     {
         ShowFeedback("GREAT!", successFlashColor);
     }
-
-    /// <summary>
-    /// Tampilkan feedback gagal di UI.
-    /// </summary>
     public void ShowFailFeedback()
     {
         ShowFeedback("MISS!", failFlashColor);

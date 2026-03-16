@@ -151,10 +151,10 @@ public class NormalDoor : MonoBehaviour
     
     public void Interact(GameObject player)
     {
-        if (_lockpickInProgress) return;
+    if (_lockpickInProgress) return;
 
-        float distSqr = (transform.position - player.transform.position).sqrMagnitude;
-        if (distSqr > _interactRadiusSqr) return;
+         float distSqr = (transform.position - player.transform.position).sqrMagnitude;
+    if (distSqr > _interactRadiusSqr) return;
 
         if (!isLocked)
         {
@@ -162,7 +162,7 @@ public class NormalDoor : MonoBehaviour
             return;
         }
 
-        if (_playerInteraction == null) return;
+         if (_playerInteraction == null) return;
         //Holding Keys
         if (_playerInteraction.IsHoldingKey(doorID))
         {
@@ -175,7 +175,6 @@ public class NormalDoor : MonoBehaviour
         {
             if (lockpickMinigame == null)
             {
-                 Debug.LogWarning($"[NormalDoor] '{gameObject.name}' canBeLockpicked=true tapi LockpickMinigame belum di-assign!");
                  return;
             }
             _lastInteractorPosition = player.transform.position;
@@ -201,7 +200,6 @@ public class NormalDoor : MonoBehaviour
         _playerInteraction?.ConsumeLockPick();
 
         UpdateUIText();
-        Debug.Log($"[NormalDoor] Lockpick gagal pada '{gameObject.name}'. Item lockpick rusak.");
     }
 
 

@@ -107,12 +107,15 @@ public class PlayerInteraction : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-
     if (!context.performed || PauseMenu.isPausedStatic) return;
+     
     
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        if (!Physics.Raycast(ray, out RaycastHit hit, 3f)) return;
-
+        if (!Physics.Raycast(ray, out RaycastHit hit, 3f)) 
+        {
+            return;
+        }
+      
         if (hit.collider.TryGetComponent(out Item item))
         {
             TryEquip();
@@ -120,7 +123,8 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         // DOOR
-        if (hit.collider.TryGetComponent(out NormalDoor door))
+        NormalDoor door = hit.collider.GetComponentInParent<NormalDoor>();
+        if (door != null)
         {
             door.Interact(gameObject);
             return;
@@ -155,7 +159,6 @@ public class PlayerInteraction : MonoBehaviour
         if (equippedItem == null) return;
         if (equippedItem.itemType != ItemType.LockPick) return;
 
-        Debug.Log("[PlayerInteraction] Lockpick dikonsumsi / rusak.");
         equippedItem.transform.SetParent(null);
         ToggleEquippedColliders(true);
  

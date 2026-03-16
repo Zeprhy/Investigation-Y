@@ -5217,7 +5217,7 @@ MonoBehaviour:
   itemName: StunGun
   itemType: 2
   isUsable: 1
-  keyID: Gun_1
+  keyID: 
 --- !u!54 &7766384829158899810
 Rigidbody:
   m_ObjectHideFlags: 0
