@@ -6,7 +6,8 @@ public enum ItemType
     Crowbar,
     StunGun,
     doorID,
-    Key
+    Key,
+    LockPick
 }
 
 public class Item : MonoBehaviour

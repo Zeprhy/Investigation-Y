@@ -144,6 +144,28 @@ public class PlayerInteraction : MonoBehaviour
             && equippedItem.keyID == requiredKeyID;
     }
 
+    public bool IsHoldingLockPick()
+    {
+        if (equippedItem == null) return false;
+        return equippedItem.itemType == ItemType.LockPick;
+    }
+
+    public void ConsumeLockPick()
+    {
+        if (equippedItem == null) return;
+        if (equippedItem.itemType != ItemType.LockPick) return;
+
+        Debug.Log("[PlayerInteraction] Lockpick dikonsumsi / rusak.");
+        equippedItem.transform.SetParent(null);
+        ToggleEquippedColliders(true);
+ 
+        Destroy(equippedItem.gameObject);
+ 
+        cachedColliders = null;
+        equippedItem = null;
+        equippedRb = null;
+    }
+
     public void UpdateFadeAlpha(float alpha) 
     {
         if (hideFadeGroup != null)
