@@ -6457,8 +6457,8 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
-  m_LocalScale: {x: 1, y: 1.4459224, z: 1}
+  m_LocalPosition: {x: 0, y: 0.7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1570782867}
@@ -15042,10 +15042,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59a057472685e2a4fabed062b7ebaca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraShakeManager
-  lightDuration: 0.3
-  lightMagnitude: 0.15
-  heavyDuration: 0.4
-  heavyMagnitude: 0.8
+  lightDuration: 2
+  lightMagnitude: 0.8
+  heavyDuration: 0.6
+  heavyMagnitude: 2
   targetCamera: {fileID: 330585545}
 --- !u!1 &1848466813
 GameObject:

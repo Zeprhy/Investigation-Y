@@ -199,7 +199,16 @@ public class MovementPlayer : MonoBehaviour
         
         rotationX -= inputLook.y * lookSpeed * sensitivityMultiplier;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
-        playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
+        Vector2 shake = Vector2.zero;
+        if (CameraShakeManager.Instance != null)
+            shake = CameraShakeManager.Instance.ShakeOffset;
+
+        // Terapkan rotasi + shake offset sekaligus
+        playerCamera.transform.localRotation = Quaternion.Euler(
+            rotationX + shake.x,   // up/down tetap bisa + offset shake
+            shake.y,               // sedikit goyang kanan kiri
+            0f
+        );
 
         transform.Rotate(Vector3.up * inputLook.x * lookSpeed * sensitivityMultiplier);
         }

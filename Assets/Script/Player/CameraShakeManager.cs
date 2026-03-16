@@ -6,13 +6,16 @@ public class CameraShakeManager : MonoBehaviour
     public static CameraShakeManager Instance;
 
     [Header("Shake Settings")]
-    [SerializeField] float lightDuration   = 0.3f;
-    [SerializeField] float lightMagnitude  = 0.05f;
-    [SerializeField] float heavyDuration   = 0.6f;
-    [SerializeField] float heavyMagnitude  = 0.2f;
+    [SerializeField] float lightDuration    = 0.3f;
+    [SerializeField] float lightMagnitude   = 0.5f;
+    [SerializeField] float heavyDuration    = 0.6f;
+    [SerializeField] float heavyMagnitude   = 1.5f;
 
     [SerializeField] Camera targetCamera;
-    Vector3 originalPos;
+
+    // Offset yang akan ditambahkan ke rotasi MovementPlayer
+    public Vector2 ShakeOffset { get; private set; }
+
     Coroutine currentShake;
 
     void Awake()
@@ -20,27 +23,18 @@ public class CameraShakeManager : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
     }
+
     void Start()
     {
         if (targetCamera == null)
-        targetCamera = Camera.main;
-
-        originalPos = transform.localPosition;
+            targetCamera = Camera.main;
     }
 
-    public void ShakeHeavy()
-{
-    TriggerShake(heavyDuration, heavyMagnitude);
-}
-
-public void ShakeLight()
-{
-    TriggerShake(lightDuration, lightMagnitude);
-}
+    public void ShakeLight() => TriggerShake(lightDuration, lightMagnitude);
+    public void ShakeHeavy() => TriggerShake(heavyDuration, heavyMagnitude);
 
     void TriggerShake(float duration, float magnitude)
     {
-        // Kalau ada shake yang sedang jalan, stop dulu
         if (currentShake != null) StopCoroutine(currentShake);
         currentShake = StartCoroutine(Shake(duration, magnitude));
     }
@@ -51,22 +45,25 @@ public void ShakeLight()
 
         while (elapsed < duration)
         {
-            // Respect pause — sama seperti MovementPlayer kamu
             if (PauseMenu.isPausedStatic)
             {
+                ShakeOffset = Vector2.zero;
                 yield return null;
                 continue;
             }
 
-            float x = Random.Range(-1f, 1f) * magnitude;
-            float y = Random.Range(-1f, 1f) * magnitude;
-            targetCamera.transform.localPosition = originalPos + new Vector3(x, y, 0f);
+            float strength = magnitude * (1f - elapsed / duration);
+
+            // Hitung offset saja, tidak langsung ke kamera
+            float x = Random.Range(-1f, 1f) * strength;
+            float y = Random.Range(-1f, 1f) * strength;
+            ShakeOffset = new Vector2(x, y);
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        targetCamera.transform.localPosition = originalPos;
+        ShakeOffset = Vector2.zero;
         currentShake = null;
     }
 }
