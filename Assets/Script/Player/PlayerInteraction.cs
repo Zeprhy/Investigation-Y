@@ -23,6 +23,7 @@ public class PlayerInteraction : MonoBehaviour
     private DragHandler dragHandler;
     private MovementPlayer player;
     private Locker currentLocker;
+    private Outline lastHighlightedItem;
 
     private bool isHidden;
     private bool isInsideLocker = false;
@@ -37,6 +38,9 @@ public class PlayerInteraction : MonoBehaviour
     { 
         if (PauseMenu.isPausedStatic) return;
 
+        HandleOutlineRaycast();
+        if (equippedItem != null) FollowHand();
+
         if (isHidden) HandleHidingLook();
 
         rayTimer += Time.deltaTime;
@@ -44,8 +48,45 @@ public class PlayerInteraction : MonoBehaviour
         {
             rayTimer = 0;
         }
+    }
 
-        if (equippedItem != null) FollowHand();
+    void HandleOutlineRaycast()
+    {
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 3f))
+        {
+            Outline outline = hit.collider.GetComponent<Outline>();
+
+            if (outline != null)
+            {                
+                if (lastHighlightedItem != outline)
+                {
+                    if (lastHighlightedItem != null) lastHighlightedItem.enabled = false;
+
+                    outline.enabled = true;
+                    lastHighlightedItem = outline;
+                }
+            }
+            else
+            {
+                DisableLastOutline();
+            }
+        }
+        else
+        {
+            DisableLastOutline();
+        }
+    }
+
+    void DisableLastOutline()
+    {
+        if (lastHighlightedItem != null)
+        {
+            lastHighlightedItem.enabled = false;
+            lastHighlightedItem = null;
+        }    
     }
 
     private void ToggleEquippedColliders(bool state)
