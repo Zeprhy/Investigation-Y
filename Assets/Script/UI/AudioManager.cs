@@ -27,6 +27,9 @@ public class AudioManager : MonoBehaviour
             bgmSource.loop = true;
             bgmSource.Play();
         }
+
+        float savedVolume = PlayerPrefs.GetFloat("Settings_Volume", 0.5f);
+        SetMasterVolume(savedVolume);
     }
 
     // Satu fungsi untuk kendalikan semua suara di game

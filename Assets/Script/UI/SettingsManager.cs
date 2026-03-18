@@ -17,47 +17,96 @@ public class SettingsManager : MonoBehaviour
     [Header("Brightness Settings (URP)")]
     [SerializeField] private Slider brightnessSlider;
     [SerializeField] private Volume globalVolume;
+    [SerializeField] private float minBrightness = -3f;
+    [SerializeField] private float maxBrightness = 3f;
     private ColorAdjustments colorAdjustments;
 
-    void Start()
+    private const string KEY_FOV = "Settings_FOV";
+    private const string KEY_VOLUME = "Settings_Volume";
+    private const string KEY_BRIGHTNESS = "Settings_Brightness";
+    void Awake()
     {
-        // --- Setup Audio ---
-        masterVolumeSlider.minValue = 0f;
-        masterVolumeSlider.maxValue = 1f;
-        masterVolumeSlider.value = 0.5f;
-        masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
+    // --- Volume ---
+    float savedVolume = PlayerPrefs.GetFloat("Settings_Volume", 0.5f);
+    SetMasterVolume(savedVolume);
 
-        // --- Setup FOV ---
-        fovSlider.minValue = minFOV;
-        fovSlider.maxValue = maxFOV;
-        fovSlider.value = playerCamera.fieldOfView;
-        fovSlider.onValueChanged.AddListener(SetFOV);
+    // --- FOV ---
+    float savedFOV = PlayerPrefs.GetFloat("Settings_FOV", 60f);
+    SetFOV(savedFOV);
 
-        // --- Setup Brightness (Post Processing) ---
+    // --- Brightness ---
         if (globalVolume.profile.TryGet(out colorAdjustments))
         {
-            brightnessSlider.minValue = -2f; // Gelap
-            brightnessSlider.maxValue = 2f;  // Terang
-            brightnessSlider.value = colorAdjustments.postExposure.value;
-            brightnessSlider.onValueChanged.AddListener(SetBrightness);
+            float savedBrightness = PlayerPrefs.GetFloat("Settings_Brightness", 0f);
+            brightnessSlider.value = savedBrightness;
+            SetBrightness(savedBrightness);
         }
+
+
     }
 
     public void SetMasterVolume(float value)
     {
         if (AudioManager.Instance != null)
+        {
             AudioManager.Instance.SetMasterVolume(value);
+        }
+            
+
+        PlayerPrefs.SetFloat(KEY_VOLUME, value);
+        PlayerPrefs.Save();
     }
 
     public void SetFOV(float value)
     {
         if (playerCamera != null)
+        {
             playerCamera.fieldOfView = value;
+        }
+            
+        MovementPlayer mp = FindAnyObjectByType<MovementPlayer>();
+        if (mp != null) mp.UpdateSavedFOV(value);
+
+        PlayerPrefs.SetFloat(KEY_FOV, value);
+        PlayerPrefs.Save();
     }
 
     public void SetBrightness(float value)
     {
         if (colorAdjustments != null)
-            colorAdjustments.postExposure.value = value;
+        {
+           colorAdjustments.postExposure.value = value; 
+        }
+            
+
+        PlayerPrefs.SetFloat(KEY_BRIGHTNESS, value);
+        PlayerPrefs.Save();
+    }
+    public void OnSettingsPanelOpen()
+    {
+    // Setup slider baru dijalankan saat panel dibuka
+    masterVolumeSlider.minValue = 0f;
+    masterVolumeSlider.maxValue = 1f;
+    masterVolumeSlider.value = PlayerPrefs.GetFloat("Settings_Volume", 0.5f);
+
+    fovSlider.minValue = minFOV;
+    fovSlider.maxValue = maxFOV;
+    fovSlider.value = PlayerPrefs.GetFloat("Settings_FOV", 60f);
+
+    brightnessSlider.minValue = minBrightness;
+    brightnessSlider.maxValue = maxBrightness;
+    brightnessSlider.value = PlayerPrefs.GetFloat("Settings_Brightness", 0f);
+
+    masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
+    fovSlider.onValueChanged.AddListener(SetFOV);
+    brightnessSlider.onValueChanged.AddListener(SetBrightness);
+    }
+
+    public void OnSettingsPanelClose()
+    {
+    // Bersihkan listener saat panel ditutup agar tidak dobel
+    masterVolumeSlider.onValueChanged.RemoveListener(SetMasterVolume);
+    fovSlider.onValueChanged.RemoveListener(SetFOV);
+    brightnessSlider.onValueChanged.RemoveListener(SetBrightness);
     }
 }

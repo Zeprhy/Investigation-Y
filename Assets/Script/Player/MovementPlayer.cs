@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using System.Collections.Generic;
 
 [RequireComponent(typeof(CharacterController))]
 public class MovementPlayer : MonoBehaviour
@@ -10,6 +9,7 @@ public class MovementPlayer : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float lookSpeed = 0.1f;
     [SerializeField] private float lookXLimit = 45f;
+    [SerializeField] private float savedFOV = 60f;
 
     [Header("Kecepatan Jalan")]
     [SerializeField] private float walkSpeed = 6f;
@@ -73,6 +73,7 @@ public class MovementPlayer : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        savedFOV = PlayerPrefs.GetFloat("Settings_FOV", 60f);
         myTransform = transform;
         currentStamina = maxStamina;
 
@@ -82,6 +83,11 @@ public class MovementPlayer : MonoBehaviour
         {
             flashlightObject.SetActive(false);
         }
+    }
+
+    public void UpdateSavedFOV(float newFOV)
+    {
+        savedFOV = newFOV;
     }
 
     public void OnMove(InputAction.CallbackContext context) => inputMove = context.ReadValue<Vector2>();
@@ -117,7 +123,7 @@ public class MovementPlayer : MonoBehaviour
             noiseTimer = 0;    
         }
 
-        float targetFOV = (isRunning && !isExhausted && inputMove.magnitude > 0.1f) ? 70f : 60f;
+        float targetFOV = (isRunning && !isExhausted && inputMove.magnitude > 0.1f) ? savedFOV + 10f : savedFOV;
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * 5f);
 
         characterController.Move(moveDirection * Time.deltaTime);

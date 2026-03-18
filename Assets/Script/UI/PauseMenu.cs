@@ -9,10 +9,13 @@ public class PauseMenu : MonoBehaviour
     [Header("UI Panels")]
     public GameObject backgroundPanel; // Folder Background yang berisi tombol-tombol utama
     public GameObject settingsPanel;
-    public GameObject confirmationPanel; // PanelPemilihanY/N
+   // public GameObject confirmationPanel; // PanelPemilihanY/N
     public GameObject blurOverlay;
 
     private bool isPaused = false;
+
+    [Header("Manager")]
+    public SettingsManager settingsManager;
 
     void Start()
     {
@@ -69,16 +72,22 @@ public class PauseMenu : MonoBehaviour
     {
         backgroundPanel.SetActive(false);
         settingsPanel.SetActive(true);
+        settingsManager.OnSettingsPanelOpen();
     }
 
     public void ShowMainPauseMenu()
     {
         backgroundPanel.SetActive(true);
         settingsPanel.SetActive(false);
-        confirmationPanel.SetActive(false);
+        if (settingsManager != null)
+        {
+          settingsManager.OnSettingsPanelClose();  
+        }
+        
+        //confirmationPanel.SetActive(false);
     }
 
-    public void ConfirmationMenu()
+    /*public void ConfirmationMenu()
     {
         backgroundPanel.SetActive(false);
         confirmationPanel.SetActive(true); 
@@ -88,7 +97,7 @@ public class PauseMenu : MonoBehaviour
     {
         backgroundPanel.SetActive(true);
         confirmationPanel.SetActive(false); 
-    }
+    }*/
 
     public void BackToSetings()
     {
