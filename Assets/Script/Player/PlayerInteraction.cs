@@ -27,6 +27,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private bool isHidden;
     private bool isInsideLocker = false;
+    private Vector3 originalItemScale;
 
     void Start()
     {
@@ -154,12 +155,19 @@ public class PlayerInteraction : MonoBehaviour
         return equippedItem.itemType == ItemType.LockPick;
     }
 
+    public bool IsHoldingCrankHandle()
+    {
+        if (equippedItem == null) return false;
+        return equippedItem.itemType == ItemType.CrankHandle;
+    }
+
     public void ConsumeLockPick()
     {
         if (equippedItem == null) return;
         if (equippedItem.itemType != ItemType.LockPick) return;
 
         equippedItem.transform.SetParent(null);
+        equippedItem.transform.localScale = originalItemScale;
         ToggleEquippedColliders(true);
  
         Destroy(equippedItem.gameObject);
@@ -261,6 +269,8 @@ public class PlayerInteraction : MonoBehaviour
                 equippedItem = item;
                 equippedRb = item.GetComponent<Rigidbody>();
 
+                originalItemScale = item.transform.localScale;
+
                 if (equippedRb != null)
                 {
                     equippedRb.useGravity = false;
@@ -271,6 +281,13 @@ public class PlayerInteraction : MonoBehaviour
                 equippedItem.transform.SetParent(handPoint);
                 equippedItem.transform.localPosition = Vector3.zero;
                 equippedItem.transform.localRotation = Quaternion.identity;
+
+                Vector3 parentScale = handPoint.lossyScale;
+                equippedItem.transform.localScale = new Vector3(
+                    originalItemScale.x / parentScale.x,
+                    originalItemScale.y / parentScale.y,
+                    originalItemScale.z / parentScale.z
+                    );
 
                 ToggleEquippedColliders(false);
 
@@ -321,7 +338,7 @@ public class PlayerInteraction : MonoBehaviour
         if (equippedItem == null) return;
 
         equippedItem.transform.SetParent(null);
-
+        equippedItem.transform.localScale = originalItemScale;
         ToggleEquippedColliders(true);
 
         if (equippedRb != null)

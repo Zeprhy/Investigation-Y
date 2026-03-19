@@ -2,8 +2,22 @@ using UnityEngine;
 using System.Collections;
 using TMPro;
 
+/// <summary>
+/// NormalDoor — Handle semua tipe pintu dalam satu script.
+/// Pilih DoorOpenMode di Inspector untuk menentukan cara membuka pintu.
+/// 
+/// Key      : Dibuka dengan kunci utama (keyID harus cocok)
+/// Lockpick : Dibuka dengan item Lockpick + minigame timing (DBD style)
+/// Crank    : Dibuka dengan item CrankHandle + minigame putar mouse
+/// </summary>
 public class NormalDoor : MonoBehaviour
 {
+    public enum DoorOpenMode
+    {
+        Key,
+        Lockpick,
+        Crank
+    }
     [Header("Settings")]
     public bool isOpen = false;
     public bool isLocked = true;
@@ -20,60 +34,59 @@ public class NormalDoor : MonoBehaviour
     [SerializeField] private TextMeshProUGUI globalInteractText;
     [SerializeField] private float uiDisplayDistance = 3.0f;
 
-    [Header("Lock Settings")]
+    [Header("Door Mode")]
+    [Tooltip("Key = kunci Utama | Lockpick = minigame timing | Crank = minigame putar")]
+    [SerializeField] private DoorOpenMode doorMode = DoorOpenMode.Key;
+
+    [Header("Key Settings(Mode: Key)")]
     [SerializeField] private string doorID = "";
     [SerializeField] private string keyNameForUI = "Kunci Laboratorium";
 
-    [Header("Lockpick Settings")]
-    [Tooltip("Aktifkan agar pintu ini bisa dibuka dengan lockpick (Selain Kunci Utama/Asli)")]
-    [SerializeField] private bool canBeLockpicked = false;
-    [Tooltip("Refrensi ke LockPickMinigame yang ada di scene")]
+    [Header("Lockpick Settings (Mode: LockPick)")]
     [SerializeField] private LockpickMinigame lockpickMinigame;
 
-    private Quaternion targetRotation;
-    private Quaternion defaultRotation;
+    [Header("Crank Settings (Mode: Crank)")]
+    [SerializeField] private CrankMinigame crankminigame;
+
+    // ---- Cache komponen ----
+    private Quaternion _targetRotation;
+    private Quaternion _defaultRotation;
     private Transform _playerTransform;
     private PlayerInteraction _playerInteraction;
-    private UnityEngine.AI.NavMeshObstacle doorObstacle;
+    private UnityEngine.AI.NavMeshObstacle _doorObstacle;
+ 
+    // ---- State ----
     private bool _isPlayerNear = false;
-    private bool _lockpickInProgress = false;
+    private bool _minigameInProgress = false;
     private Vector3 _lastInteractorPosition;
-
-     private string _uiTextLocked;
-    private string _uiTextLockedWithLockpick;
+ 
+    // ---- Cache string UI ----
+    private string _uiTextLocked;
+    private string _uiTextWithItem;
     private string _uiTextOpen;
     private string _uiTextClose;
+    private string _uiTextCranking;
  
-    
+    // ---- Cache threshold ----
     private float _uiDistanceSqr;
     private float _interactRadiusSqr;
  
+    // ---- Cache WaitForSeconds ----
+    private WaitForSeconds _autoCloseWait;     
     
-    private WaitForSeconds _autoCloseWait;
-    private WaitForSeconds _lockpickEndWait;
-
-     void Awake()
+    void Awake()
     {
-        // Pre-bake semua string UI
-        string keyUpper = keyNameForUI.ToUpper();
-        _uiTextLocked               = $"[Locked] Need {keyUpper}";
-        _uiTextLockedWithLockpick   = $"[Locked] Need {keyUpper}  |  [F] Lockpick";
-        _uiTextOpen                 = "Press [F] To Open The Door";
-        _uiTextClose                = "Press [F] To Close The Door";
- 
-        // Pre-bake threshold kuadrat
-        _uiDistanceSqr      = uiDisplayDistance * uiDisplayDistance;
-        _interactRadiusSqr  = interactionRadius * interactionRadius;
- 
-        // Pre-bake WaitForSeconds
-        _autoCloseWait   = new WaitForSeconds(autoCloseDelay);
+        _uiDistanceSqr     = uiDisplayDistance * uiDisplayDistance;
+        _interactRadiusSqr = interactionRadius * interactionRadius;
+        _autoCloseWait     = new WaitForSeconds(autoCloseDelay);
     }
     void Start()
     {
+        BakeUIStrings();
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        doorObstacle = GetComponent<UnityEngine.AI.NavMeshObstacle>();
+        _doorObstacle = GetComponent<UnityEngine.AI.NavMeshObstacle>();
 
-        if (doorObstacle != null) doorObstacle.enabled = !isOpen;
+        if (_doorObstacle != null) _doorObstacle.enabled = !isOpen;
 
         if (playerObj != null)
         {
@@ -83,24 +96,31 @@ public class NormalDoor : MonoBehaviour
 
         if (globalInteractText != null) globalInteractText.text = "";
         
-        defaultRotation = transform.localRotation;
-        targetRotation = defaultRotation;
+        _defaultRotation = transform.localRotation;
+        _targetRotation = _defaultRotation;
+        SubscribeMinigameEvent();
+    }
 
-        //subscribe event minigame
-        if (lockpickMinigame != null)
+    private void SubscribeMinigameEvent()
+    {
+        if (doorMode == DoorOpenMode.Lockpick && lockpickMinigame != null)
         {
-            lockpickMinigame.onMinigameSuccess.AddListener(OnLockpickSuccess);
-            lockpickMinigame.onMinigameFailed.AddListener(OnLockpickFailed);
+            lockpickMinigame.onMinigameSuccess.AddListener(OnMinigameSuccess);
+            lockpickMinigame.onMinigameFailed.AddListener(OnMinigameFailed);
+        }
+        
+        if (doorMode == DoorOpenMode.Crank && crankminigame != null)
+        {
+            crankminigame.onCrankComplete.AddListener(OnMinigameSuccess);
         }
     }
 
     void Update()
     {
-        transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, Time.deltaTime * smoothSpeed);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, _targetRotation, Time.deltaTime * smoothSpeed);
         
         HandleUIDisplay();
     }
-
     private void HandleUIDisplay()
     {
         if (_playerTransform == null || globalInteractText == null) return;
@@ -120,10 +140,44 @@ public class NormalDoor : MonoBehaviour
         }
     }
 
+    private void BakeUIStrings()
+    {
+    _uiTextOpen     = "Press [F] To Open The Door";
+    _uiTextClose    = "Press [F] To Close The Door";
+    _uiTextCranking = "Hold [LMB] + Putar Mouse searah jarum jam";
+
+        switch (doorMode)
+        {
+        case DoorOpenMode.Key:
+            string keyUpper = string.IsNullOrEmpty(keyNameForUI) ? "KEY" : keyNameForUI.ToUpper();
+            _uiTextLocked   = $"[Locked] Need {keyUpper}";
+            _uiTextWithItem = $"[Locked] Need {keyUpper}";
+            break;
+
+        case DoorOpenMode.Lockpick:
+            _uiTextLocked   = "[Locked] Need Lockpick";
+            _uiTextWithItem = "[Locked] Press [F] To Lockpick";
+            break;
+
+        case DoorOpenMode.Crank:
+            _uiTextLocked   = "[Locked] Need Crank Handle";
+            _uiTextWithItem = "[Locked] Press [F] To Use Crank";
+            break;
+        }
+    }
     private void UpdateUIText()
     {
         if (!_isPlayerNear || globalInteractText == null) return;
-        if (_lockpickInProgress)
+
+        //Saat Minigame Crank
+        if (_minigameInProgress && doorMode == DoorOpenMode.Crank)
+        {
+            globalInteractText.text = _uiTextCranking;
+            return;
+        }
+
+        //Saat Minigame LockPick
+        if (_minigameInProgress)
         {
             globalInteractText.text = "";
             return;
@@ -131,13 +185,8 @@ public class NormalDoor : MonoBehaviour
 
         if (isLocked)
         {
-        bool playerHasLockpick = canBeLockpicked
-        && _playerInteraction != null 
-        && _playerInteraction.IsHoldingLockPick();
-
-        globalInteractText.text = playerHasLockpick
-                ? _uiTextLockedWithLockpick   // "[Locked] Need X  |  [F] Lockpick"
-                : _uiTextLocked;              // "[Locked] Need X" 
+            bool hasCorrectItem = HasCorrectItem();
+            globalInteractText.text = hasCorrectItem ? _uiTextWithItem : _uiTextLocked;
         }
 
         else
@@ -147,13 +196,26 @@ public class NormalDoor : MonoBehaviour
 
        
     }
+
+    private bool HasCorrectItem()
+    {
+        if (_playerInteraction == null) return false;
+
+        return doorMode switch
+        {
+            DoorOpenMode.Key      => _playerInteraction.IsHoldingKey(doorID),
+            DoorOpenMode.Lockpick => _playerInteraction.IsHoldingLockPick(),
+            DoorOpenMode.Crank    => _playerInteraction.IsHoldingCrankHandle(),
+            _                     => false
+        };
+    }
     
     
     public void Interact(GameObject player)
     {
-    if (_lockpickInProgress) return;
+    if (_minigameInProgress) return;
 
-         float distSqr = (transform.position - player.transform.position).sqrMagnitude;
+        float distSqr = (transform.position - player.transform.position).sqrMagnitude;
     if (distSqr > _interactRadiusSqr) return;
 
         if (!isLocked)
@@ -163,42 +225,78 @@ public class NormalDoor : MonoBehaviour
         }
 
          if (_playerInteraction == null) return;
+
         //Holding Keys
+       switch (doorMode)
+        {
+            case DoorOpenMode.Key:
+                HandleKeyInteract(player);
+                break;
+
+            case DoorOpenMode.Lockpick:
+                HandleLockpickInteract(player);
+                break;
+
+            case DoorOpenMode.Crank:
+                HandleCrankInteract(player);
+                break;
+        }
+    }
+
+    private void HandleKeyInteract(GameObject player)
+    {
         if (_playerInteraction.IsHoldingKey(doorID))
         {
             UnlockDoor();
             ToggleDoor(player.transform.position);
-            return;
-        }
-        //Holding LockPick
-        if (canBeLockpicked && _playerInteraction.IsHoldingLockPick())
-        {
-            if (lockpickMinigame == null)
-            {
-                 return;
-            }
-            _lastInteractorPosition = player.transform.position;
-            _lockpickInProgress = true;
-            lockpickMinigame.StartMinigame();
-            return;
         }
     }
-
-    private void OnLockpickSuccess()
+    private void HandleLockpickInteract(GameObject player)
     {
-        _lockpickInProgress = false;
-        UnlockDoor();
-        ToggleDoor(_lastInteractorPosition);
+        if (!_playerInteraction.IsHoldingLockPick()) return;
 
-        _playerInteraction?.ConsumeLockPick();
+        if (lockpickMinigame == null)
+        {
+            return;
+        }
+
+        _lastInteractorPosition = player.transform.position;
+        _minigameInProgress = true;
+        lockpickMinigame.StartMinigame();
+        MinigameStateManager.Instance?.EnterMinigame();
+    }
+    private void HandleCrankInteract(GameObject player)
+    {
+        if (!_playerInteraction.IsHoldingCrankHandle()) return;
+
+        if (crankminigame == null)
+        {
+            return;
+        }
+
+        _lastInteractorPosition = player.transform.position;
+        _minigameInProgress = true;
+        crankminigame.StartMinigame();
+        MinigameStateManager.Instance?.EnterMinigame();
         UpdateUIText();
     }
 
-    private void OnLockpickFailed()
+    private void OnMinigameSuccess()
     {
-        _lockpickInProgress = false;
-        _playerInteraction?.ConsumeLockPick();
+        _minigameInProgress = false;
+        UnlockDoor();
+        ToggleDoor(_lastInteractorPosition);
 
+        if (doorMode == DoorOpenMode.Lockpick)
+        _playerInteraction?.ConsumeLockPick();
+        MinigameStateManager.Instance?.ExitMinigame();
+        UpdateUIText();
+    }
+
+    private void OnMinigameFailed()
+    {
+        _minigameInProgress = false;
+        MinigameStateManager.Instance?.ExitMinigame();
         UpdateUIText();
     }
 
@@ -222,9 +320,9 @@ public class NormalDoor : MonoBehaviour
     
         isOpen = !isOpen;
     
-        if (doorObstacle != null) 
+        if (_doorObstacle != null) 
         {
-            doorObstacle.enabled = !isOpen; 
+            _doorObstacle.enabled = !isOpen; 
         }
 
         if (isOpen)
@@ -233,7 +331,7 @@ public class NormalDoor : MonoBehaviour
             float dot = Vector3.Dot(transform.forward, directionToInteractor);
             float angle = dot >= 0 ? openAngle : -openAngle;
             
-            targetRotation = defaultRotation * Quaternion.Euler(0, angle, 0);
+            _targetRotation = _defaultRotation * Quaternion.Euler(0, angle, 0);
     
             if (useAutoClose) autoCloseCoroutine = StartCoroutine(AutoCloseTimer());
         }
@@ -241,13 +339,14 @@ public class NormalDoor : MonoBehaviour
         {
             CloseDoor();
         }
+        UpdateUIText();
     }
 
     private void CloseDoor()
     {
         isOpen = false;
-        targetRotation = defaultRotation;
-        if (doorObstacle != null) doorObstacle.enabled = true;
+        _targetRotation = _defaultRotation;
+        if (_doorObstacle != null) _doorObstacle.enabled = true;
         UpdateUIText();
     }
 

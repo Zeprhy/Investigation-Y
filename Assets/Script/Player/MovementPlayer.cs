@@ -69,6 +69,8 @@ public class MovementPlayer : MonoBehaviour
     private bool isFlashlightOn = false;
     private bool isExhausted = false;
     public bool IsHidden { get; set; }
+    private bool _isMinigameActive = false;
+
 
     void Start()
     {
@@ -99,6 +101,7 @@ public class MovementPlayer : MonoBehaviour
     void Update()
     {
         if (PauseMenu.isPausedStatic) return;
+        if (_isMinigameActive) return;
 
         HandleStamina();
         UpdateStaminaUI();
@@ -134,6 +137,11 @@ public class MovementPlayer : MonoBehaviour
         isCursorLocked = locked;
         Cursor.lockState = locked ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = locked;
+    }
+
+    public void SetminigameState(bool active)
+    {
+        _isMinigameActive = active;
     }
 
     public void SetHiddenStatus(bool status)
@@ -196,6 +204,7 @@ public class MovementPlayer : MonoBehaviour
 
     private void ApplyRotation()
     {
+        if (_isMinigameActive) return;
         if (health != null && health.currentHealth <= 0 || PauseMenu.isPausedStatic) return;
          
         if (!isCursorLocked)

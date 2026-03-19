@@ -33,6 +33,7 @@ public class LockpickMinigame : MonoBehaviour
     private float _successZoneStartAngle = 0f;
     private float _baseNeedleSpeed;
     private bool _isActive = false;
+    public bool IsActive => _isActive;
     private int _currentSuccesses = 0;
     private int _currentFailures = 0;
     private bool _inputConsumed = false;

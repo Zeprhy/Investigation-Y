@@ -7,7 +7,8 @@ public enum ItemType
     StunGun,
     doorID,
     Key,
-    LockPick
+    LockPick,
+    CrankHandle
 }
 
 public class Item : MonoBehaviour
