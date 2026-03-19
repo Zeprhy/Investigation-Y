@@ -108,36 +108,52 @@ public class PlayerInteraction : MonoBehaviour
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-    if (!context.performed || PauseMenu.isPausedStatic) return;
-     
-    
+        if (!context.performed || PauseMenu.isPausedStatic) return;
+
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        if (!Physics.Raycast(ray, out RaycastHit hit, 3f)) 
-        {
-            return;
-        }
-      
-        if (hit.collider.TryGetComponent(out Item item))
-        {
-            TryEquip();
-            return;
-        }
+        RaycastHit hit;
 
-        // DOOR
-        NormalDoor door = hit.collider.GetComponentInParent<NormalDoor>();
-        if (door != null)
+        if (Physics.Raycast(ray, out hit, 3f)) 
         {
-            door.Interact(gameObject);
-            return;
-        }
+            // 1. LIFT
+            ElevatorSlidingDoor slidingDoor = hit.collider.GetComponentInParent<ElevatorSlidingDoor>();
+            if (slidingDoor != null)
+            {
+                slidingDoor.Interact(gameObject); 
+                return;
+            }
 
-        // LOCKER
-        Locker locker = hit.collider.GetComponentInParent<Locker>();
-        if ( locker != null)
-        {
-            SetCurrentLocker(locker);
-            locker.Interact(player);
-            return;
+            // 2. CEK PANEL LIFT (UI Lantai) - JANGAN LUPA BAGIAN INI
+            ElevatorTeleporter elevator = hit.collider.GetComponentInParent<ElevatorTeleporter>();
+            if (elevator != null)
+            {
+                elevator.OpenFloorUI();
+                return;
+            }
+
+            // 3. CEK ITEM (Pick up)
+            if (hit.collider.TryGetComponent(out Item item))
+            {
+                TryEquip();
+                return;
+            }
+
+            // 4. CEK PINTU BIASA (Normal Door)
+            NormalDoor door = hit.collider.GetComponentInParent<NormalDoor>();
+            if (door != null)
+            {
+                door.Interact(gameObject);
+                return;
+            }
+
+            // 5. CEK LOCKER (Tempat Sembunyi)
+            Locker locker = hit.collider.GetComponentInParent<Locker>();
+            if (locker != null)
+            {
+                SetCurrentLocker(locker);
+                locker.Interact(player);
+                return;
+            }
         }
     }
 
