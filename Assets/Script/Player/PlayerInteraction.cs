@@ -154,6 +154,14 @@ public class PlayerInteraction : MonoBehaviour
                 locker.Interact(player);
                 return;
             }
+
+            // 6. CEK SAKLAR LAMPU
+            LightSwitch salkar = hit.collider.GetComponent<LightSwitch>();
+            if (salkar != null)
+            {
+                salkar.Toggle();
+                return;
+            }
         }
     }
 
