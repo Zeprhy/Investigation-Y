@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
-using Mono.Cecil.Cil;
-using System.Xml.Serialization;
 
 /// <summary>
 /// EvidenceInspector — Handle sistem inspeksi barang bukti.
@@ -57,10 +55,18 @@ public class EvidenceInspector : MonoBehaviour
     // ---- Cache string ----
     private const string HINT_EVIDENCE  = "Press [F] To Inspect";
     private const string HINT_COLLECT   = "Press [F] To Collect  |  Press [E] To Put Back";
+    private bool _isReturning = false;
+    private Vector3 _returnTargetPos;
+    private Quaternion _returnTargetRot;
 
     void Update()
     {
         if (PauseMenu.isPausedStatic) return;
+
+        if (_isReturning)
+        {
+            HandleReturnMovement();
+        }
 
         if (_isInspecting)
         {
@@ -96,13 +102,42 @@ public class EvidenceInspector : MonoBehaviour
 
     public void OnInspect(InputAction.CallbackContext context)
     {
+        Debug.Log("[Evidence] OnInspectOrCollect dipanggil"); // ← tambah
         if (!context.performed || PauseMenu.isPausedStatic) return;
 
         if (_isInspecting)
         {
             CollectCurrent();
         }
+        else
+        {
+            TryStartInspect();
+        }
     }
+
+    private void TryStartInspect()
+{
+   
+    Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+
+    if (!Physics.Raycast(ray, out RaycastHit hit, detectRange))
+    {  
+        return;
+    }
+
+    EvidenceItem evidence = hit.collider.GetComponentInParent<EvidenceItem>();
+    if (evidence != null)
+    {
+        StartInspectEvidence(evidence);
+        return;
+    }
+
+    DocumentItem document = hit.collider.GetComponentInParent<DocumentItem>();
+    if (document != null)
+    {
+        StartInspectDocument(document);
+    }
+}
 
     public void OnPutBack(InputAction.CallbackContext context)
     {
@@ -110,25 +145,6 @@ public class EvidenceInspector : MonoBehaviour
         if (!_isInspecting) return;
 
         PutBackCurrent();
-    }
-
-    private void TryStartInspect()
-    {
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f , 0.5f , 0));
-        if (!Physics.Raycast(ray, out RaycastHit hit, detectRange)) return;
-
-        EvidenceItem evidence = hit.collider.GetComponentInParent<EvidenceItem>();
-        if (evidence != null)
-        {
-            StartInspectEvidence(evidence);
-            return;
-        }
-
-        DocumentItem document = hit.collider.GetComponentInParent<DocumentItem>();
-        if (document != null)
-        {
-            StartInspectDocument(document);
-        }
     }
 
     private void StartInspectEvidence(EvidenceItem evidence)
@@ -170,7 +186,7 @@ public class EvidenceInspector : MonoBehaviour
         if(_currentEvidence != null)
         {
             _currentEvidence.CollectEvidence();
-            _currentDocument = null;
+            _currentEvidence = null;
         }
         else if (_currentDocument != null)
         {
@@ -187,38 +203,39 @@ public class EvidenceInspector : MonoBehaviour
     {
         HideInspectUI();
         FreezePlayer(false);
-
-        if (_currentEvidence != null)
-        {
-             _currentEvidence.StopInspect();
-            _currentEvidence = null;
-        }
-        else if (_currentDocument != null)
-        {
-            _currentDocument.StopInspect();
-            _currentDocument = null;
-        }
-
         _isInspecting = false;
         HideHint();
 
-        Debug.Log("[EvidenceInspector] Item dikembalikan.");
+        if (_currentEvidence != null)
+        {
+            _returnTargetPos = _currentEvidence.OriginalPosition;
+            _returnTargetRot = _currentEvidence.OriginalRotation;
+            _currentEvidence.StopInspect();
+            
+        }
+        else if (_currentDocument != null)
+        {
+            _returnTargetPos = _currentDocument.OriginalPosition;
+            _returnTargetRot = _currentDocument.OriginalRotation;
+            _currentDocument.StopInspect();
+        }
+        _isReturning = true;
     }
 
     private void MoveItemToInspectionPoint()
     {
         Transform itemTransform = null;
-        Vector3 targetRotation = Vector3.zero;
+        Quaternion targetRotation = Quaternion.identity;
 
         if (_currentEvidence != null)
         {
             itemTransform = _currentEvidence.transform;
-            targetRotation = _currentEvidence.inspectRotationOffset;
+            targetRotation = inspectionPoint.rotation * Quaternion.Euler(_currentEvidence.inspectRotationOffset);
         }
         else if (_currentDocument != null)
         {
             itemTransform = _currentDocument.transform;
-            targetRotation = new Vector3(0f, 180f, 0f);
+            targetRotation = inspectionPoint.rotation;
         }
 
         if (itemTransform == null) return;
@@ -228,11 +245,59 @@ public class EvidenceInspector : MonoBehaviour
             moveSpeed * Time.deltaTime
         );
 
-        itemTransform.rotation = Quaternion.Lerp(
+        itemTransform.rotation = Quaternion.Slerp(
             itemTransform.rotation,
-            Quaternion.Euler(targetRotation),
+            targetRotation,
             moveSpeed * Time.deltaTime
         );
+    }
+
+    private void HandleReturnMovement()
+    {
+        Transform itemTransform = null;
+
+        if (_currentEvidence != null)
+            itemTransform = _currentEvidence.transform;
+
+        if (_currentDocument != null)
+            itemTransform = _currentDocument.transform;
+
+        if (itemTransform == null)
+        {
+            _isReturning = false;
+            return;
+        }
+
+        itemTransform.position = Vector3.Lerp(
+            itemTransform.position,
+            _returnTargetPos,
+            moveSpeed * Time.deltaTime
+        );
+
+        itemTransform.rotation = Quaternion.Slerp(
+            itemTransform.rotation,
+            _returnTargetRot,
+            moveSpeed * Time.deltaTime
+        );
+
+        float dist = Vector3.Distance(itemTransform.position, _returnTargetPos);
+        if (dist < 0.05f)
+        {
+            itemTransform.position = _returnTargetPos;
+            itemTransform.rotation = _returnTargetRot;
+
+            if (_currentEvidence != null) 
+                _currentEvidence.RestorePhysics();
+            if (_currentDocument != null)
+                _currentDocument.RestorePhysics();
+
+            _isReturning = false;
+            _currentEvidence = null;
+            _currentDocument = null;
+
+
+        Debug.Log("[EvidenceInspector] Item kembali ke posisi asal.");
+        }
     }
 
     private void FreezePlayer(bool freeze)

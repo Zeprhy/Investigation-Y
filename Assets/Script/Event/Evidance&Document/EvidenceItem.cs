@@ -29,6 +29,11 @@ public class EvidenceItem : MonoBehaviour
     private Rigidbody _rb;
     private Collider _col;
     private bool _isBeingInspected = false;
+    private Vector3 _originalPosition;
+    private Quaternion _originalRotation;
+
+    public Vector3 OriginalPosition => _originalPosition;
+    public Quaternion OriginalRotation => _originalRotation; 
 
     public bool IsBeingInspected => _isBeingInspected;
 
@@ -39,7 +44,9 @@ public class EvidenceItem : MonoBehaviour
     }
 
     public void StartInspect()
-    {
+    {   
+        _originalPosition = transform.position;
+        _originalRotation = transform.rotation;
         _isBeingInspected = true;
 
         if (_rb != null)
@@ -55,11 +62,16 @@ public class EvidenceItem : MonoBehaviour
     public void StopInspect()
     {
         _isBeingInspected = false;
+        if (_col != null)
+            _col.enabled = false;
+    }
 
-        if (_rb != null)
+    public void RestorePhysics()
+    {
+         if (_rb != null)
         {
-            _rb.useGravity  = true;
-            _rb.isKinematic = false;
+            _rb.useGravity  = false;
+            _rb.isKinematic = true;
         }
 
         if (_col != null)

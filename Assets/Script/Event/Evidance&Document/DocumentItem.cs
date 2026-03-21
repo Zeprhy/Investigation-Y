@@ -33,8 +33,22 @@ public class DocumentItem : MonoBehaviour
     private Rigidbody _rb;
     private Collider _col;
     private bool _isBeingInspected = false;
+    private Vector3 _originalPosition;
+    private Quaternion _originalRotation;
+
+    public Vector3 OriginalPosition => _originalPosition;
+    public Quaternion OriginalRotation => _originalRotation; 
  
     public bool IsBeingInspected => _isBeingInspected;
+
+    void Awake()
+    {
+        _rb = GetComponent<Rigidbody>();
+        _col = GetComponent<Collider>();
+
+        if (documentCanvas != null)
+            documentCanvas.gameObject.SetActive(false);
+    }
 
     void Start()
     {
@@ -47,6 +61,8 @@ public class DocumentItem : MonoBehaviour
 
     public void StartInspect()
     {
+        _originalPosition = transform.position;
+        _originalRotation = transform.rotation;
         _isBeingInspected = true;
 
         if (_rb != null)
@@ -68,21 +84,26 @@ public class DocumentItem : MonoBehaviour
     {
         _isBeingInspected = false;
 
-        if (_rb != null)
-        {
-            _rb.useGravity = true;
-            _rb.isKinematic = false;
-        }
-
         if (_col != null)
         {
-            _col.enabled = true;
+            _col.enabled = false;
         }
 
         if (documentCanvas != null)
             documentCanvas.gameObject.SetActive(false);
     }
 
+    public void RestorePhysics()
+    {
+         if (_rb != null)
+        {
+            _rb.useGravity  = false;
+            _rb.isKinematic = true;
+        }
+
+        if (_col != null)
+            _col.enabled = true;
+    }
     public void CollectDocument()
     {
         EvidenceManager.Instance?.AddEvidence(documentTitle,documentText,documentID);
