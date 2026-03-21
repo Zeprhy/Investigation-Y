@@ -103,6 +103,8 @@ public class MovementPlayer : MonoBehaviour
         if (PauseMenu.isPausedStatic) return;
         if (_isMinigameActive) return;
 
+        ApplyRotation();
+        
         HandleStamina();
         UpdateStaminaUI();
 
@@ -112,9 +114,15 @@ public class MovementPlayer : MonoBehaviour
             return; 
         }
 
+        ClimbingSystem climbing = GetComponent<ClimbingSystem>();
+        if (climbing != null && climbing.IsClimbing) 
+        {
+            moveDirection = Vector3.zero;
+            return;
+        }
+
         if (!characterController.enabled) return;
         
-        ApplyRotation();
         ApplyMovement();
         ApplyGravity();
         ApplyCrouch();
