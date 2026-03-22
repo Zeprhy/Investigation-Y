@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class MovementPlayer : MonoBehaviour
 {
     [Header("Kamera & Look")]
-    [SerializeField] private Camera playerCamera;
+    [SerializeField] private Transform playerCamera;
     [SerializeField] private float lookSpeed = 0.1f;
     [SerializeField] private float lookXLimit = 45f;
     [SerializeField] private float savedFOV = 60f;
@@ -70,6 +70,7 @@ public class MovementPlayer : MonoBehaviour
     private bool isExhausted = false;
     public bool IsHidden { get; set; }
     private bool _isMinigameActive = false;
+    public bool isDead = false;
 
 
     void Start()
@@ -135,7 +136,10 @@ public class MovementPlayer : MonoBehaviour
         }
 
         float targetFOV = (isRunning && !isExhausted && inputMove.magnitude > 0.1f) ? savedFOV + 10f : savedFOV;
-        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * 5f);
+        Camera lens = playerCamera.GetComponentInChildren<Camera>();
+        if (lens != null) {
+            lens.fieldOfView = Mathf.Lerp(lens.fieldOfView, targetFOV, Time.deltaTime * 5f);
+        }
 
         characterController.Move(moveDirection * Time.deltaTime);
     }
@@ -164,9 +168,9 @@ public class MovementPlayer : MonoBehaviour
 
     private void HandleStamina()
     {
-        bool isMoving = inputMove.magnitude > 0.1f;
+        bool isMovingState = characterController.velocity.magnitude > 0.1f;
 
-        if (isRunning && isMoving && !isExhausted && !isCrouching && !IsHidden)
+        if (isRunning && isMovingState && !isExhausted && !isCrouching && !IsHidden)
         {
             currentStamina -= staminaDrain * Time.deltaTime;
             if (currentStamina <= 0)
@@ -212,28 +216,29 @@ public class MovementPlayer : MonoBehaviour
 
     private void ApplyRotation()
     {
-        if (_isMinigameActive) return;
-        if (health != null && health.currentHealth <= 0 || PauseMenu.isPausedStatic) return;
-         
+        if (_isMinigameActive || PauseMenu.isPausedStatic) return;
+
+        // Modifikasi: Mouse hanya bisa digerakkan jika masih hidup
+        float mouseInputX = isDead ? 0 : inputLook.x;
+        float mouseInputY = isDead ? 0 : inputLook.y;
+
         if (!isCursorLocked)
         {
+            float sensitivityMultiplier = 0.1f;
 
-        float sensitivityMultiplier = 0.1f;
-        
-        rotationX -= inputLook.y * lookSpeed * sensitivityMultiplier;
-        rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
-        Vector2 shake = Vector2.zero;
-        if (CameraShakeManager.Instance != null)
-            shake = CameraShakeManager.Instance.ShakeOffset;
+            // Gunakan mouseInputY (0 jika mati)
+            rotationX -= mouseInputY * lookSpeed * sensitivityMultiplier;
+            rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
 
-        // Terapkan rotasi + shake offset sekaligus
-        playerCamera.transform.localRotation = Quaternion.Euler(
-            rotationX + shake.x,   // up/down tetap bisa + offset shake
-            shake.y,               // sedikit goyang kanan kiri
-            0f
-        );
+            Vector3 shakeOffset = Vector3.zero;
+            if (CameraShakeManager.Instance != null)
+                shakeOffset = CameraShakeManager.Instance.ShakeOffset; 
 
-        transform.Rotate(Vector3.up * inputLook.x * lookSpeed * sensitivityMultiplier);
+            // PENTING: Baris ini harus tetap jalan agar ShakeOffset bisa diterapkan!
+            playerCamera.transform.localRotation = Quaternion.Euler(rotationX + shakeOffset.x, shakeOffset.y, shakeOffset.z);
+
+            // Gunakan mouseInputX (0 jika mati)
+            transform.Rotate(Vector3.up * mouseInputX * lookSpeed * sensitivityMultiplier);
         }
     }
 

@@ -7,6 +7,7 @@ public class EnemyAI : MonoBehaviour
 {
     public enum EnemyState { Patrolling, Chasing, Attacking, Investigating , Idle}
     public EnemyState currentState = EnemyState.Patrolling;
+    public bool isPerformingKill = false;
 
     [Header("Components")]
     private NavMeshAgent agent;
@@ -98,6 +99,26 @@ public class EnemyAI : MonoBehaviour
         agent.velocity = Vector3.zero;
 
         currentState = EnemyState.Investigating;
+    }
+
+    public void TriggerKillAnimation()
+    {
+        isPerformingKill = true;
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        Animator anim = GetComponentInChildren<Animator>();
+        if (anim != null)
+        {
+            anim.SetTrigger("Stab"); 
+        }
+    }
+
+    public void ResetKillAnimationState()
+    {
+        isPerformingKill = false;
+        isAttackingSequence = false;
+        agent.isStopped = false;
     }
 
     private void RecoverFromStun()
@@ -410,7 +431,7 @@ public class EnemyAI : MonoBehaviour
         if (dist <= attackRange + 0.5f) 
         {
             HealthManager hp = player.GetComponent<HealthManager>();
-            if (hp != null) hp.TakeDamage(1);
+            if (hp != null) hp.TakeDamage(1, this);
         }
 
         // --- 2. JEDA SETELAH MENYERANG (Recovery) ---

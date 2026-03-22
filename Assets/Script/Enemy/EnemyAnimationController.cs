@@ -12,42 +12,57 @@ public class EnemyAnimationController : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        // Menggunakan GetComponentInChildren karena model biasanya ada di bawah parent
         anim = GetComponentInChildren<Animator>();
         enemyAI = GetComponent<EnemyAI>();
-        previousState = enemyAI.currentState;
+        
+        if (enemyAI != null) previousState = enemyAI.currentState;
     }
 
     void Update()
     {
-        if( enemyAI == null) return;
+        if (enemyAI == null || anim == null) return;
 
-        EnemyAI.EnemyState state = enemyAI.currentState;
+        // 1. PRIORITAS UTAMA: Jika sedang dalam animasi 'Kill', kunci semua update lainnya
+        if (enemyAI.isPerformingKill) return; 
+
+        HandleMovementAnimation();
+        HandleStateTransitions();
+
+        // Update state terakhir di akhir frame
+        previousState = enemyAI.currentState;
+    }
+
+    private void HandleMovementAnimation()
+    {
+        // Gunakan kecepatan agent untuk menentukan animasi Walk/Run
+        // Kita beri sedikit smoothing (Mathf.Lerp) agar transisi gerak lebih halus
         float currentSpeed = agent.velocity.magnitude;
         
-        //Walk/Run
-        if (state == EnemyAI.EnemyState.Attacking || state == EnemyAI.EnemyState.Idle)
+        // Jika sedang menyerang atau diam, paksa speed ke 0 agar kaki tidak 'sliding'
+        if (enemyAI.currentState == EnemyAI.EnemyState.Attacking || enemyAI.currentState == EnemyAI.EnemyState.Idle)
         {
-            anim.SetFloat("Speed", 0f);
-        }
-        else
-        {
-            anim.SetFloat("Speed", currentSpeed); 
-        }
-        
-        //Attack
-        if (state == EnemyAI.EnemyState.Attacking && previousState != EnemyAI.EnemyState.Attacking)
-        {
-           anim.SetTrigger("Attack");
+            currentSpeed = 0;
         }
 
-        //investigation
-        if (state == EnemyAI.EnemyState.Investigating && previousState != EnemyAI.EnemyState.Investigating)
+        anim.SetFloat("Speed", currentSpeed, 0.1f, Time.deltaTime);
+    }
+
+    private void HandleStateTransitions()
+    {
+        EnemyAI.EnemyState currentState = enemyAI.currentState;
+
+        // Jika state tidak berubah, tidak perlu mengecek trigger
+        if (currentState == previousState) return;
+
+        // Trigger Serangan Biasa
+        if (currentState == EnemyAI.EnemyState.Attacking)
         {
-            anim.SetBool("Investigating", true);
+            anim.SetTrigger("Attack");
         }
-        else if (state != EnemyAI.EnemyState.Investigating)
-        {
-            anim.SetBool("Investigating", false);
-        }
+
+        // Kontrol Investigasi (Boolean)
+        bool isInvestigating = (currentState == EnemyAI.EnemyState.Investigating);
+        anim.SetBool("Investigating", isInvestigating);
     }
 }
