@@ -123,22 +123,22 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            // 2. CEK PANEL LIFT (UI Lantai) - JANGAN LUPA BAGIAN INI
-            ElevatorTeleporter elevator = hit.collider.GetComponentInParent<ElevatorTeleporter>();
-            if (elevator != null)
+            // 1.5 CEK TOMBOL LIFT (Panel Lantai)
+            ElevatorTeleporter panelLift = hit.collider.GetComponent<ElevatorTeleporter>();
+            if (panelLift != null)
             {
-                elevator.OpenFloorUI();
+                panelLift.OpenFloorUI();
                 return;
             }
 
-            // 3. CEK ITEM (Pick up)
+            // 2. CEK ITEM (Pick up)
             if (hit.collider.TryGetComponent(out Item item))
             {
                 TryEquip();
                 return;
             }
 
-            // 4. CEK PINTU BIASA (Normal Door)
+            // 3. CEK PINTU BIASA (Normal Door)
             NormalDoor door = hit.collider.GetComponentInParent<NormalDoor>();
             if (door != null)
             {
@@ -146,7 +146,7 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            // 5. CEK LOCKER (Tempat Sembunyi)
+            // 4. CEK LOCKER (Tempat Sembunyi)
             Locker locker = hit.collider.GetComponentInParent<Locker>();
             if (locker != null)
             {
@@ -155,7 +155,7 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            // 6. CEK SAKLAR LAMPU
+            // 5. CEK SAKLAR LAMPU
             LightSwitch salkar = hit.collider.GetComponent<LightSwitch>();
             if (salkar != null)
             {

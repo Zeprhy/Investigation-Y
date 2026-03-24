@@ -347,9 +347,4 @@ public class EvidenceInspector : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlaySFX(clip);
     }
-
-
-       
-
-    
 }
