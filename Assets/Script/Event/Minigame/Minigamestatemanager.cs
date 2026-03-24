@@ -1,15 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-/// <summary>
-/// MinigameStateManager — Handle freeze/unfreeze player saat minigame aktif.
-/// Attach di GameObject Player atau GameObject terpisah di scene.
-/// 
-/// Cara pakai:
-/// - Panggil MinigameStateManager.Instance.EnterMinigame() saat minigame mulai
-/// - Panggil MinigameStateManager.Instance.ExitMinigame() saat minigame selesai
-/// - Binding tombol keluar minigame di Input Actions → hubungkan ke OnExitMinigame() di PlayerInteraction
-/// </summary>
 public class MinigameStateManager : MonoBehaviour
 {
     public static MinigameStateManager Instance;
@@ -29,6 +19,12 @@ public class MinigameStateManager : MonoBehaviour
     // ---- State ----
     private bool _isInMinigame = false;
     public bool IsInMinigame => _isInMinigame;
+    public enum MinigameType
+    {
+        Lockpick,
+         Crank
+    }
+    public MinigameType _currentType;
 
     void Awake()
     {
@@ -36,7 +32,7 @@ public class MinigameStateManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    public void EnterMinigame()
+    public void EnterMinigame(MinigameType type = MinigameType.Lockpick)
     {
         if (_isInMinigame) return;
         _isInMinigame = true;
@@ -45,11 +41,18 @@ public class MinigameStateManager : MonoBehaviour
         if (movementPlayer != null)
             movementPlayer.SetminigameState(true);
 
-        // Unlock cursor untuk input minigame
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        switch (type)
+        {
+            case MinigameType.Lockpick:
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                break;
 
-        Debug.Log("[MinigameStateManager] Minigame dimulai — player di-freeze");
+            case MinigameType.Crank:
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                break;
+        }
     }
 
     public void ExitMinigame()

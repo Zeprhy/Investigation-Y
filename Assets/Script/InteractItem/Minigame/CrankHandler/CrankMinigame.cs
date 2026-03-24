@@ -1,12 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
- 
-/// <summary>
-/// CrankMinigame — Sistem engkol putar.
-/// Player hold klik kiri + gerak mouse searah jarum jam untuk isi progress.
-/// Kalau dilepas terlalu lama, progress mundur perlahan.
-/// </summary>
 public class CrankMinigame : MonoBehaviour
 {
     [Header("== Pengaturan ==")]
@@ -40,6 +34,7 @@ public class CrankMinigame : MonoBehaviour
     private bool _isHolding = false;
     private float _graceTimer = 0f;
     private bool _isComplete = false;
+    private float _smoothedInput = 0f;
  
     // ---- Cache ----
     private WaitForSeconds _completeWait;
@@ -67,19 +62,14 @@ public class CrankMinigame : MonoBehaviour
         {
             _graceTimer = graceTime;
 
-            Vector2 mouseDelta = new Vector2(
-                Input.GetAxis("Mouse X"),
-                Input.GetAxis("Mouse Y")
-            );
+           float mouseX = Input.GetAxis("Mouse X");
+           float mouseY = Input.GetAxis("Mouse Y");
+           float rawInput = (mouseX - mouseY) * rotationSensitivity;
 
-            //Rumus: clockWise = mouseX - MouseY
-            // (gerak kanan = CW, gerak atas = CCW, gerak bawah = CW, gerak kiri = CCW)
-            float clockwiseInput = (mouseDelta.x - mouseDelta.y) * rotationSensitivity;
-
-            if (clockwiseInput > 0)
+           _smoothedInput = Mathf.Lerp(_smoothedInput, rawInput, 0.3f);
+           if (_smoothedInput > 0.01f)
             {
-                //progress naik
-                _progress += clockwiseInput * fillSpeed * Time.deltaTime;
+                _progress += _smoothedInput * fillSpeed * Time.deltaTime;
                 _progress = Mathf.Clamp01(_progress);
 
                 PlayCrankSound();
@@ -89,6 +79,10 @@ public class CrankMinigame : MonoBehaviour
                     StartCoroutine(CompleteMinigame());
                     return;
                 }
+            }
+            else
+            {
+               StopCrankSound(); 
             }
         }
         else
@@ -112,6 +106,7 @@ public class CrankMinigame : MonoBehaviour
         _isActive = true;
         _isComplete = false;
         _graceTimer = graceTime;
+        _smoothedInput = 0f;
 
         if (crankPanel != null)
         crankPanel.SetActive(true);

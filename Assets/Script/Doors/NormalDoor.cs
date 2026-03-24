@@ -263,7 +263,7 @@ public class NormalDoor : MonoBehaviour
         _lastInteractorPosition = player.transform.position;
         _minigameInProgress = true;
         lockpickMinigame.StartMinigame();
-        MinigameStateManager.Instance?.EnterMinigame();
+        MinigameStateManager.Instance?.EnterMinigame(MinigameStateManager.MinigameType.Lockpick);
     }
     private void HandleCrankInteract(GameObject player)
     {
@@ -277,7 +277,7 @@ public class NormalDoor : MonoBehaviour
         _lastInteractorPosition = player.transform.position;
         _minigameInProgress = true;
         crankminigame.StartMinigame();
-        MinigameStateManager.Instance?.EnterMinigame();
+        MinigameStateManager.Instance?.EnterMinigame(MinigameStateManager.MinigameType.Crank);
         UpdateUIText();
     }
 
