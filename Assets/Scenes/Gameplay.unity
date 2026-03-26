@@ -866,7 +866,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 449926799}
         m_TargetAssemblyTypeName: ElevatorTeleporter, Assembly-CSharp
         m_MethodName: SelectFloor
         m_Mode: 3
@@ -3035,11 +3035,11 @@ Transform:
   m_GameObject: {fileID: 334271111}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.4358875, y: -0.24862358, z: 0.274444}
-  m_LocalScale: {x: 0.015368038, y: 0.3346782, z: 0.055851948}
+  m_LocalPosition: {x: -8.684506, y: 10.66116, z: 2.709999}
+  m_LocalScale: {x: 0.089359, y: 1.4926362, z: 0.071228}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1851578961}
+  m_Father: {fileID: 1035459469}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &334271113
 MonoBehaviour:
@@ -4330,6 +4330,7 @@ Transform:
   - {fileID: 1588613806}
   - {fileID: 1805282838}
   - {fileID: 695790023}
+  - {fileID: 1035459469}
   - {fileID: 856422968}
   - {fileID: 995318416}
   - {fileID: 1851578961}
@@ -4531,11 +4532,11 @@ Transform:
   m_GameObject: {fileID: 449926791}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.4358875, y: -0.20852412, z: 0.274444}
-  m_LocalScale: {x: 0.015368038, y: 0.3346782, z: 0.055851948}
+  m_LocalPosition: {x: -8.684506, y: 1.4100003, z: 2.709999}
+  m_LocalScale: {x: 0.089359, y: 1.4926362, z: 0.071228}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 856422968}
+  m_Father: {fileID: 1035459469}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &449926793
 BoxCollider:
@@ -6525,11 +6526,11 @@ Transform:
   m_GameObject: {fileID: 699895272}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.4358875, y: -0.2598345, z: 0.274444}
-  m_LocalScale: {x: 0.015368038, y: 0.3346782, z: 0.055851948}
+  m_LocalPosition: {x: -8.684506, y: 5.9111605, z: 2.709999}
+  m_LocalScale: {x: 0.089359, y: 1.4926362, z: 0.071228}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 995318416}
+  m_Father: {fileID: 1035459469}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &699895274
 MonoBehaviour:
@@ -6975,10 +6976,6 @@ MonoBehaviour:
   uiDisplayDistance: 3
   gizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   maxHidingTime: 10
-  minYaw: -60
-  maxYaw: 60
-  minPitch: -30
-  maxPitch: 30
   lockerAnimator: {fileID: 721203941}
   transitionSpeed: 5
   hidingPoint: {fileID: 1484612382}
@@ -9370,12 +9367,11 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -6.149995, y: 2.3400002, z: 2.3600006}
-  m_LocalScale: {x: 5.8146005, y: 4.4599147, z: 1.2753001}
+  m_LocalScale: {x: 5.814601, y: 4.4599147, z: 1.2753003}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 991595865}
   - {fileID: 1906689629}
-  - {fileID: 449926792}
   m_Father: {fileID: 395995378}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &856422969
@@ -10439,7 +10435,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 699895274}
         m_TargetAssemblyTypeName: ElevatorTeleporter, Assembly-CSharp
         m_MethodName: SelectFloor
         m_Mode: 3
@@ -11850,7 +11846,6 @@ Transform:
   m_Children:
   - {fileID: 650093759}
   - {fileID: 1959700639}
-  - {fileID: 699895273}
   m_Father: {fileID: 395995378}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!208 &995318417
@@ -12072,6 +12067,40 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &1035459468
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1035459469}
+  m_Layer: 0
+  m_Name: Buttons
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1035459469
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035459468}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 449926792}
+  - {fileID: 699895273}
+  - {fileID: 334271112}
+  m_Father: {fileID: 395995378}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1069866448
 GameObject:
   m_ObjectHideFlags: 0
@@ -14369,7 +14398,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!195 &1474810396
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -22139,7 +22168,6 @@ Transform:
   m_Children:
   - {fileID: 624424931}
   - {fileID: 984012363}
-  - {fileID: 334271112}
   m_Father: {fileID: 395995378}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!208 &1851578962
@@ -26780,7 +26808,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 334271113}
         m_TargetAssemblyTypeName: ElevatorTeleporter, Assembly-CSharp
         m_MethodName: SelectFloor
         m_Mode: 3

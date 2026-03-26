@@ -42,8 +42,6 @@ public class PlayerInteraction : MonoBehaviour
         HandleOutlineRaycast();
         if (equippedItem != null) FollowHand();
 
-        if (isHidden) HandleHidingLook();
-
         rayTimer += Time.deltaTime;
         if (rayTimer >= raycastFrequency)
         {
@@ -321,22 +319,6 @@ public class PlayerInteraction : MonoBehaviour
                 }
             }
         }
-    }
-
-    void HandleHidingLook()
-    {
-        if (currentLocker == null) return;
-    
-        Vector2 lookInput = Mouse.current.delta.ReadValue();
-    
-        float mouseX = lookInput.x * 0.1f;
-        float mouseY = lookInput.y * 0.1f;
-    
-        currentLocker.HandleCameraPeeking(
-            playerCamera.transform,
-            mouseX,
-            mouseY
-        );
     }
 
     public void SetCurrentLocker(Locker locker)

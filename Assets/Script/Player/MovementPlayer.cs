@@ -72,6 +72,7 @@ public class MovementPlayer : MonoBehaviour
     private bool _isMinigameActive = false;
     public bool isDead = false;
 
+    public Transform PlayerCamera => playerCamera;
 
     void Start()
     {
@@ -216,7 +217,7 @@ public class MovementPlayer : MonoBehaviour
 
     private void ApplyRotation()
     {
-        if (_isMinigameActive || PauseMenu.isPausedStatic) return;
+        if (_isMinigameActive || PauseMenu.isPausedStatic || IsHidden || isDead) return;
 
         // Modifikasi: Mouse hanya bisa digerakkan jika masih hidup
         float mouseInputX = isDead ? 0 : inputLook.x;
@@ -239,6 +240,16 @@ public class MovementPlayer : MonoBehaviour
 
             // Gunakan mouseInputX (0 jika mati)
             transform.Rotate(Vector3.up * mouseInputX * lookSpeed * sensitivityMultiplier);
+        }
+    }
+
+    public void ResetRotation(float targetYaw)
+    {
+        rotationX = 0f;
+        transform.rotation = Quaternion.Euler(0, targetYaw, 0);
+
+        if (playerCamera != null) {
+            playerCamera.localRotation = Quaternion.identity;
         }
     }
 
