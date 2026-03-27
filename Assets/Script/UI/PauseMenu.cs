@@ -83,21 +83,7 @@ public class PauseMenu : MonoBehaviour
         {
           settingsManager.OnSettingsPanelClose();  
         }
-        
-        //confirmationPanel.SetActive(false);
     }
-
-    /*public void ConfirmationMenu()
-    {
-        backgroundPanel.SetActive(false);
-        confirmationPanel.SetActive(true); 
-    }
-
-    public void CancelConfirmationMenu()
-    {
-        backgroundPanel.SetActive(true);
-        confirmationPanel.SetActive(false); 
-    }*/
 
     public void BackToSetings()
     {
