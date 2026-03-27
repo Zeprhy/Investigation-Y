@@ -6,12 +6,12 @@ public class CameraShakeManager : MonoBehaviour
     public static CameraShakeManager Instance;
 
     [Header("Shake Settings")]
-    [SerializeField] float lightDuration    = 0.3f;
-    [SerializeField] float lightMagnitude   = 0.5f;
-    [SerializeField] float heavyDuration    = 0.6f;
-    [SerializeField] float heavyMagnitude   = 1.5f;
+    [SerializeField] private float lightDuration    = 0.3f;
+    [SerializeField] private float lightMagnitude   = 0.5f;
+    [SerializeField] private float heavyDuration    = 0.6f;
+    [SerializeField] private float heavyMagnitude   = 1.5f;
 
-    [SerializeField] Camera targetCamera;
+    [SerializeField] private Camera targetCamera;
 
     // Offset yang akan ditambahkan ke rotasi MovementPlayer
     public Vector2 ShakeOffset { get; private set; }

@@ -15,37 +15,37 @@ using TMPro;
 public class EvidenceInspector : MonoBehaviour
 {
     [Header("== Referensi ==")]
-    public Camera playerCamera;
+    [SerializeField] private Camera playerCamera;
  
     [Tooltip("Transform titik inspeksi — buat GameObject kosong di depan kamera")]
-    public Transform inspectionPoint;
+    [SerializeField] private Transform inspectionPoint;
  
     [Tooltip("Script movement player untuk freeze saat inspeksi")]
-    public MovementPlayer movementPlayer;
+    [SerializeField] private MovementPlayer movementPlayer;
  
     [Header("== Pengaturan ==")]
     [Tooltip("Jarak raycast untuk detect barang bukti")]
-    public float detectRange = 3f;
+    [SerializeField] private float detectRange = 3f;
  
     [Tooltip("Seberapa cepat item bergerak ke inspection point")]
-    public float moveSpeed = 10f;
+    [SerializeField] private float moveSpeed = 10f;
  
     [Header("== UI ==")]
     [Tooltip("UI hint saat melihat barang bukti")]
-    public TextMeshProUGUI inspectHintText;
+    [SerializeField] private TextMeshProUGUI inspectHintText;
  
     [Tooltip("UI nama barang bukti saat sedang diinspeksi")]
-    public TextMeshProUGUI evidenceNameText;
+    [SerializeField] private TextMeshProUGUI evidenceNameText;
  
     [Tooltip("UI deskripsi saat sedang diinspeksi")]
-    public TextMeshProUGUI evidenceDescText;
+    [SerializeField] private TextMeshProUGUI evidenceDescText;
  
     [Tooltip("Panel UI yang muncul saat inspeksi aktif")]
-    public GameObject inspectUIPanel;
+    [SerializeField] private GameObject inspectUIPanel;
  
     [Header("== Audio ==")]
-    public AudioClip pickupSound;
-    public AudioClip collectSound;
+    [SerializeField] private AudioClip pickupSound;
+    [SerializeField] private AudioClip collectSound;
  
     // ---- State ----
     private EvidenceItem _currentEvidence;
@@ -100,43 +100,37 @@ public class EvidenceInspector : MonoBehaviour
         HideHint();
     }
 
-    public void OnInspect(InputAction.CallbackContext context)
-    {
-        Debug.Log("[Evidence] OnInspectOrCollect dipanggil"); // ← tambah
-        if (!context.performed || PauseMenu.isPausedStatic) return;
-
-        if (_isInspecting)
-        {
-            CollectCurrent();
-        }
-        else
-        {
-            TryStartInspect();
-        }
-    }
-
-    private void TryStartInspect()
+    public bool TryHandleInteract()
 {
-   
-    Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+    Debug.Log($"[TryHandleInteract] _isInspecting: {_isInspecting}");
 
-    if (!Physics.Raycast(ray, out RaycastHit hit, detectRange))
-    {  
-        return;
+    if (_isInspecting)
+    {
+        Debug.Log("[TryHandleInteract] → CollectCurrent");
+        CollectCurrent();
+        return true;
     }
+
+    Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+    if (!Physics.Raycast(ray, out RaycastHit hit, detectRange)) return false;
 
     EvidenceItem evidence = hit.collider.GetComponentInParent<EvidenceItem>();
     if (evidence != null)
     {
+        Debug.Log("[TryHandleInteract] → StartInspectEvidence");
         StartInspectEvidence(evidence);
-        return;
+        return true;
     }
 
     DocumentItem document = hit.collider.GetComponentInParent<DocumentItem>();
     if (document != null)
     {
+        Debug.Log("[TryHandleInteract] → StartInspectDocument");
         StartInspectDocument(document);
+        return true;
     }
+
+    return false;
 }
 
     public void OnPutBack(InputAction.CallbackContext context)

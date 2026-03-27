@@ -10,8 +10,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource sfxSource;
 
     [Header("BGM Clip")]
-    public AudioClip backgroundMusic;
-    public AudioMixer mainMixer;
+    [SerializeField] private AudioClip backgroundMusic;
+    [SerializeField] private AudioMixer mainMixer;
 
     private void Awake()
     {

@@ -26,7 +26,7 @@ public class DocumentItem : MonoBehaviour
     [Tooltip("TextMeshPro untuk tampilkan isi teks di kertas")]
     public TextMeshProUGUI documentTextTMP;
  
-    [Tooltip("TextMeshPro untuk tampilkan judul dokumen (opsional)")]
+    [SerializeField] [Tooltip("TextMeshPro untuk tampilkan judul dokumen (opsional)")]
     public TextMeshProUGUI documentTitleTMP;
  
     // ---- Cache ----

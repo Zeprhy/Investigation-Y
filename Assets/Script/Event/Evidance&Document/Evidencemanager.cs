@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
-using UnityEngine.InputSystem.Utilities;
 
 public class EvidenceManager : MonoBehaviour
 {
@@ -10,16 +8,16 @@ public class EvidenceManager : MonoBehaviour
  
     [Header("== UI Counter ==")]
     [Tooltip("Icon barang bukti di HUD")]
-    public GameObject evidenceIconUI;
+    [SerializeField] private GameObject evidenceIconUI;
  
     [Tooltip("Text counter jumlah barang bukti")]
-    public TextMeshProUGUI evidenceCountText;
+    [SerializeField] private TextMeshProUGUI evidenceCountText;
  
     [Tooltip("Animasi saat barang bukti baru masuk (opsional)")]
-    public Animator counterAnimator;
+    [SerializeField] private Animator counterAnimator;
  
     [Tooltip("Nama trigger animator saat evidence baru masuk")]
-    public string newEvidenceTrigger = "NewEvidence";
+    [SerializeField] private string newEvidenceTrigger = "NewEvidence";
  
     // ---- Data ----
     private List<EvidenceData> _collectedEvidence = new List<EvidenceData>();
@@ -52,7 +50,6 @@ public class EvidenceManager : MonoBehaviour
         };
 
         _collectedEvidence.Add(data);
-          Debug.Log($"[EvidenceManager] Barang bukti ditambahkan: {name} (Total: {_collectedEvidence.Count})");
         UpdateUI();
         if (counterAnimator != null)
             counterAnimator.SetTrigger(newEvidenceTrigger);

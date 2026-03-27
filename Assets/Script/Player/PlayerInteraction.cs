@@ -4,13 +4,13 @@ using UnityEngine.InputSystem;
 public class PlayerInteraction : MonoBehaviour
 {
     [Header("References")]
-    public Camera playerCamera;
-    public Transform handPoint;
-    public float ForcePush;
+    [SerializeField] private Camera playerCamera;
+    [SerializeField] private Transform handPoint;
+    [SerializeField] private float ForcePush;
 
     [Header("UI")]
-    public TMPro.TextMeshProUGUI equipppedItemText;
-    public TMPro.TextMeshProUGUI interactPromptText;
+    [SerializeField] private TMPro.TextMeshProUGUI equipppedItemText;
+    [SerializeField] private TMPro.TextMeshProUGUI interactPromptText;
     [SerializeField] private CanvasGroup hideFadeGroup;
     
     [Header("Optimization")]
@@ -29,10 +29,13 @@ public class PlayerInteraction : MonoBehaviour
     private bool isInsideLocker = false;
     private Vector3 originalItemScale;
 
+    private EvidenceInspector evidenceInspector;
+
     void Start()
     {
         dragHandler = GetComponent<DragHandler>();
         player = GetComponent<MovementPlayer>();
+        evidenceInspector = GetComponent<EvidenceInspector>();
     }
 
     void Update()
@@ -107,6 +110,8 @@ public class PlayerInteraction : MonoBehaviour
     public void OnInteract(InputAction.CallbackContext context)
     {
         if (!context.performed || PauseMenu.isPausedStatic) return;
+
+        if (evidenceInspector != null && evidenceInspector.TryHandleInteract()) return;
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;

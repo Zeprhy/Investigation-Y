@@ -133,15 +133,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Inspect",
-                    "type": "Button",
-                    "id": "49140091-3bb3-4708-bc85-15e6581a52c6",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "PutBack",
                     "type": "Button",
                     "id": "96df8e3b-e08c-4b5e-bb87-5689462f0144",
@@ -347,17 +338,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Interact",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "25c5512b-076a-406d-85a0-3b60c229cd4f",
-                    "path": "<Keyboard>/f",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Inspect",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

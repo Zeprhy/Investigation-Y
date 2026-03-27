@@ -16,7 +16,7 @@ public class EvidenceItem : MonoBehaviour
     public string description = "Deskripsi barang bukti...";
 
     [Tooltip("ID unik untuk tracking (opsional)")]
-    public string evidenceID = "";
+    [SerializeField] private string evidenceID = "";
 
     [Header("== Inspeksi ==")]
     [Tooltip("Offset posisi saat dipegang di inspection point (local space)")]

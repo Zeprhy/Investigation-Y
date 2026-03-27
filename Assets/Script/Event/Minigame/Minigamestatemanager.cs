@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 public class MinigameStateManager : MonoBehaviour
 {
     public static MinigameStateManager Instance;
@@ -44,13 +43,13 @@ public class MinigameStateManager : MonoBehaviour
         switch (type)
         {
             case MinigameType.Lockpick:
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
                 break;
 
             case MinigameType.Crank:
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
                 break;
         }
     }

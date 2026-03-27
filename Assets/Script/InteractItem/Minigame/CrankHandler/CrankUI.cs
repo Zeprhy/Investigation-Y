@@ -5,15 +5,15 @@ using UnityEngine.UI;
 public class CrankUI : MonoBehaviour
 {
      [Header(" Referensi ")]
-    public CrankMinigame crankMinigame;
+    [SerializeField] private CrankMinigame crankMinigame;
 
     [Header(" UI Elements ")]
-    public Image progressBarFill;
-    public RectTransform crankVisual;
+    [SerializeField] private Image progressBarFill;
+    [SerializeField] private RectTransform crankVisual;
 
     [Header(" Pengaturan ")]
     [Tooltip("Seberapa cepat visual engkol berputar")]
-    public float crankRotateSpeed = 200f;
+    [SerializeField] private float crankRotateSpeed = 200f;
 
     private float _currentRotation = 0f;
 

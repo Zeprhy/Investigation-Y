@@ -7520,6 +7520,7 @@ MonoBehaviour:
   staminaBarFill: {fileID: 0}
   health: {fileID: 769955107}
   noiseUpdateFrequency: 0.2
+  isDead: 0
 --- !u!136 &769955099
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -7883,22 +7884,6 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 769955108}
         m_TargetAssemblyTypeName: EvidenceInspector, Assembly-CSharp
-        m_MethodName: OnInspect
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 49140091-3bb3-4708-bc85-15e6581a52c6
-    m_ActionName: 'Player/Inspect[/Keyboard/f]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 769955108}
-        m_TargetAssemblyTypeName: EvidenceInspector, Assembly-CSharp
         m_MethodName: OnPutBack
         m_Mode: 0
         m_Arguments:
@@ -7964,10 +7949,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   maxHealth: 5
   currentHealth: 5
+  isDead: 0
   BloodScreenImage: {fileID: 1301217577}
   minAlpha: 0
   maxAlpha: 0.8
   fadeSpeed: 2
+  stabCinematic: {fileID: 0}
 --- !u!114 &769955108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12262,6 +12249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyChase
   currentState: 0
+  isPerformingKill: 0
   waypoints:
   - {fileID: 1429286376}
   - {fileID: 279190939}
@@ -13988,9 +13976,13 @@ PrefabInstance:
 '
       objectReference: {fileID: 0}
     - target: {fileID: 3956776427842412366, guid: 6a5087587687b1a4082b9d92c2973e0e, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 3956776427842412366, guid: 6a5087587687b1a4082b9d92c2973e0e, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -2862347239344361409, guid: 405860fcf289dc78a97c1703e6bee50b, type: 2}
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

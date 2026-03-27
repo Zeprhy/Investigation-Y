@@ -7,15 +7,15 @@ public class PauseMenu : MonoBehaviour
     public static bool isPausedStatic = false;
 
     [Header("UI Panels")]
-    public GameObject backgroundPanel; // Folder Background yang berisi tombol-tombol utama
-    public GameObject settingsPanel;
+    [SerializeField] private GameObject backgroundPanel; // Folder Background yang berisi tombol-tombol utama
+    [SerializeField] private GameObject settingsPanel;
    // public GameObject confirmationPanel; // PanelPemilihanY/N
-    public GameObject blurOverlay;
+    [SerializeField] private GameObject blurOverlay;
 
     private bool isPaused = false;
 
     [Header("Manager")]
-    public SettingsManager settingsManager;
+    [SerializeField] private SettingsManager settingsManager;
 
     void Start()
     {
