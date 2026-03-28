@@ -9,6 +9,10 @@ public class HealthManager : MonoBehaviour
     public int currentHealth;
     public bool isDead = false;
 
+    [Header("Healing Settings")]
+    public float healDelay = 180f; 
+    private float currentHealTimer;
+
     [Header("UI Element")]
     public Image BloodScreenImage;
 
@@ -23,15 +27,46 @@ public class HealthManager : MonoBehaviour
     void Awake()
     {
         currentHealth = maxHealth;
-        if (BloodScreenImage != null)
-        {
-            Color c = BloodScreenImage.color;
-            c.a = 0;
-            BloodScreenImage.color = c;
-        }
+        SetupReferences();
+        ResetBloodUI();
     }
 
     void Update()
+    {
+        // 1. Logika Visual Darah
+        HandleBloodUI();
+
+        // 2. Logika Healing Otomatis
+        HandleAutoHealing();
+    }
+
+    private void SetupReferences()
+    {
+        // Gunakan Instance, jauh lebih cepat dan akurat
+        stabCinematic = StabSequence.Instance;
+
+        // Cari BloodScreenImage via Tag PlayerUI
+        if (BloodScreenImage == null)
+        {
+            GameObject uiRoot = GameObject.FindWithTag("PlayerUI");
+            if (uiRoot != null)
+            {
+                Image[] allImages = uiRoot.GetComponentsInChildren<Image>(true);
+                foreach (Image img in allImages)
+                {
+                    if (img.gameObject.name == "BloodUI")
+                    {
+                        BloodScreenImage = img;
+                        break;
+                    }
+                }
+            }
+        }
+
+        ResetBloodUI();
+    }
+
+    private void HandleBloodUI()
     {
         if (BloodScreenImage != null)
         {
@@ -40,33 +75,70 @@ public class HealthManager : MonoBehaviour
             BloodScreenImage.color = curColor;
         }
     }
+
+    private void HandleAutoHealing()
+    {
+        // Healing hanya berjalan jika HP tidak penuh dan player tidak sedang mati
+        if (currentHealth < maxHealth && !isDead)
+        {
+            currentHealTimer += Time.deltaTime;
+
+            if (currentHealTimer >= healDelay)
+            {
+                PerformHeal();
+            }
+        }
+    }
+
+    private void PerformHeal()
+    {
+        currentHealth = maxHealth;
+        targetAlpha = 0f; // Hilangkan layar merah
+        currentHealTimer = 0f; // Reset timer
+        Debug.Log("<color=cyan>Player Healed!</color> Health kembali penuh.");
+    }
+
     public void TakeDamage(int amount, EnemyAI attacker = null)
     {
         if (isDead) return;
 
-        Debug.Log("Healthmanager: player terkena hit! Damage:" + amount);
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-        targetAlpha = (1f - ((float) currentHealth / maxHealth)) * maxAlpha;
+        
+        // Reset timer healing setiap kali terkena hit (biar adil)
+        currentHealTimer = 0f;
+
+        targetAlpha = (1f - ((float)currentHealth / maxHealth)) * maxAlpha;
 
         if (currentHealth <= 0)
         {
             StartCoroutine(RespawnSequence(attacker));
         }
     }
+
+    private void ResetBloodUI()
+    {
+        if (BloodScreenImage != null)
+        {
+            Color c = BloodScreenImage.color;
+            c.a = 0;
+            BloodScreenImage.color = c;
+        }
+    }
+
     IEnumerator RespawnSequence(EnemyAI attacker)
     {
         isDead = true;
+        currentHealTimer = 0f; // Reset timer saat mati
 
+        // Matikan kontrol & jalankan cinematic
         MovementPlayer moveScript = GetComponent<MovementPlayer>();
         if (moveScript != null) moveScript.isDead = true;
 
         PlayerInteraction interactScript = GetComponent<PlayerInteraction>();
         if (interactScript != null) interactScript.DropEquipped();
         
-        DragHandler dragScript = GetComponent<DragHandler>();
-        if (dragScript != null) dragScript.DropItem();
-
+        if (stabCinematic == null) SetupReferences();
         if (stabCinematic != null) stabCinematic.TriggerStab();
     
         if (attacker != null)
@@ -76,26 +148,6 @@ public class HealthManager : MonoBehaviour
         }
 
         targetAlpha = maxAlpha;
-
-        yield return new WaitForSecondsRealtime(3.0f);
-
-        CheckpointManager.Instance.LoadCheckpoint();
-
-        currentHealth = maxHealth;
-
-        if (attacker != null) attacker.ResetKillAnimationState();
-
-        if (moveScript != null) moveScript.isDead = false;
-
-        targetAlpha = 0;
-
-        EnemyAI[] allEnemies = FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
-        foreach (EnemyAI enemy in allEnemies)
-        {
-            enemy.ApplyStun(1.0f);
-        }
-    
-        yield return new WaitForSeconds(0.5f);
-        isDead = false;
+        yield break;
     }
 }

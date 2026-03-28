@@ -9,6 +9,7 @@ public class StabSequence : MonoBehaviour
     public Image bloodUI;
     public Camera mainCam;
     public CanvasGroup deathPanelGroup;
+    public GameObject gameplayHUD;
 
     [Header("Settings")]
     [SerializeField] private float bloodFadeSpeed = 0.5f;
@@ -16,6 +17,7 @@ public class StabSequence : MonoBehaviour
     public float fallSpeed = 5.0f;
     public float fallRotateSpeed = 10.0f;
     public float panelFadeSpeed = 1.0f;
+    public static StabSequence Instance { get; private set; }
 
     private Vector3 originalCamPos;
     private Quaternion originalCamRot;
@@ -26,6 +28,16 @@ public class StabSequence : MonoBehaviour
 
     void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (mainCam != null)
         {
             originalCamPos = mainCam.transform.localPosition;
@@ -42,19 +54,32 @@ public class StabSequence : MonoBehaviour
 
     private IEnumerator DeferredSceneSetup()
     {
-        yield return null;
+        yield return null; 
 
-        // Paksa cari ulang tanpa if (== null)
         mainCam = Camera.main;
-        GameObject panelObj = GameObject.Find("You are Dead");
-        if (panelObj != null)
+        GameObject uiRoot = GameObject.FindWithTag("PlayerUI");
+
+        if (uiRoot != null)
         {
-            deathPanelGroup = panelObj.GetComponent<CanvasGroup>();
-            Debug.Log("DeathPanel ditemukan: " + panelObj.name);
-        }
-        else
-        {
-            Debug.LogError("FATAL: 'You are Dead' tidak ditemukan di scene!");
+            Image[] allImages = uiRoot.GetComponentsInChildren<Image>(true);
+            foreach (Image img in allImages)
+            {
+                if (img.gameObject.name == "BloodUI")
+                {
+                    bloodUI = img;
+                    break; 
+                }
+            }
+
+            CanvasGroup[] allGroups = uiRoot.GetComponentsInChildren<CanvasGroup>(true);
+            foreach (CanvasGroup group in allGroups)
+            {
+                if (group.gameObject.name == "DeathPanel")
+                {
+                    deathPanelGroup = group;
+                    break; 
+                }
+            }
         }
 
         if (mainCam != null)
@@ -68,7 +93,9 @@ public class StabSequence : MonoBehaviour
 
     public void ResetUI()
     {
-        if (deathPanelGroup != null)
+        if (gameplayHUD != null) gameplayHUD.SetActive(true);
+        
+        if (deathPanelGroup != null) 
         {
             deathPanelGroup.alpha = 0f;
             deathPanelGroup.interactable = false;
@@ -84,9 +111,6 @@ public class StabSequence : MonoBehaviour
         }
     }
 
-    // ============================================================
-    // TRIGGER DARI HEALTHMANAGER
-    // ============================================================
     public void TriggerStab()
     {
         if (_isDead) return;
@@ -123,6 +147,10 @@ public class StabSequence : MonoBehaviour
             yield break;
         }
 
+        if (gameplayHUD != null) 
+        {
+            gameplayHUD.SetActive(false);
+        }
         float alpha = 0f;
         while (alpha < 1f)
         {
@@ -133,6 +161,7 @@ public class StabSequence : MonoBehaviour
 
         deathPanelGroup.interactable = true;
         deathPanelGroup.blocksRaycasts = true;
+
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -173,9 +202,6 @@ public class StabSequence : MonoBehaviour
         }
     }
 
-    // ============================================================
-    // TOMBOL UI — assign ke Button di Inspector
-    // ============================================================
     public void TryAgain()
     {
         Time.timeScale = 1f;

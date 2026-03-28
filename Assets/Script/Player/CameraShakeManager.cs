@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class CameraShakeManager : MonoBehaviour
@@ -12,16 +13,22 @@ public class CameraShakeManager : MonoBehaviour
     [SerializeField] private float heavyMagnitude   = 1.5f;
 
     [SerializeField] private Camera targetCamera;
-
-    // Offset yang akan ditambahkan ke rotasi MovementPlayer
     public Vector2 ShakeOffset { get; private set; }
 
     Coroutine currentShake;
+
+    private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
+    private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
 
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        targetCamera = Camera.main;
     }
 
     void Start()

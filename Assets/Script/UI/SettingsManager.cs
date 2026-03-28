@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 public class SettingsManager : MonoBehaviour
 {
@@ -24,6 +25,10 @@ public class SettingsManager : MonoBehaviour
     private const string KEY_FOV = "Settings_FOV";
     private const string KEY_VOLUME = "Settings_Volume";
     private const string KEY_BRIGHTNESS = "Settings_Brightness";
+
+    private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
+    private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
+
     void Awake()
     {
     // --- Volume ---
@@ -43,6 +48,29 @@ public class SettingsManager : MonoBehaviour
         }
 
 
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        playerCamera = Camera.main;
+
+        globalVolume = FindAnyObjectByType<Volume>();
+        if (globalVolume != null)
+        {
+            globalVolume.profile.TryGet(out colorAdjustments);
+        }
+
+        GameObject uiRoot = GameObject.FindWithTag("PlayerUI");
+        if(uiRoot != null)
+        {
+            Slider[] allSliders = uiRoot.GetComponentsInChildren<Slider>(true);
+            foreach(Slider s in allSliders)
+            {
+                if(s.gameObject.name == "VolumeSlider") masterVolumeSlider = s;
+                if(s.gameObject.name == "FOVSlider") fovSlider = s;
+                if(s.gameObject.name == "BrightnessSlider") brightnessSlider = s;
+            }
+        }
     }
 
     public void SetMasterVolume(float value)
