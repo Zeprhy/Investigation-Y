@@ -8548,6 +8548,7 @@ MonoBehaviour:
   playerCamera: {fileID: 330585545}
   handPoint: {fileID: 1534866241}
   ForcePush: 5
+  climbingSystem: {fileID: 769955108}
   equipppedItemText: {fileID: 0}
   interactPromptText: {fileID: 0}
   hideFadeGroup: {fileID: 362284827}
@@ -8585,12 +8586,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ab152dfa01f701b2a704cf5d022ede9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClimbingSystem
-  climbSpeed: 3
+  climbSpeed: 2
+  detectionRange: 0.7
+  cameraAlignSpeed: 8
   climbableLayer:
     serializedVersion: 2
     m_Bits: 512
-  detectionRange: 0.7
+  rayOffset: {x: 0, y: 0.2, z: 0}
+  topPushForce: 0.5
   controller: {fileID: 769955103}
+  playerCamera: {fileID: 330585546}
+  sphereRadius: 0.3
 --- !u!1 &801015022
 GameObject:
   m_ObjectHideFlags: 0
@@ -8942,8 +8948,8 @@ Transform:
   m_GameObject: {fileID: 801015022}
   serializedVersion: 2
   m_LocalRotation: {x: 1.1102232e-17, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12, y: 4.09, z: -1.8377525}
-  m_LocalScale: {x: 1, y: 1.0237426, z: 1}
+  m_LocalPosition: {x: -11.953, y: 4.01, z: -1.8377525}
+  m_LocalScale: {x: 0.27521, y: 1.0236095, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -14726,7 +14732,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!195 &1474810396
 NavMeshAgent:
   m_ObjectHideFlags: 0

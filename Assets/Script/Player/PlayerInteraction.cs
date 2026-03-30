@@ -7,6 +7,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private Transform handPoint;
     [SerializeField] private float ForcePush;
+    [SerializeField] private ClimbingSystem climbingSystem;
 
     [Header("UI")]
     [SerializeField] private TMPro.TextMeshProUGUI equipppedItemText;
@@ -111,6 +112,12 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (!context.performed || PauseMenu.isPausedStatic) return;
 
+        if (climbingSystem != null && climbingSystem.IsClimbing)
+        {
+            climbingSystem.StopClimbing();
+            return;
+        }
+
         if (evidenceInspector != null && evidenceInspector.TryHandleInteract()) return;
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -164,6 +171,16 @@ public class PlayerInteraction : MonoBehaviour
             {
                 salkar.Toggle();
                 return;
+            }
+
+            // 6. CLIMB SYSTEM
+            if (Physics.Raycast(ray, out hit, 3.5f))
+            {                
+                if (climbingSystem != null && ((1 << hit.collider.gameObject.layer) & climbingSystem.climbableLayer) != 0)
+                {
+                    climbingSystem.ToggleClimb(hit.normal, hit.point); 
+                    return;
+                }
             }
         }
     }

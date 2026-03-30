@@ -27,8 +27,12 @@ public class HealthManager : MonoBehaviour
     void Awake()
     {
         currentHealth = maxHealth;
-        SetupReferences();
         ResetBloodUI();
+    }
+
+    void Start()
+    {
+        SetupReferences();
     }
 
     void Update()
