@@ -17,12 +17,12 @@ public class MovementPlayer : MonoBehaviour
     [SerializeField] private float crouchSpeed = 3f;
 
     [Header("Fisika")]
-    [SerializeField] private float jumpPower = 7f;
+    //[SerializeField] private float jumpPower = 7f;
     [SerializeField] private float gravity = 20f;
     [SerializeField] private float defaultHeight = 2f;
     [SerializeField] private float crouchHeight = 1f;
-    [SerializeField] private float jumpCooldown = 0.1f; 
-    [SerializeField] private float jumpForwardForce = 2f;
+    //[SerializeField] private float jumpCooldown = 0.1f; 
+    //[SerializeField] private float jumpForwardForce = 2f;
 
     [Header("Stealth & Hide")]
     [SerializeField] private LayerMask obstacleMask;
@@ -61,7 +61,7 @@ public class MovementPlayer : MonoBehaviour
     private Vector2 inputLook;
     private float rotationX = 0;
     private bool isCursorLocked;
-    private float lastJumpTime;
+    //private float lastJumpTime;
 
     private bool isRunning;
     private bool isCrouching;
@@ -96,7 +96,7 @@ public class MovementPlayer : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext context) => inputMove = context.ReadValue<Vector2>();
     public void OnLook(InputAction.CallbackContext context) => inputLook = context.ReadValue<Vector2>();
-    public void OnJump(InputAction.CallbackContext context) { if (context.performed) ApplyJump(); }
+    //public void OnJump(InputAction.CallbackContext context) { if (context.performed) ApplyJump(); }
     public void OnSprint(InputAction.CallbackContext context) => isRunning = context.performed;
     public void OnCrouch(InputAction.CallbackContext context) => isCrouching = context.performed;
 
@@ -290,7 +290,7 @@ public class MovementPlayer : MonoBehaviour
         moveDirection.y = verticalTemp;
     }
 
-    private void ApplyJump()
+    /*private void ApplyJump()
     {
         // Cek apakah di tanah, sedang tidak cooldown, dan tidak lelah
         if (characterController.isGrounded && Time.time >= lastJumpTime + jumpCooldown && !isExhausted)
@@ -306,7 +306,7 @@ public class MovementPlayer : MonoBehaviour
 
             lastJumpTime = Time.time; // Catat waktu lompat
         }
-    }
+    }*/
 
     private void ApplyGravity()
     {
