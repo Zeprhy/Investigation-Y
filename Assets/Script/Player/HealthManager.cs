@@ -1,6 +1,7 @@
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class HealthManager : MonoBehaviour
 {
@@ -102,20 +103,19 @@ public class HealthManager : MonoBehaviour
         Debug.Log("<color=cyan>Player Healed!</color> Health kembali penuh.");
     }
 
-    public void TakeDamage(int amount, EnemyAI attacker = null)
+    public void TakeDamage(int amount, NewEnemyAI attacker = null)
     {
         if (isDead) return;
 
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-        
-        // Reset timer healing setiap kali terkena hit (biar adil)
-        currentHealTimer = 0f;
 
+        currentHealTimer = 0f;
         targetAlpha = (1f - ((float)currentHealth / maxHealth)) * maxAlpha;
 
         if (currentHealth <= 0)
         {
+            // Pastikan memanggil IEnumerator dengan NeEnemyAI
             StartCoroutine(RespawnSequence(attacker));
         }
     }
@@ -130,7 +130,7 @@ public class HealthManager : MonoBehaviour
         }
     }
 
-    IEnumerator RespawnSequence(EnemyAI attacker)
+    IEnumerator RespawnSequence(NewEnemyAI attacker)
     {
         isDead = true;
         currentHealTimer = 0f; // Reset timer saat mati

@@ -5,16 +5,16 @@ public class EnemyAnimationController : MonoBehaviour
 {
     private NavMeshAgent agent;
     private Animator anim;
-    private EnemyAI enemyAI;
+    private NewEnemyAI enemyAI;
 
-    private EnemyAI.EnemyState previousState;
+    private NewEnemyAI.EnemyState previousState;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         // Menggunakan GetComponentInChildren karena model biasanya ada di bawah parent
         anim = GetComponentInChildren<Animator>();
-        enemyAI = GetComponent<EnemyAI>();
+        enemyAI = GetComponent<NewEnemyAI>();
         
         if (enemyAI != null) previousState = enemyAI.currentState;
     }
@@ -40,7 +40,7 @@ public class EnemyAnimationController : MonoBehaviour
         float currentSpeed = agent.velocity.magnitude;
         
         // Jika sedang menyerang atau diam, paksa speed ke 0 agar kaki tidak 'sliding'
-        if (enemyAI.currentState == EnemyAI.EnemyState.Attacking || enemyAI.currentState == EnemyAI.EnemyState.Idle)
+        if (enemyAI.currentState == NewEnemyAI.EnemyState.Attacking || enemyAI.currentState == NewEnemyAI.EnemyState.Idle)
         {
             currentSpeed = 0;
         }
@@ -50,19 +50,19 @@ public class EnemyAnimationController : MonoBehaviour
 
     private void HandleStateTransitions()
     {
-        EnemyAI.EnemyState currentState = enemyAI.currentState;
+        NewEnemyAI.EnemyState currentState = enemyAI.currentState;
 
         // Jika state tidak berubah, tidak perlu mengecek trigger
         if (currentState == previousState) return;
 
         // Trigger Serangan Biasa
-        if (currentState == EnemyAI.EnemyState.Attacking)
+        if (currentState == NewEnemyAI.EnemyState.Attacking)
         {
             anim.SetTrigger("Attack");
         }
 
         // Kontrol Investigasi (Boolean)
-        bool isInvestigating = (currentState == EnemyAI.EnemyState.Investigating);
+        bool isInvestigating = (currentState == NewEnemyAI.EnemyState.Investigating);
         anim.SetBool("Investigating", isInvestigating);
     }
 }

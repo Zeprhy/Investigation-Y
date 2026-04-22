@@ -364,7 +364,7 @@ public class MovementPlayer : MonoBehaviour
         
         for (int i = 0; i < numEnemies; i++)
         {
-            if (enemyBuffer[i].TryGetComponent(out EnemyAI enemyScript))
+            if (enemyBuffer[i].TryGetComponent(out NewEnemyAI enemyScript))
             {
                 enemyScript.OnHeardNoise(myTransform.position);
             }

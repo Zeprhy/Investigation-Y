@@ -93,7 +93,7 @@ public class StunGun : MonoBehaviour
         {
             endPoint = hit.point;
 
-            EnemyAI enemy = hit.collider.GetComponentInParent<EnemyAI>();
+            NewEnemyAI enemy = hit.collider.GetComponentInParent<NewEnemyAI>();
 
             if (enemy != null)  enemy.ApplyStun(stunDuration);
             // Impact Flash di titik kena
