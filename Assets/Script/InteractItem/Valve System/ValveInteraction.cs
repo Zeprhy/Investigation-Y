@@ -1,0 +1,181 @@
+// Script: ValveInteraction.cs
+
+using UnityEngine;
+using UnityEngine.Events;
+using System.Collections;
+
+public class ValveInteraction : MonoBehaviour
+{
+    [Header("Valve Settings")]
+    [SerializeField] private float rotationSpeed = 2f;
+    [SerializeField] private float fillRate = 0.3f;
+    [SerializeField] private float drainRate = 0.1f;
+    [SerializeField] private float gracePeriod = 1.5f;
+    [SerializeField] private float interactionDistance = 3f;
+    
+    [Header("References")]
+    [Tooltip("The physical valve transform to rotate")]
+    [SerializeField] private Transform valveTransform;
+    
+    [Header("Audio")]
+    [SerializeField] private AudioClip valveTurningSound;
+    [SerializeField] private AudioClip valveCompleteSound;
+    
+    [Header("Events")]
+    public UnityEvent onValveComplete;
+    
+    // --- State ---
+    private float _progress = 0f;
+    private bool _isInteracting = false;
+    private bool _isComplete = false;
+    private float _graceTimer = 0f;
+    private float _lastMouseY = 0f;
+    
+    // --- Cache (Optimization) ---
+    private Camera _mainCam;
+    private Collider _valveCollider;
+    private AudioSource _audioSource;
+    private bool _isAudioPlaying = false;
+    
+    // --- Properties ---
+    public float Progress => _progress;
+    public bool IsComplete => _isComplete;
+
+    void Awake() {
+        _mainCam = Camera.main;
+        _valveCollider = GetComponent<Collider>();
+
+        if (valveTransform == null)
+            valveTransform = transform;
+
+        _audioSource = GetComponent<AudioSource>();
+        if(_audioSource == null)
+            _audioSource = gameObject.AddComponent<AudioSource>();
+    }
+
+    void Update()
+    {
+        if (_isComplete) return;
+    
+    // Detect interaction start (only raycast on click)
+    if (Input.GetMouseButtonDown(0))
+    {
+            Ray ray = _mainCam.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance))
+            {
+                if (hit.collider == _valveCollider)
+                {
+                    _isInteracting = true;
+                    _lastMouseY = Input.mousePosition.y;
+                    _graceTimer = gracePeriod;
+                }
+            }
+        }
+        
+        // Stop interaction
+        if (Input.GetMouseButtonUp(0))
+        {
+            _isInteracting = false;
+            StopValveAudio();
+        }
+        
+        // Only process logic when needed
+        if (_isInteracting)
+        {
+            HandleValveRotation();
+        }
+        else if (_progress > 0f)
+        {
+            HandleProggresDrain();
+        }
+    }
+
+    private void HandleValveRotation()
+    {
+        float currentMouseY = Input.mousePosition.y;
+        float mouseDeltaY = currentMouseY - _lastMouseY;
+        float rotationInput = -mouseDeltaY * rotationSpeed;
+
+        if (rotationInput > 0.01f)
+        {
+            valveTransform.Rotate(0,0, rotationInput * Time.deltaTime * 60f, Space.Self);
+
+            _progress += rotationInput * fillRate * Time.deltaTime;
+            _progress = Mathf.Clamp01(_progress);
+
+            _graceTimer = gracePeriod;
+
+            PlayValveAudio();
+
+            if (_progress >= 1 && !_isComplete)
+            {
+                StartCoroutine(CompleteValve());
+            }
+        }
+        else
+        {
+            StopValveAudio();
+        }
+        _lastMouseY = currentMouseY;
+    }
+
+    private void HandleProggresDrain()
+    {
+            StopValveAudio();
+        
+        // Grace period before draining starts
+        if (_graceTimer > 0f)
+        {
+            _graceTimer -= Time.deltaTime;
+        }
+        else
+        {
+            // Slowly drain progress to maintain tension
+            _progress -= drainRate * Time.deltaTime;
+            _progress = Mathf.Clamp01(_progress);
+        }
+    }
+
+    private IEnumerator CompleteValve()
+    {
+        _isComplete = true;
+        _isInteracting = false;
+        _progress = 1f;
+        
+        StopValveAudio();
+        PlaySFX(valveCompleteSound);
+        
+        Debug.Log("[ValveInteraction] Valve fully turned!");
+        
+        yield return new WaitForSeconds(0.3f);
+        
+        onValveComplete?.Invoke();
+    }
+
+    // Script: ValveInteraction.cs
+
+    private void PlayValveAudio()
+    {
+        if (valveTurningSound == null || _isAudioPlaying) return;
+        
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(valveTurningSound);
+        
+        _isAudioPlaying = true;
+    }
+
+    private void StopValveAudio()
+    {
+        _isAudioPlaying = false;
+    }
+
+    private void PlaySFX(AudioClip clip)
+    {
+        if (clip == null) return;
+        
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(clip);
+        else
+            AudioSource.PlayClipAtPoint(clip, _mainCam.transform.position);
+    }
+}
