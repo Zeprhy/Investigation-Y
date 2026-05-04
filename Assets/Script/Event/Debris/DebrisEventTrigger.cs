@@ -13,35 +13,32 @@ public class DebrisEventTrigger : MonoBehaviour, IDataPersistence
     [SerializeField] float warningDuration = 2f;
 
     [SerializeField] private string id;
-    [ContextMenu("Generate guid for id")]
-    private void GenerateGuid() { id = System.Guid.NewGuid().ToString(); }
-
     bool hasTriggered = false;
 
     public void LoadData(GameData data)
     {
-        // Cek apakah ID debris ini sudah pernah jatuh di data save
-        data.debrisFallenStatus.TryGetValue(id, out hasTriggered);
+        DebrisData dData = data.debrisListData.Find(x => x.id == id);
         
-        if (hasTriggered)
-        {
-            // Jika sudah pernah jatuh, langsung munculkan debris tanpa animasi lagi
+        if (dData != null) {
+            this.hasTriggered = dData.hasTriggered;
+        }
+
+        if (hasTriggered) {
             Instantiate(debrisPrefab, spawnPoint.position, Quaternion.identity);
-            // Matikan trigger agar tidak bunyi SFX lagi
-            this.gameObject.SetActive(false); 
+            this.gameObject.SetActive(false);
         }
     }
 
     public void SaveData(ref GameData data)
     {
-        // Simpan status apakah debris ini sudah dipicu
-        if (data.debrisFallenStatus.ContainsKey(id))
-        {
-            data.debrisFallenStatus[id] = hasTriggered;
-        }
-        else
-        {
-            data.debrisFallenStatus.Add(id, hasTriggered);
+        DebrisData dData = data.debrisListData.Find(x => x.id == id);
+
+        if (dData != null) {
+            // Update jika sudah ada
+            dData.hasTriggered = hasTriggered;
+        } else {
+            // Tambah baru jika belum ada
+            data.debrisListData.Add(new DebrisData(id, hasTriggered));
         }
     }
 
