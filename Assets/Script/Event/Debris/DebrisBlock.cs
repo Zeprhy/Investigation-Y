@@ -9,7 +9,7 @@ public class DebrisBlock : MonoBehaviour
 
     Rigidbody rb;
     NavMeshObstacle obstacle;
-     bool hasLanded = false;
+    bool hasLanded = false;
 
     void Awake()
     {
@@ -22,6 +22,12 @@ public class DebrisBlock : MonoBehaviour
         obstacle.carveOnlyStationary = true;
     }
 
+    void FixedUpdate() {
+        if (!hasLanded && rb != null)
+        {
+            rb.AddForce(Vector3.down * 20f, ForceMode.Acceleration);
+        }
+    }
     void OnCollisionEnter(Collision collision)
     {
         if (hasLanded) return;
