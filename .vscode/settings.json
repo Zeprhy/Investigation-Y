@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Investigation Y.slnx"
+    "dotnet.defaultSolution": "Investigation-Y.slnx"
 }
