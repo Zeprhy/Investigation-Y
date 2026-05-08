@@ -77,7 +77,7 @@ public class SettingsManager : MonoBehaviour
     {
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.SetMasterVolume(value);
+            AudioManager.Instance.UpdateMasterVolume(value);
         }
             
 

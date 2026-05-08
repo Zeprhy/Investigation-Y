@@ -15635,6 +15635,10 @@ PrefabInstance:
       propertyPath: masterVolumeSlider
       value: 
       objectReference: {fileID: 796316311}
+    - target: {fileID: 2395554643983880303, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
+      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3398847915844436771, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
       propertyPath: m_Name
       value: GameManager
@@ -15651,6 +15655,10 @@ PrefabInstance:
       propertyPath: playerInteraction
       value: 
       objectReference: {fileID: 769955106}
+    - target: {fileID: 4327153315121819686, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
+      propertyPath: musicSource
+      value: 
+      objectReference: {fileID: 2260874477487786542}
     - target: {fileID: 5395689185339446633, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
       propertyPath: evidenceIconUI
       value: 
@@ -15716,6 +15724,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
+--- !u!82 &2260874477487786542 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 6655625987680506178, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
+  m_PrefabInstance: {fileID: 2260874477487786541}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2994346617017303370
 PrefabInstance:
   m_ObjectHideFlags: 0
