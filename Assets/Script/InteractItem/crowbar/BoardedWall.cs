@@ -89,9 +89,13 @@ public class BoardedWall : MonoBehaviour, IInteractable
         if (isDone) return;
         if (boardsRemoved >= boards.Count) return;
 
+        if (AudioManager.Instance != null && AudioManager.Instance.PryingSound != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.PryingSound);
+        }
+
         Rigidbody board = boards[boardsRemoved];
         DetachBoard(board);
-
         boardsRemoved++;
 
         if (boardsRemoved >= boards.Count)

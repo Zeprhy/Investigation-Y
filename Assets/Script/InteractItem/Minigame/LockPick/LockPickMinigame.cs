@@ -17,18 +17,14 @@ public class LockpickMinigame : MonoBehaviour
     [SerializeField] private Transform needle;
     [SerializeField] private RectTransform successZoneRect;
     [SerializeField] private GameObject minigamePanel;
- 
-    [Header(" Audio (via AudioManager) ")]
-    [SerializeField] private AudioClip successSound;
-    [SerializeField] private AudioClip failSound;
-    [SerializeField] private AudioClip completeSound;
- 
+
+    // --- BAGIAN AUDIO LOKAL DIHAPUS ---
+
     [Header(" Events ")]
     public UnityEvent onMinigameSuccess;
     public UnityEvent onMinigameFailed;
     public UnityEvent<int, int> onProgress;
  
-    // ---- State ----
     private float _currentAngle = 0f;
     private float _successZoneStartAngle = 0f;
     private float _baseNeedleSpeed;
@@ -38,21 +34,17 @@ public class LockpickMinigame : MonoBehaviour
     private int _currentFailures = 0;
     private bool _inputConsumed = false;
  
-    // Cache null-check needle — cek sekali di Awake
     private bool _hasNeedle;
     private bool _hasZoneRect;
  
-    // Cache WaitForSeconds — hindari GC alloc tiap coroutine dipanggil
     private WaitForSeconds _endWait;
     private WaitForSeconds _failPauseWait;
 
     void Awake()
     {
         _baseNeedleSpeed = needleSpeed;
-
         _hasNeedle = needle != null;
         _hasZoneRect = successZoneRect != null;
-
         _endWait = new WaitForSeconds(0.5f);
         _failPauseWait = new WaitForSeconds(0.25f);
     }
@@ -64,7 +56,6 @@ public class LockpickMinigame : MonoBehaviour
         
         if (_currentAngle >= 360f) _currentAngle -= 360f;
 
-        // Pakai cached bool — tidak null-check tiap frame
         if (_hasNeedle)
         {
             needle.localRotation = Quaternion.AngleAxis(- _currentAngle,Vector3.forward);
@@ -78,8 +69,8 @@ public class LockpickMinigame : MonoBehaviour
             _inputConsumed = true;
             CheckInput();
         }
-
     }
+
     public void StartMinigame()
     {
         _currentSuccesses = 0;
@@ -104,8 +95,6 @@ public class LockpickMinigame : MonoBehaviour
         }
     }
 
-
-    // Logic
     private void CheckInput()
     {
         float end = _successZoneStartAngle + successZoneSize;
@@ -133,7 +122,9 @@ public class LockpickMinigame : MonoBehaviour
     private void HandleSuccess()
     {
         _currentSuccesses++;
-        PlaySFX(successSound);
+        
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickSuccess);
  
         onProgress?.Invoke(_currentSuccesses, requiredSuccesses);
  
@@ -151,7 +142,9 @@ public class LockpickMinigame : MonoBehaviour
     private void HandleFail()
     {
         _currentFailures++;
-        PlaySFX(failSound);
+        
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickFail);
  
         if (_currentFailures >= maxFailures)
         {
@@ -177,7 +170,9 @@ public class LockpickMinigame : MonoBehaviour
     private IEnumerator CompleteMinigame()
     {
         _isActive = false;
-        PlaySFX(completeSound);
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickComplete);
 
         yield return _endWait;
 
@@ -188,9 +183,7 @@ public class LockpickMinigame : MonoBehaviour
     private IEnumerator FailMinigame()
     {
         _isActive = false;
-
         yield return _endWait;
-
         StopMinigame();
         onMinigameFailed?.Invoke();
     }
@@ -199,22 +192,7 @@ public class LockpickMinigame : MonoBehaviour
     {
         float saved = needleSpeed;
         needleSpeed = 0f;
-
         yield return _failPauseWait;
         needleSpeed = saved;
-    }
-
-    private void PlaySFX(AudioClip clip)
-    {
-        if ( clip == null) return;
-
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlaySFX(clip);
-        }
-        else
-        {
-           AudioSource.PlayClipAtPoint(clip, Camera.main != null ? Camera.main.transform.position : Vector3.zero); 
-        }
     }
 }

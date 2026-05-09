@@ -46,10 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bc771cb6e923f4dac583fb4157b826, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  bgmSource: {fileID: 6655625987680506178}
-  sfxSource: {fileID: 2395554643983880303}
-  backgroundMusic: {fileID: 8300000, guid: 2aa19a22d4ee8184faf46910ca205a7b, type: 3}
   mainMixer: {fileID: 24100000, guid: 53f223f29958eb941a5c4a18f6480c62, type: 2}
+  musicSource: {fileID: 6655625987680506178}
+  sfxSource: {fileID: 2395554643983880303}
+  poolSize: 10
+  jumpSound: {fileID: 0}
 --- !u!1 &2823692804704512276
 GameObject:
   m_ObjectHideFlags: 0
@@ -486,6 +487,10 @@ PrefabInstance:
       propertyPath: OutputAudioMixerGroup
       value: 
       objectReference: {fileID: 6433840791218544060, guid: 53f223f29958eb941a5c4a18f6480c62, type: 2}
+    - target: {fileID: 2076891170011905122, guid: 3a0b500e5507b9a4aacd5d7c758c64b1, type: 3}
+      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2728777075566968062, guid: 3a0b500e5507b9a4aacd5d7c758c64b1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

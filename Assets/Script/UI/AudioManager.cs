@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -18,8 +17,15 @@ public class AudioManager : MonoBehaviour, IDataPersistence
     private Queue<AudioSource> audioSourcePool = new Queue<AudioSource>();
     private Transform poolParent;
 
-    [Header("Audio Clips")]
-    public AudioClip jumpSound;
+    [Header("Player Audio Clips")]
+    public AudioClip StepSound;
+
+    [Header("Item Audio Clips")]
+    public AudioClip PryingSound;
+    public AudioClip lockpickSuccess; 
+    public AudioClip lockpickFail;
+    public AudioClip lockpickComplete;
+   
 
     private float currentMasterVol = 1f;
     private float currentMusicVol = 1f;
