@@ -45,6 +45,7 @@ public class SteamTrapManager : MonoBehaviour
     {
         if (steamParticle != null) steamParticle.Stop();
         if (steamAudio != null) StartCoroutine(FadeOutAudio());
+        Destroy(blockObject);
     }
 
     private IEnumerator FadeOutAudio()
