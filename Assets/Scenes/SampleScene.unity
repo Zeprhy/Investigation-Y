@@ -16071,6 +16071,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9131233646528407787, guid: c5c8da626a7defc47a8748a200e06ba7, type: 3}
+      propertyPath: onValveComplete.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9131233646528407787, guid: c5c8da626a7defc47a8748a200e06ba7, type: 3}
+      propertyPath: onValveComplete.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

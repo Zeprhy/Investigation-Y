@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 public class NewEnemyAI : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class NewEnemyAI : MonoBehaviour
     public EnemyState currentState = EnemyState.Patrolling;
     public bool isStunned = false;
     public bool isPerformingKill = false;
+
+    [Header ("Audio Settings")]
+    [SerializeField] private float suspensesDistance = 20f;
 
     [Header("Components")]
     private NavMeshAgent agent;
@@ -79,7 +83,8 @@ public class NewEnemyAI : MonoBehaviour
 
         HandleDetection();
         CheckForDoors();
-        
+        UpdateMusicStatus();
+
         // State Machine sederhana seperti di video referensi
         switch (currentState)
         {
@@ -98,6 +103,28 @@ public class NewEnemyAI : MonoBehaviour
             case EnemyState.Idle:
                 IdleLogic();
                 break;
+        }
+    }
+
+    private void UpdateMusicStatus()
+    {
+        if (AudioManager.Instance == null) return;
+
+        float dist = Vector3.Distance(transform.position, player.position);
+
+        if (currentState == EnemyState.Chasing || currentState == EnemyState.Attacking)
+        {
+            AudioManager.Instance.SetMusicState(AudioManager.MusicState.Chase);
+        }
+
+        else if (currentState == EnemyState.Investigating || dist <= suspensesDistance)
+        {
+            AudioManager.Instance.SetMusicState(AudioManager.MusicState.Investigate);
+        }
+
+        else
+        {
+            AudioManager.Instance.SetMusicState(AudioManager.MusicState.Ambient);
         }
     }
 

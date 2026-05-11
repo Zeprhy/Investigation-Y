@@ -1,15 +1,16 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
     public static bool isPausedStatic = false;
 
     [Header("UI Panels")]
-    [SerializeField] private GameObject backgroundPanel; // Folder Background yang berisi tombol-tombol utama
+    [SerializeField] private GameObject backgroundPanel;
     [SerializeField] private GameObject settingsPanel;
-   // public GameObject confirmationPanel; // PanelPemilihanY/N
     [SerializeField] private GameObject blurOverlay;
 
     private bool isPaused = false;
@@ -20,10 +21,6 @@ public class PauseMenu : MonoBehaviour
     void Start()
     {
         ResumeGame();
-    }
-    void Update()
-    {
-       
     }
 
     public void OnPauseMenu(InputAction.CallbackContext context)
@@ -52,7 +49,7 @@ public class PauseMenu : MonoBehaviour
         ShowMainPauseMenu();     
  
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;      
+        Cursor.visible = true;
     }
 
     public void ResumeGame()
@@ -94,6 +91,7 @@ public class PauseMenu : MonoBehaviour
     public void ExitToMainMenu()
     {
         Time.timeScale = 1f;
+        PlayerPrefs.Save();
         isPausedStatic = false;
 
         Cursor.lockState = CursorLockMode.None;

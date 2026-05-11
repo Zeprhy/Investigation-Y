@@ -123,8 +123,8 @@ public class LockpickMinigame : MonoBehaviour
     {
         _currentSuccesses++;
         
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickSuccess);
+        // if (AudioManager.Instance != null)
+            // AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickSuccess);
  
         onProgress?.Invoke(_currentSuccesses, requiredSuccesses);
  
@@ -143,8 +143,8 @@ public class LockpickMinigame : MonoBehaviour
     {
         _currentFailures++;
         
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickFail);
+        // if (AudioManager.Instance != null)
+            // AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickFail);
  
         if (_currentFailures >= maxFailures)
         {
@@ -171,8 +171,8 @@ public class LockpickMinigame : MonoBehaviour
     {
         _isActive = false;
 
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickComplete);
+        // if (AudioManager.Instance != null)
+            // AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickComplete);
 
         yield return _endWait;
 
