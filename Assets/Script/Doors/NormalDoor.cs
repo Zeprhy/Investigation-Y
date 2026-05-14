@@ -342,7 +342,7 @@ public class NormalDoor : MonoBehaviour
         UpdateUIText();
     }
 
-    private void CloseDoor()
+    public void CloseDoor()
     {
         isOpen = false;
         _targetRotation = _defaultRotation;

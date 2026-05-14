@@ -1,11 +1,12 @@
 using UnityEngine;
-using System.Collections; // Wajib ditambahkan untuk Coroutine
+using System.Collections;
 
 public class LightSwitch : MonoBehaviour
 {
     [Header("References")]
     public Light[] lampLights;
     public Renderer bulbRenderer;
+    [SerializeField] private Animator _animator;
     
     [Header("Settings")]
     public bool isOn = true;
@@ -13,13 +14,26 @@ public class LightSwitch : MonoBehaviour
     public Color emissionColor = Color.white;
 
     [Header("Flicker Settings")]
-    public bool useFlicker = true;      // Centang jika ingin ada efek kedipan
-    public int flickerCount = 4;        // Berapa kali kedipan terjadi
-    public float flickerSpeed = 0.05f;  // Kecepatan antar kedipan
+    public bool useFlicker = true;
+    public int flickerCount = 4;
+    public float flickerSpeed = 0.05f;
+
+    private static readonly int IsOnHash = Animator.StringToHash("isOn");
+
+    private void Awake()
+    {
+        if (_animator != null) _animator = GetComponent<Animator>();
+
+        UpdateAnimator();
+        SetLightState(isOn);
+    }
 
     public void Toggle()
     {
+        if (!PowerSystem.IsPowerOn) return;
+
         isOn = !isOn;
+        UpdateAnimator();
 
         if (isOn && useFlicker)
         {
@@ -33,10 +47,17 @@ public class LightSwitch : MonoBehaviour
         }
     }
 
+    private void UpdateAnimator()
+    {
+        if (_animator != null)
+        {
+            _animator.SetBool(IsOnHash, isOn);
+        }
+    }
+
     // Fungsi pembantu untuk mengatur cahaya dan visual secara bersamaan
     private void SetLightState(bool state)
     {
-        // Melakukan loop untuk setiap lampu yang ada di dalam daftar
         foreach (Light light in lampLights)
         {
             if (light != null) light.enabled = state;
@@ -50,18 +71,34 @@ public class LightSwitch : MonoBehaviour
         }
     }
 
-    // Coroutine untuk efek lampu konslet
     IEnumerator FlickerEffect()
     {
         for (int i = 0; i < flickerCount; i++)
         {
-            SetLightState(false); // Matikan sebentar
+            SetLightState(false); 
             yield return new WaitForSeconds(flickerSpeed);
-            SetLightState(true);  // Hidupkan sebentar
+            SetLightState(true);
             yield return new WaitForSeconds(flickerSpeed);
         }
-        
-        // Pastikan di akhir tetap menyala sesuai status isOn
         SetLightState(isOn);
+    }
+
+    public void ForceTurnOff()
+    {
+        StartCoroutine(FlickerEffect());
+        isOn = false;
+    } 
+
+    public void ForceTurnOn()
+    {
+        isOn = true;
+        if (useFlicker)
+        {
+            StartCoroutine(FlickerEffect());
+        }
+        else
+        {
+            SetLightState(true);
+        }
     }
 }

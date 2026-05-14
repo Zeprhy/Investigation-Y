@@ -1,0 +1,62 @@
+using UnityEngine;
+
+public class SmartMeter : MonoBehaviour
+{
+    [Header("Settings")]
+    [SerializeField] private ApartmentEventManager eventManager;
+    [SerializeField] private AudioClip openSound;
+    [SerializeField] private AudioClip closeSound;
+    [SerializeField] private AudioClip switchSound;
+
+    [SerializeField] private Animator _animator;
+    [SerializeField] private bool _powerIsRestored = false;
+    [SerializeField] private bool _IsBoxOpen = false;
+
+    private static readonly int IsOpenHash = Animator.StringToHash("isOpen");
+
+    private void Awake()
+    {
+        _animator = GetComponent<Animator>();
+    }
+    public void UseMeter()
+    {
+        if (!_IsBoxOpen)
+        {
+            ToggleBox(true);
+        }
+
+        else if (!_powerIsRestored)
+        {
+            PerformPowerRestoration();
+        }
+
+        else
+        {
+            ToggleBox(false);
+        }
+    }
+
+    private void ToggleBox(bool open)
+    {
+        _IsBoxOpen = open;
+        _animator.SetBool(IsOpenHash, _IsBoxOpen);
+        
+        AudioClip clipToPlay = open ? openSound : closeSound;
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(clipToPlay);
+    }
+
+    private void PerformPowerRestoration()
+    {   
+        if (PowerSystem.IsPowerOn) return;
+
+        _powerIsRestored = true;
+
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(switchSound);
+
+        if (eventManager != null)
+            eventManager.RestoreApartementLights();
+    }
+}

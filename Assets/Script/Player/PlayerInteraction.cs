@@ -173,7 +173,14 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            // 6. CLIMB SYSTEM
+            // 6. SMART METER
+            if (hit.collider.TryGetComponent(out SmartMeter meter))
+            {
+                meter.UseMeter();
+                return;    
+            }
+
+            // 7. CLIMB SYSTEM
             if (Physics.Raycast(ray, out hit, 3.5f))
             {                
                 if (climbingSystem != null && ((1 << hit.collider.gameObject.layer) & climbingSystem.climbableLayer) != 0)

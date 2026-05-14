@@ -13,6 +13,7 @@ public class TriggerZone : MonoBehaviour
         {
             onPlayerEnter.Invoke();
             _hasTrigger = true;
+            Destroy(gameObject);
         }
     }
 }

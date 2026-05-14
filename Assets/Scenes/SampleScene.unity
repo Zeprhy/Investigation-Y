@@ -7463,9 +7463,9 @@ GameObject:
   - component: {fileID: 769955101}
   - component: {fileID: 769955100}
   - component: {fileID: 769955099}
+  - component: {fileID: 769955104}
   - component: {fileID: 769955098}
   - component: {fileID: 769955103}
-  - component: {fileID: 769955104}
   - component: {fileID: 769955106}
   - component: {fileID: 769955105}
   - component: {fileID: 769955107}
@@ -7607,7 +7607,7 @@ Transform:
   m_GameObject: {fileID: 769955097}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.79301, y: 0.0156, z: 1.8}
+  m_LocalPosition: {x: 2.79301, y: 0.433, z: 1.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7698,19 +7698,7 @@ MonoBehaviour:
     m_ActionId: 52eee4cd-7d5e-4a58-ad94-f37222d1925f
     m_ActionName: 'New action map/Look[/Mouse/delta]'
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 769955098}
-        m_TargetAssemblyTypeName: MovementPlayer, Assembly-CSharp
-        m_MethodName: OnJump
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 7bcc6338-f867-4a3a-af66-94d8e8c78db7
     m_ActionName: 'New action map/Jump[/Keyboard/space]'
   - m_PersistentCalls:

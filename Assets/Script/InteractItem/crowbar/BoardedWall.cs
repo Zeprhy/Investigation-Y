@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
 using TMPro;
+using System.Net.NetworkInformation;
 
 public class BoardedWall : MonoBehaviour, IInteractable
 {
@@ -12,6 +13,9 @@ public class BoardedWall : MonoBehaviour, IInteractable
    public float fallForceMin = 1f;
    public float fallForceMax = 3f;
    [SerializeField] private float uiDisplayDistance = 3.0f;
+
+   [Header("Objective Settings")]
+   [SerializeField] ObjectiveManager objectiveManager;
 
     [Header("UI System (Direct TMP)")]
     [SerializeField] private TextMeshProUGUI globalInteractText;
@@ -108,6 +112,8 @@ public class BoardedWall : MonoBehaviour, IInteractable
             }
 
             if (globalInteractText != null) globalInteractText.text = "";
+
+            CompleteBasementObjective();
         }
     }
      void DetachBoard(Rigidbody board)
@@ -122,4 +128,12 @@ public class BoardedWall : MonoBehaviour, IInteractable
             board.AddForce(randomForce, ForceMode.Impulse);
             board.AddTorque(Random.insideUnitSphere * 1.5f, ForceMode.Impulse);
         }
+
+    private void CompleteBasementObjective()
+    {
+        if (objectiveManager != null)
+        {
+            objectiveManager.ForceCompleteCurrentObjective();
+        }
+    }
 }
