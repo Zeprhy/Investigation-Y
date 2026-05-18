@@ -129,15 +129,15 @@ public class PlayerInteraction : MonoBehaviour
             ElevatorSlidingDoor slidingDoor = hit.collider.GetComponentInParent<ElevatorSlidingDoor>();
             if (slidingDoor != null)
             {
-                slidingDoor.Interact(gameObject); 
+                slidingDoor.Interact(); 
                 return;
             }
 
             // 1.5 CEK TOMBOL LIFT (Panel Lantai)
-            ElevatorTeleporter panelLift = hit.collider.GetComponent<ElevatorTeleporter>();
+            ElevatorButton panelLift = hit.collider.GetComponent<ElevatorButton>();
             if (panelLift != null)
             {
-                panelLift.OpenFloorUI();
+                panelLift.Interaction();
                 return;
             }
 
