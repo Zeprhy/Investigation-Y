@@ -12,8 +12,12 @@ public class EvidenceItem : MonoBehaviour
     public string evidenceName = "Barang Bukti";
 
     [Tooltip("Deskripsi singkat yang muncul saat inspeksi")]
-    [TextArea(2, 4)]
-    public string description = "Deskripsi barang bukti...";
+    [TextArea(2, 4)] 
+    [SerializeField] private string description = "Deskripsi barang bukti...";
+
+    [Tooltip("Dialog yang muncul saat barang bukti diperiksa")]
+    [TextArea(2, 4)] 
+    [SerializeField] private string dialog = "DescriptionDialog...";
 
     [Tooltip("ID unik untuk tracking (opsional)")]
     [SerializeField] private string evidenceID = "";
@@ -40,6 +44,9 @@ public class EvidenceItem : MonoBehaviour
 
     public bool IsBeingInspected => _isBeingInspected;
 
+    public string Description => description;
+    public string Dialog => dialog;
+
     void Awake()
     {
         _rb  = GetComponent<Rigidbody>();
@@ -64,12 +71,14 @@ public class EvidenceItem : MonoBehaviour
             if (_col != null)
                 _col.enabled = false;
         }
+
     }
 
     public void StopInspect()
     {
         _isBeingInspected = false;
-        if (_col != null)
+
+        if (canBePickedUp && _col != null)
             _col.enabled = false;
     }
 
@@ -101,6 +110,11 @@ public class EvidenceItem : MonoBehaviour
             }
 
             this.enabled = false;
+            
+            if (DialogueManager.Instance != null)
+            {
+                DialogueManager.Instance.ShowDialogue(dialog);
+            }
         }
     }
 }

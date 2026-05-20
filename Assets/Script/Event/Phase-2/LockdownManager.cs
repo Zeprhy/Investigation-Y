@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class LockdownManager : MonoBehaviour
 {
@@ -8,16 +9,19 @@ public class LockdownManager : MonoBehaviour
     private bool _isLockdownActive = false;
     public bool IsLockdownActive => _isLockdownActive;
 
-    [Header("== Elemen Lingkungan (Opsional) ==")]
-    [Tooltip("Lampu utama gedung yang akan mati saat lockdown")]
-    [SerializeField] private GameObject mainLightsParent;
+    [Header("== Pengaturan Lampu ==")]
+    [SerializeField] private Light[] mainLights;
 
-    [Tooltip("Lampu darurat/merah yang aktif saat lockdown")]
-    [SerializeField] private GameObject emergencyLightsParent;
+    [Header("== Pengaturan Efek Flicker (Kedipan) ==")]
+    [SerializeField] private bool useFlicker = true;
+    [SerializeField] private int flickerCount = 5;
+    [SerializeField] private float flickerSpeed = 0.06f;
 
     [Header("== Audio ==")]
     [SerializeField] private AudioClip lockdownAlarmSFX;
     [SerializeField] private AudioSource ambientAudioSource;
+
+    private Coroutine _flickerCoroutine;
 
     void Awake()
     {
@@ -27,9 +31,8 @@ public class LockdownManager : MonoBehaviour
 
     void Start()
     {
-        // Pastikan di awal game kondisi lampu normal
-        if (emergencyLightsParent != null) emergencyLightsParent.SetActive(false);
-        if (mainLightsParent != null) mainLightsParent.SetActive(true);
+        // Kondisi awal game: Lampu utama hidup, lampu darurat mati tanpa flicker
+        SetLightsState(mainLights, true);
     }
 
     /// <summary>
@@ -42,20 +45,27 @@ public class LockdownManager : MonoBehaviour
         _isLockdownActive = true;
         Debug.Log("<color=red>[LOCKDOWN ACTIVATED]</color> Gedung terkunci, listrik padam!");
 
-        // 1. Matikan lampu utama, nyalakan lampu darurat merah
-        if (mainLightsParent != null) mainLightsParent.SetActive(false);
-        if (emergencyLightsParent != null) emergencyLightsParent.SetActive(true);
+        // Amankan coroutine jika ada yang sedang berjalan
+        if (_flickerCoroutine != null) StopCoroutine(_flickerCoroutine);
 
-        // 2. Mainkan sound effect alarm atau suara listrik mati
+        if (useFlicker)
+        {
+            // Menjalankan efek kedipan saat lampu utama padam dan lampu darurat merah mulai menyala
+            _flickerCoroutine = StartCoroutine(LockdownFlickerEffect(true));
+        }
+        else
+        {
+            // Jika tidak pakai flicker, langsung ganti status lampu secara instan
+            SetLightsState(mainLights, false);
+        }
+
+        // Mainkan sound effect alarm atau suara listrik mati
         if (lockdownAlarmSFX != null && ambientAudioSource != null)
         {
             ambientAudioSource.clip = lockdownAlarmSFX;
             ambientAudioSource.loop = true;
             ambientAudioSource.Play();
         }
-
-        // 3. TODO: Tambahkan logika penguncian pintu keluar jika ada script Pintu
-        // Contoh: DoorManager.Instance?.LockAllExits();
     }
 
     /// <summary>
@@ -68,17 +78,76 @@ public class LockdownManager : MonoBehaviour
         _isLockdownActive = false;
         Debug.Log("<color=green>[LOCKDOWN DEACTIVATED]</color> Listrik kembali normal melalui PC Security.");
 
-        // 1. Kembalikan lampu ke kondisi normal
-        if (mainLightsParent != null) mainLightsParent.SetActive(true);
-        if (emergencyLightsParent != null) emergencyLightsParent.SetActive(false);
+        if (_flickerCoroutine != null) StopCoroutine(_flickerCoroutine);
 
-        // 2. Matikan alarm
+        if (useFlicker)
+        {
+            // Menjalankan efek kedipan saat listrik kembali dinyalakan (lampu utama hidup, darurat mati)
+            _flickerCoroutine = StartCoroutine(LockdownFlickerEffect(false));
+        }
+        else
+        {
+            SetLightsState(mainLights, true);
+        }
+
+        // Matikan alarm
         if (ambientAudioSource != null)
         {
             ambientAudioSource.Stop();
         }
+    }
 
-        // 3. TODO: Buka kembali pintu yang terkunci
-        // Contoh: DoorManager.Instance?.UnlockAllExits();
+    /// <summary>
+    /// Fungsi pembantu untuk mematikan atau menghidupkan sekelompok lampu (Array)
+    /// </summary>
+    private void SetLightsState(Light[] lightGroup, bool state)
+    {
+        if (lightGroup == null) return;
+
+        foreach (Light light in lightGroup)
+        {
+            if (light != null)
+            {
+                light.enabled = state;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Coroutine untuk memberikan efek ketegangan kedipan lampu saat perubahan status lockdown
+    /// </summary>
+    IEnumerator LockdownFlickerEffect(bool activatingLockdown)
+    {
+        for (int i = 0; i < flickerCount; i++)
+        {
+            if (activatingLockdown)
+            {
+                // Saat lockdown aktif: Lampu utama berkedip mati, lampu darurat berkedip menyala
+                SetLightsState(mainLights, false);
+                yield return new WaitForSeconds(flickerSpeed);
+                
+                SetLightsState(mainLights, true);
+                yield return new WaitForSeconds(flickerSpeed);
+            }
+            else
+            {
+                // Saat lockdown mati (Normal kembali): Lampu utama berkedip menyala, lampu darurat berkedip mati
+                SetLightsState(mainLights, true);
+                yield return new WaitForSeconds(flickerSpeed);
+
+                SetLightsState(mainLights, false);
+                yield return new WaitForSeconds(flickerSpeed);
+            }
+        }
+
+        // State Akhir setelah selesai berkedip
+        if (activatingLockdown)
+        {
+            SetLightsState(mainLights, false);
+        }
+        else
+        {
+            SetLightsState(mainLights, true);
+        }
     }
 }

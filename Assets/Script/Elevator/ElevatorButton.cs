@@ -20,6 +20,12 @@ public class ElevatorButton : MonoBehaviour
     private Transform _playerTransform;
     private bool _isPlayerNear = false;
 
+    public bool CanPressed
+    {
+        get => canPressed;
+        set => canPressed = value;
+    }
+
     void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");

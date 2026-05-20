@@ -84,6 +84,19 @@ public class EvidenceInspector : MonoBehaviour
         
         if (Physics.Raycast(ray, out RaycastHit hit, detectRange))
         {
+            SecurityComputer pcSecurity = hit.collider.GetComponentInParent<SecurityComputer>();
+            if (pcSecurity != null)
+            {
+                if (LockdownManager.Instance != null && LockdownManager.Instance.IsLockdownActive)
+                {
+                    ShowHint("Press [F] To Acces Security PC");
+                }
+                else
+                {
+                    ShowHint("Security PC offline");
+                }
+            }
+
             EvidenceItem evidence = hit.collider.GetComponentInParent<EvidenceItem>();
             if (evidence != null)
             {
@@ -157,7 +170,7 @@ public class EvidenceInspector : MonoBehaviour
         FreezePlayer(true);
         PlaySFX(pickupSound);
 
-        ShowInspectUI(evidence.evidenceName, evidence.description);
+        ShowInspectUI(evidence.evidenceName, evidence.Description);
         ShowHint(HINT_COLLECT);
 
          Debug.Log($"[EvidenceInspector] Inspeksi: {evidence.evidenceName}");
@@ -213,12 +226,14 @@ public class EvidenceInspector : MonoBehaviour
             {
                 _currentEvidence.StopInspect();
                 _currentEvidence = null;
+                _isReturning = false;
                 return;    
             }
 
             _returnTargetPos = _currentEvidence.OriginalPosition;
             _returnTargetRot = _currentEvidence.OriginalRotation;
-            _currentEvidence.StopInspect();
+            _currentDocument.StopInspect();
+            _isReturning = true;
             
         }
         else if (_currentDocument != null)
@@ -226,8 +241,8 @@ public class EvidenceInspector : MonoBehaviour
             _returnTargetPos = _currentDocument.OriginalPosition;
             _returnTargetRot = _currentDocument.OriginalRotation;
             _currentDocument.StopInspect();
+            _isReturning = true;
         }
-        _isReturning = true;
     }
 
     private void MoveItemToInspectionPoint()

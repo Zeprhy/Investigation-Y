@@ -14,6 +14,13 @@ public class SecurityComputer : MonoBehaviour
     [Header("== Audio ==")]
     [SerializeField] private AudioClip typingAndClickSFX;
 
+    [Header ("== Enemy Activation ==")]
+    [SerializeField] private NewEnemyAI EnemyActivation;
+
+    [Header("== elevator active ==")]
+    [SerializeField] private ElevatorButton elevatorButton;
+    [SerializeField] private TeleportLift teleportLift;
+
     private bool _hasBeenCleared = false;
 
     void Update()
@@ -50,11 +57,17 @@ public class SecurityComputer : MonoBehaviour
             LockdownManager.Instance.DeactivateLockdown();
             _hasBeenCleared = true;
             
-            Debug.Log("[SecurityPC] Akses diterima. Sistem lockdown dimatikan.");
+            if (EnemyActivation != null)
+            {
+                EnemyActivation.gameObject.SetActive(true);
+            }
+
+            if (elevatorButton != null && teleportLift != null)
+            {
+                elevatorButton.CanPressed = true;
+                teleportLift.IsEnabeled = true;
+            }
         }
-        else
-        {
-            Debug.Log("[SecurityPC] Tidak ada ancaman aktif atau sistem offline.");
-        }
+
     }
 }

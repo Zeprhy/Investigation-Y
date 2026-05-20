@@ -41,6 +41,8 @@ public class EnemyStalker : MonoBehaviour
             yield return null;    
         }
 
+        DialogueManager.Instance.ShowDialogue("Hey who's there!");
+
         gameObject.SetActive(false);
     }
 }

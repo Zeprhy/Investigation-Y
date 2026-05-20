@@ -54,7 +54,7 @@ public class EvidenceManager : MonoBehaviour
         if (counterAnimator != null)
             counterAnimator.SetTrigger(newEvidenceTrigger);
 
-        if (id == "Handphone" || id == "BloodSlash")
+        if (id == "BloodSlash")
         {
             LockdownManager.Instance.ActivateLockdown();
         }

@@ -1,10 +1,17 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UIElements.Experimental;
 
 public class TeleportLift : MonoBehaviour
 {
     [Header("Settings")]
-    public bool isEnabled = true; // Condition to allow teleportation
+    [SerializeField] private bool isEnabled = true;
+    public bool IsEnabeled
+    {
+        get => isEnabled;
+        set => isEnabled = value;
+    }
+    
     [SerializeField] private Transform destination;
     [SerializeField] private string targetTag = "Player";
     [SerializeField] private float travelDelay = 3.0f;
