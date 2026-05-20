@@ -56,6 +56,8 @@ public class SmartMeter : MonoBehaviour
         if (AudioManager.Instance != null)
             AudioManager.Instance.PlaySFX(switchSound);
 
+        PowerSystem.RestorePower();
+
         if (eventManager != null)
             eventManager.RestoreApartementLights();
     }

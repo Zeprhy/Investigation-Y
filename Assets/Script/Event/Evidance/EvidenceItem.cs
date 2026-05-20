@@ -19,6 +19,9 @@ public class EvidenceItem : MonoBehaviour
     [SerializeField] private string evidenceID = "";
 
     [Header("== Inspeksi ==")]
+    [Tooltip("Apakah barang ini bisa dipegang/melayang ke kamera? (Matikan untuk bercak darah di dinding)")]
+    public bool canBePickedUp = true;
+
     [Tooltip("Offset posisi saat dipegang di inspection point (local space)")]
     public Vector3 inspectPositionOffset = Vector3.zero;
 
@@ -45,18 +48,22 @@ public class EvidenceItem : MonoBehaviour
 
     public void StartInspect()
     {   
-        _originalPosition = transform.position;
-        _originalRotation = transform.rotation;
         _isBeingInspected = true;
 
-        if (_rb != null)
+        if (canBePickedUp)
         {
-            _rb.useGravity  = false;
-            _rb.isKinematic = true;
-        }
+            _originalPosition = transform.position;
+            _originalRotation = transform.rotation;
 
-        if (_col != null)
-            _col.enabled = false;
+            if (_rb != null)
+            {
+                _rb.useGravity  = false;
+                _rb.isKinematic = true;
+            }
+
+            if (_col != null)
+                _col.enabled = false;
+        }
     }
 
     public void StopInspect()
@@ -81,6 +88,19 @@ public class EvidenceItem : MonoBehaviour
     public void CollectEvidence()
     {
         EvidenceManager.Instance?.AddEvidence(evidenceName, description, evidenceID);
-        Destroy(gameObject);
+
+        if (canBePickedUp)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            if (_col != null)
+            {
+                _col.enabled = false;
+            }
+
+            this.enabled = false;
+        }
     }
 }

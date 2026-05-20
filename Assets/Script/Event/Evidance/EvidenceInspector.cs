@@ -25,7 +25,7 @@ public class EvidenceInspector : MonoBehaviour
  
     [Header("== Pengaturan ==")]
     [Tooltip("Jarak raycast untuk detect barang bukti")]
-    [SerializeField] private float detectRange = 3f;
+    [SerializeField] private float detectRange = 1f;
  
     [Tooltip("Seberapa cepat item bergerak ke inspection point")]
     [SerializeField] private float moveSpeed = 10f;
@@ -113,6 +113,13 @@ public class EvidenceInspector : MonoBehaviour
 
     Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
     if (!Physics.Raycast(ray, out RaycastHit hit, detectRange)) return false;
+
+    SecurityComputer pcSecurity = hit.collider.GetComponentInParent<SecurityComputer>();
+    if (pcSecurity != null)
+    {
+        pcSecurity.InteractWithComputer();
+        return true;
+    }
 
     EvidenceItem evidence = hit.collider.GetComponentInParent<EvidenceItem>();
     if (evidence != null)
@@ -202,6 +209,13 @@ public class EvidenceInspector : MonoBehaviour
 
         if (_currentEvidence != null)
         {
+            if (!_currentEvidence.canBePickedUp)
+            {
+                _currentEvidence.StopInspect();
+                _currentEvidence = null;
+                return;    
+            }
+
             _returnTargetPos = _currentEvidence.OriginalPosition;
             _returnTargetRot = _currentEvidence.OriginalRotation;
             _currentEvidence.StopInspect();
@@ -223,6 +237,8 @@ public class EvidenceInspector : MonoBehaviour
 
         if (_currentEvidence != null)
         {
+            if (!_currentEvidence.canBePickedUp) return;
+            
             itemTransform = _currentEvidence.transform;
             targetRotation = inspectionPoint.rotation * Quaternion.Euler(_currentEvidence.inspectRotationOffset);
         }

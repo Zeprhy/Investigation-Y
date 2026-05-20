@@ -125,11 +125,11 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 3f)) 
         {
-            // 1. CEK TOMBOL LIFT (Prioritaskan tombol daripada pintu)
+            // 1. CEK TOMBOL LIFT
             ElevatorButton buttonLift = hit.collider.GetComponent<ElevatorButton>();
             if (buttonLift != null)
             {
-                buttonLift.Interaction(); // Memanggil method Interaction() di ElevatorButton
+                buttonLift.Interaction();
                 return;
             }
 

@@ -53,6 +53,11 @@ public class EvidenceManager : MonoBehaviour
         UpdateUI();
         if (counterAnimator != null)
             counterAnimator.SetTrigger(newEvidenceTrigger);
+
+        if (id == "Handphone" || id == "BloodSlash")
+        {
+            LockdownManager.Instance.ActivateLockdown();
+        }
     }
     public void UpdateUI()
     {

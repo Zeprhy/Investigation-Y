@@ -36,6 +36,8 @@ public class ElevatorButton : MonoBehaviour
     {
         if (!canPressed) return;
 
+        if (!PowerSystem.IsPowerOn) return;
+
         if (elevatorDoor != null)
         {
             elevatorDoor.Interact(); // Calls the door
