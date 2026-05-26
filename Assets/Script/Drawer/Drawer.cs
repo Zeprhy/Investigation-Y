@@ -62,6 +62,13 @@ public class Drawer : MonoBehaviour
     {
         if (_playerTransform == null || globalInteractText == null) return;
 
+        if (!canInteract)
+        {
+            if (globalInteractText.text == interactMessage)
+                globalInteractText.text = "";
+            return;
+        }
+
         float distance = Vector3.Distance(transform.position, _playerTransform.position);
 
         if (distance <= uiDisplayDistance)

@@ -206,6 +206,14 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
+            RotateWheel wheel = hit.collider.GetComponent<RotateWheel>();
+            if (wheel != null)
+            {
+                // Putar rodanya!
+                wheel.Interact();
+                return;
+            }
+
             // 2. CEK ITEM (Pick up)
             if (hit.collider.TryGetComponent(out Item item))
             {
