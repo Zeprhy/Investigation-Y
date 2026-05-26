@@ -12,6 +12,10 @@ public class CameraShakeManager : MonoBehaviour
     [SerializeField] private float heavyDuration    = 0.6f;
     [SerializeField] private float heavyMagnitude   = 1.5f;
 
+    [Header("Impact Settings")]
+    [SerializeField] private float impactDuration  = 0.8f;
+    [SerializeField] private float impactMagnitude = 3f;
+
     [SerializeField] private Camera targetCamera;
     public Vector2 ShakeOffset { get; private set; }
 
@@ -39,6 +43,10 @@ public class CameraShakeManager : MonoBehaviour
 
     public void ShakeLight() => TriggerShake(lightDuration, lightMagnitude);
     public void ShakeHeavy() => TriggerShake(heavyDuration, heavyMagnitude);
+    public void ShakeImpact() => TriggerShake(impactDuration, impactMagnitude);
+
+    public void ShakeCustom(float duration, float magnitude) 
+        => TriggerShake(duration, magnitude);
 
     void TriggerShake(float duration, float magnitude)
     {
@@ -73,4 +81,5 @@ public class CameraShakeManager : MonoBehaviour
         ShakeOffset = Vector2.zero;
         currentShake = null;
     }
+
 }

@@ -115,6 +115,7 @@ public class EvidenceItem : MonoBehaviour
             {
                 DialogueManager.Instance.ShowDialogue(dialog);
             }
+
         }
     }
 }

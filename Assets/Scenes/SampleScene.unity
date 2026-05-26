@@ -552,12 +552,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 70102563}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -23.74924, y: 7.3, z: 26}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -46.55565, y: 7.3, z: -50.14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 214751730}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &85374370
 PrefabInstance:
@@ -855,6 +855,40 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4502835371528836758, guid: ac7d97648452a6a42b1a61451fa7bf15, type: 3}
   m_PrefabInstance: {fileID: 2994346617017303370}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &214751729
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 214751730}
+  m_Layer: 0
+  m_Name: DebrisEvent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &214751730
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 214751729}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 22.80641, y: -0, z: 80.2708}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 955720035}
+  - {fileID: 70102564}
+  - {fileID: 1220149888}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &215423900
 GameObject:
   m_ObjectHideFlags: 0
@@ -891,6 +925,7 @@ MonoBehaviour:
   fallForceMin: 1
   fallForceMax: 3
   uiDisplayDistance: 3
+  objectiveManager: {fileID: 0}
   globalInteractText: {fileID: 0}
 --- !u!4 &215423902
 Transform:
@@ -7921,6 +7956,9 @@ MonoBehaviour:
   interactPromptText: {fileID: 1403439682}
   hideFadeGroup: {fileID: 0}
   raycastFrequency: 0.1
+  SocketLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &769955107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8272,7 +8310,7 @@ GameObject:
   - component: {fileID: 846357199}
   - component: {fileID: 846357198}
   m_Layer: 0
-  m_Name: Document_01
+  m_Name: Document
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8656,8 +8694,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 0.11840281}
-  m_Center: {x: 0, y: 0, z: 0.44079858}
+  m_Size: {x: 1, y: 1, z: 0.7031054}
+  m_Center: {x: 0, y: 0, z: -0.008477395}
 --- !u!23 &955720033
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8723,13 +8761,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 955720031}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -23.0942, y: -0.69, z: 29.8209}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -45.90061, y: -0.69, z: -50.449898}
   m_LocalScale: {x: 21.50262, y: 1, z: 21.288067}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 246517999}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 214751730}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &955720036
 MonoBehaviour:
@@ -8746,9 +8784,14 @@ MonoBehaviour:
   debrisPrefab: {fileID: 5130179564894065144, guid: fd94bdaac2494644882c76897a31b6a4, type: 3}
   spawnPoint: {fileID: 70102564}
   crackSFX: {fileID: 0}
+  rumbleSFX: {fileID: 0}
+  impactSFX: {fileID: 0}
   dustParticle: {fileID: 246518001}
+  impactDustParticle: {fileID: 0}
+  warningLight: {fileID: 0}
   warningDuration: 1
   id: DebrisTest
+  isEventReady: 0
 --- !u!1 &963126807
 GameObject:
   m_ObjectHideFlags: 0
@@ -11117,12 +11160,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1220149884}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -23.74924, y: 14, z: 30}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -46.55565, y: 14, z: -50.270798}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 214751730}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1220658815 stripped
 GameObject:
@@ -12206,7 +12249,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EvidenceItem
   evidenceName: Pilar Kuno
   description: Ini Adalah Pilar Kuno Yang Konon Katanya Angker
+  dialog: DescriptionDialog...
   evidenceID: Pilar_01
+  canBePickedUp: 1
   inspectPositionOffset: {x: 0, y: 0, z: 0}
   inspectRotationOffset: {x: 0, y: 0, z: 0}
 --- !u!136 &1451223885
@@ -14592,6 +14637,8 @@ MonoBehaviour:
   lightMagnitude: 0.8
   heavyDuration: 0.6
   heavyMagnitude: 2
+  impactDuration: 0.8
+  impactMagnitude: 3
   targetCamera: {fileID: 330585545}
 --- !u!1 &1848466813
 GameObject:
@@ -15800,6 +15847,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5172030498993823667, guid: ac7d97648452a6a42b1a61451fa7bf15, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16184,12 +16235,10 @@ SceneRoots:
   - {fileID: 215423902}
   - {fileID: 1579786151}
   - {fileID: 1547030361}
-  - {fileID: 955720035}
-  - {fileID: 70102564}
-  - {fileID: 1220149888}
   - {fileID: 598156207}
   - {fileID: 2103631190}
   - {fileID: 2260874477487786541}
   - {fileID: 1451223888}
   - {fileID: 846357200}
   - {fileID: 8073067263849191575}
+  - {fileID: 214751730}

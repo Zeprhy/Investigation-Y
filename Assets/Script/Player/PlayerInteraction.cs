@@ -16,6 +16,7 @@ public class PlayerInteraction : MonoBehaviour
     
     [Header("Optimization")]
     [SerializeField] private float raycastFrequency = 0.1f;
+    [SerializeField] private LayerMask SocketLayerMask;
     private float rayTimer;
     private Collider[] cachedColliders;
 
@@ -25,12 +26,14 @@ public class PlayerInteraction : MonoBehaviour
     private MovementPlayer player;
     private Locker currentLocker;
     private Outline lastHighlightedItem;
+    private PuzzleSocket currentViewedSocket;
 
     private bool isHidden;
     private bool isInsideLocker = false;
     private Vector3 originalItemScale;
 
     private EvidenceInspector evidenceInspector;
+    private PuzzleSocket _lastViewedSocket;
 
     void Start()
     {
@@ -44,13 +47,62 @@ public class PlayerInteraction : MonoBehaviour
         if (PauseMenu.isPausedStatic) return;
 
         HandleOutlineRaycast();
-        if (equippedItem != null) FollowHand();
 
         rayTimer += Time.deltaTime;
         if (rayTimer >= raycastFrequency)
         {
             rayTimer = 0;
         }
+
+        HandleSocketPreviewRaycast();
+    }
+
+    void LateUpdate()
+    {
+        if (equippedItem != null) FollowHand();
+    }
+
+    private void HandleSocketPreviewRaycast()
+    {
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        
+        if (Physics.Raycast(ray, out RaycastHit hit, 3f, SocketLayerMask))
+        {
+            PuzzleSocket socket = hit.collider.GetComponent<PuzzleSocket>();
+
+            if (socket != null && equippedItem != null && socket.IsCorrectItem(equippedItem) && !socket.IsOccupied)
+            {
+                if (_lastViewedSocket != socket)
+                {
+                    if(_lastViewedSocket != null) _lastViewedSocket.SetPreview(false);
+                    _lastViewedSocket = socket;
+                    _lastViewedSocket.SetPreview(true);
+                }
+                return;
+            }
+        }
+
+        if (_lastViewedSocket != null)
+        {
+            _lastViewedSocket.SetPreview(false);
+            _lastViewedSocket = null;
+        }
+    }
+
+    private void ConsumeCurrentItem()
+    {
+        if (equippedItem == null) return;
+
+        equippedItem.transform.SetParent(null);
+
+        GameObject ObjItem = equippedItem.gameObject;
+
+        equippedItem = null;
+        equippedRb = null;
+        cachedColliders = null;
+        
+
+        Destroy(ObjItem);
     }
 
     void HandleOutlineRaycast()
@@ -97,15 +149,18 @@ public class PlayerInteraction : MonoBehaviour
         if (equippedItem == null) return;
 
         // Jika belum di-cache, ambil dulu
-        if (cachedColliders == null)
+        if (cachedColliders == null || (cachedColliders.Length > 0 && cachedColliders[0] == null))
             cachedColliders = equippedItem.GetComponentsInChildren<Collider>();
         
         foreach (Collider col in cachedColliders)
         {
-            col.enabled = state;
+            if (col != null)
+            {
+                col.enabled = state;   
+            }
         }
 
-        if (state == true) cachedColliders = null; // Reset cache saat dibuang
+        if (state == true) cachedColliders = null;
     }
 
     public void OnInteract(InputAction.CallbackContext context)
@@ -130,6 +185,24 @@ public class PlayerInteraction : MonoBehaviour
             if (buttonLift != null)
             {
                 buttonLift.Interaction();
+                return;
+            }
+
+            Drawer drawer = hit.collider.GetComponent<Drawer>();
+            if (drawer != null)
+            {
+                drawer.Interaction();
+                return;
+            }
+
+            PuzzleSocket socket = hit.collider.GetComponent<PuzzleSocket>();
+            if (socket != null)
+            {
+                if (equippedItem != null && socket.IsCorrectItem(equippedItem) && !socket.IsOccupied)
+                {
+                    socket.PutItemInSocket();
+                    ConsumeCurrentItem();
+                }
                 return;
             }
 
@@ -317,8 +390,8 @@ public class PlayerInteraction : MonoBehaviour
                 if (equippedRb != null)
                 {
                     equippedRb.useGravity = false;
-                    equippedRb.isKinematic = false;
-                    equippedRb.interpolation = RigidbodyInterpolation.Interpolate;
+                    equippedRb.isKinematic = true;
+                    equippedRb.interpolation = RigidbodyInterpolation.None;
                 }
 
                 equippedItem.transform.SetParent(handPoint);

@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 
 [RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(AudioSource))] // Otomatis menambahkan AudioSource
 public class ClimbingSystem : MonoBehaviour
 {
     [Header("Movement Settings")]
@@ -10,6 +11,14 @@ public class ClimbingSystem : MonoBehaviour
     [SerializeField] private float detectionRange = 0.6f;
     [SerializeField] private float cameraAlignSpeed = 12f;
     [SerializeField] public LayerMask climbableLayer;
+
+    [Header("Audio (Pijakan Tangga)")]
+    [Tooltip("Masukkan variasi suara langkah tangga ke sini")]
+    [SerializeField] private AudioClip[] climbFootstepSounds;
+    [Tooltip("Jarak tempuh sebelum suara pijakan berikutnya berbunyi")]
+    [SerializeField] private float stepDistance = 0.6f;
+    private float _distanceMoved = 0f;
+    private AudioSource _audioSource;
 
     [Header("UI System (Single Object)")]
     [SerializeField] private TextMeshProUGUI interactionText;
@@ -40,6 +49,13 @@ public class ClimbingSystem : MonoBehaviour
     {
         if (controller == null) controller = GetComponent<CharacterController>();
         if (playerCamera == null) playerCamera = Camera.main.transform;
+        
+        // Inisialisasi AudioSource
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource != null)
+        {
+            _audioSource.playOnAwake = false;
+        }
 
         if (interactionText != null) interactionText.text = "";
     }
@@ -53,50 +69,27 @@ public class ClimbingSystem : MonoBehaviour
     private void StartClimbing(Vector3 hitNormal, Vector3 hitPoint)
     {
         _isClimbing = true;
+        _distanceMoved = stepDistance; // Supaya pas pertama nempel langsung bunyi
 
         if (interactionText != null) interactionText.text = "";
 
-        // 1. Cek apakah kita mulai dari atas (Turun)
         bool startingFromTop = transform.position.y > hitPoint.y + 0.1f;
-
         Vector3 horizontalNormal = new Vector3(hitNormal.x, 0, hitNormal.z).normalized;
-
-        // 2. LOGIKA FLIP UNTUK TURUN:
-        if (startingFromTop)
+        
+        if (horizontalNormal.sqrMagnitude < 0.1f)
         {
-            // Jika turun, kita ingin player "menyeberang" ke sisi lain hitPoint.
-            // Kita hitung arah dari player ke tangga, lalu gunakan itu sebagai normal.
-            Vector3 dirToLadder = (hitPoint - transform.position);
-            dirToLadder.y = 0;
-            _ladderNormal = dirToLadder.normalized; 
-        }
-        else
-        {
-            // Jika manjat dari bawah, gunakan normal permukaan seperti biasa.
-            if (horizontalNormal.sqrMagnitude < 0.1f)
-            {
-                horizontalNormal = (transform.position - hitPoint);
-                horizontalNormal.y = 0;
-                horizontalNormal.Normalize();
-            }
-            _ladderNormal = horizontalNormal;
+            horizontalNormal = (transform.position - hitPoint);
+            horizontalNormal.y = 0;
+            horizontalNormal.Normalize();
         }
 
-        // 3. POSISI SNAPPING
-        // targetPos sekarang akan berada di SISI SEBERANG tangga jika startingFromTop = true
+        _ladderNormal = horizontalNormal;
+
         Vector3 targetPos = hitPoint + (_ladderNormal * startOffset);
 
-        if (startingFromTop)
-        {
-            // Turunkan player agar menggantung di bawah bibir lantai
-            targetPos.y = hitPoint.y - DownOffset; 
-        }
-        else
-        {
-            targetPos.y = transform.position.y;
-        }
+        if (startingFromTop) targetPos.y = hitPoint.y - DownOffset; 
+        else targetPos.y = transform.position.y;
 
-        // Penting: Matikan controller sebentar agar bisa teleport tanpa hambatan collision lantai
         controller.enabled = false;
         transform.position = targetPos;
         controller.enabled = true;
@@ -121,9 +114,7 @@ public class ClimbingSystem : MonoBehaviour
         while (t < 1f)
         {
             t += Time.deltaTime * cameraAlignSpeed;
-
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, t);
-
             playerCamera.localRotation = Quaternion.Slerp(playerCamera.localRotation, Quaternion.identity, t);
             
             yield return null;
@@ -172,6 +163,25 @@ public class ClimbingSystem : MonoBehaviour
             Vector3 move = transform.up * _verticalInput;
             controller.Move(move * climbSpeed * Time.deltaTime);
 
+            // LOGIKA SUARA PIJAKAN DITAMBAHKAN DI SINI
+            if (Mathf.Abs(_verticalInput) > 0.1f)
+            {
+                // Tambahkan jarak sebesar kecepatan gerak player
+                _distanceMoved += climbSpeed * Time.deltaTime;
+                
+                // Jika sudah melewati batas jarak langkah, putar suara
+                if (_distanceMoved >= stepDistance)
+                {
+                    PlayClimbFootstep();
+                    _distanceMoved = 0f; // Reset jarak
+                }
+            }
+            else
+            {
+                // Jika player diam di tengah tangga, tidak ada jarak yang dihitung
+                _distanceMoved = 0f; 
+            }
+
             if (_verticalInput < -0.1f && (controller.isGrounded || CheckGroundBelow()))
             {
                 StopClimbing();
@@ -182,6 +192,17 @@ public class ClimbingSystem : MonoBehaviour
             if (_verticalInput > 0.1f) StartCoroutine(FinishClimbRoutine());
             else StopClimbing();
         }
+    }
+
+    // FUNGSI UNTUK MEMUTAR SUARA ACAK
+    private void PlayClimbFootstep()
+    {
+        if (climbFootstepSounds == null || climbFootstepSounds.Length == 0) return;
+        if (_audioSource == null) return;
+
+        // Pilih suara acak dari array agar tidak terdengar repetitif/monoton
+        int randomIndex = Random.Range(0, climbFootstepSounds.Length);
+        _audioSource.PlayOneShot(climbFootstepSounds[randomIndex]);
     }
 
     private bool CheckGroundBelow() => Physics.Raycast(transform.position, Vector3.down, 0.2f);

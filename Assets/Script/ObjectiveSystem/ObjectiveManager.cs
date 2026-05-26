@@ -27,16 +27,31 @@ public class ObjectiveManager : MonoBehaviour
         if (objectiveCanvasGroup != null) objectiveCanvasGroup.alpha = 0;
     }
 
+    private Coroutine _activeRoutine;
+
     public void SetNewObjective(ObjectiveSO newObj)
     {
-        if (newObj == null || (currentObjective == newObj && objectiveCanvasGroup.alpha > 0)) return;
+        if (newObj == null) return;
 
-        currentObjective = newObj;
-        currentObjective.Reset();
+        ObjectiveSO clone = Instantiate(newObj);
+        clone.Reset();
 
-        StopAllCoroutines();
-        StartCoroutine(AppearRoutine());
+        if (currentObjective != null && currentObjective.objectiveID == clone.objectiveID 
+            && objectiveCanvasGroup.alpha > 0) return;
 
+        currentObjective = clone;
+
+        if (_activeRoutine != null) StopCoroutine(_activeRoutine);
+        _activeRoutine = StartCoroutine(AppearRoutine());
+    }
+
+    public void ForceCompleteCurrentObjective()
+    {
+        if (currentObjective == null) return;
+        currentObjective.iscompleted = true;
+
+        if (_activeRoutine != null) StopCoroutine(_activeRoutine);
+        _activeRoutine = StartCoroutine(DissapearRoutine());
     }
 
     public void CompleteObjetive(string id)
@@ -44,8 +59,8 @@ public class ObjectiveManager : MonoBehaviour
         if (currentObjective != null && currentObjective.objectiveID == id)
         {
             currentObjective.iscompleted = true;
-            StopAllCoroutines();
-            StartCoroutine(DissapearRoutine());
+            if (_activeRoutine != null) StopCoroutine(_activeRoutine);
+            _activeRoutine = StartCoroutine(DissapearRoutine());
         }
     }
 
@@ -61,16 +76,6 @@ public class ObjectiveManager : MonoBehaviour
         yield return StartCoroutine(FadecanvasGroup(objectiveCanvasGroup.alpha, 0, fadeDuration)); 
         objectiveText.text = "";
         currentObjective = null;
-    }
-
-    public void ForceCompleteCurrentObjective()
-    {
-        if (currentObjective != null)
-        {
-            currentObjective.iscompleted = true;
-            StopAllCoroutines();
-            StartCoroutine(DissapearRoutine());
-        }
     }
 
     private IEnumerator TypeText(string text)

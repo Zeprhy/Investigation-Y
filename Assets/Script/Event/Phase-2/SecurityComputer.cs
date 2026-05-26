@@ -14,12 +14,12 @@ public class SecurityComputer : MonoBehaviour
     [Header("== Audio ==")]
     [SerializeField] private AudioClip typingAndClickSFX;
 
-    [Header ("== Enemy Activation ==")]
-    [SerializeField] private NewEnemyAI EnemyActivation;
-
     [Header("== elevator active ==")]
     [SerializeField] private ElevatorButton elevatorButton;
     [SerializeField] private TeleportLift teleportLift;
+
+    [Header("== Enemy Chasing Event ==")]
+    [SerializeField] private GameObject chaseTriggerZone;
 
     private bool _hasBeenCleared = false;
 
@@ -56,10 +56,10 @@ public class SecurityComputer : MonoBehaviour
             // 2. Matikan lockdown melalui manager
             LockdownManager.Instance.DeactivateLockdown();
             _hasBeenCleared = true;
-            
-            if (EnemyActivation != null)
+
+            if (chaseTriggerZone != null)
             {
-                EnemyActivation.gameObject.SetActive(true);
+                chaseTriggerZone.SetActive(true);
             }
 
             if (elevatorButton != null && teleportLift != null)

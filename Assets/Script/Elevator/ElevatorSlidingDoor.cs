@@ -29,7 +29,6 @@ public class ElevatorSlidingDoor : MonoBehaviour
         if (doorObstacle != null) doorObstacle.enabled = !isOpen;
     }
 
-    // This is now purely for logic, no UI text here
     public void Interact()
     {
         ToggleDoor();

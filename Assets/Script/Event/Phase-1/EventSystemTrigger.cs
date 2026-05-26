@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class LampsEventTrigger : MonoBehaviour
+public class EventSystemTrigger : MonoBehaviour
 {
     public UnityEvent eventManager;
 
@@ -10,7 +10,7 @@ public class LampsEventTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             eventManager.Invoke();
-            Destroy(gameObject);
+            GetComponent<Collider>().enabled = false;
         }
     }
 }

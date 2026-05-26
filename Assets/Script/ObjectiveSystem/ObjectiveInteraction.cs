@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class ObjectiveInteraction : MonoBehaviour
 {
@@ -16,11 +17,6 @@ public class ObjectiveInteraction : MonoBehaviour
     [SerializeField] private string requiredItemName;
 
     private static HashSet<string> _CollectedItems = new HashSet<string>();
-
-    private void Awake()
-    {
-        _CollectedItems.Clear();    
-    }
 
     public void Interaction()
     {
@@ -41,6 +37,13 @@ public class ObjectiveInteraction : MonoBehaviour
 
     private void HandleObstacle()
     {
+        if (!needItem)
+        {
+            if (relatedObjective != null)
+                ObjectiveManager.Instance.SetNewObjective(relatedObjective);
+            return;
+        }
+
         bool hasRequiredItem = !needItem ||_CollectedItems.Contains(requiredItemName);
 
         if (!hasRequiredItem)

@@ -1,8 +1,14 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+
 public class CrankMinigame : MonoBehaviour
 {
+    // KODE BARU: Gembok cerita
+    [Header("== Story Event ==")]
+    [Tooltip("Jika false, minigame tidak akan bisa dimulai meskipun player membawa Crank Handle")]
+    public bool isStoryUnlocked = false;
+
     [Header("== Pengaturan ==")]
     [Tooltip("Seberapa cepat progress naik saat mouse diputar searah jarum jam")]
     [SerializeField] private float fillSpeed = 0.4f;
@@ -49,7 +55,7 @@ public class CrankMinigame : MonoBehaviour
         _completeWait = new WaitForSeconds(0.5f);
         _audioSource = GetComponent<AudioSource>();
         if (_audioSource == null)
-        _audioSource = gameObject.AddComponent<AudioSource>();
+            _audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
@@ -100,8 +106,17 @@ public class CrankMinigame : MonoBehaviour
         }
     }
 
+    // KODE BARU: Fungsi untuk membuka kunci dari script lain
+    public void UnlockCrankFeature()
+    {
+        isStoryUnlocked = true;
+    }
+
     public void StartMinigame()
     {
+        // KODE BARU: Tolak interaksi jika cerita belum sampai sini
+        if (!isStoryUnlocked) return;
+
         _progress = 0f;
         _isActive = true;
         _isComplete = false;
@@ -109,19 +124,19 @@ public class CrankMinigame : MonoBehaviour
         _smoothedInput = 0f;
 
         if (crankPanel != null)
-        crankPanel.SetActive(true);
+            crankPanel.SetActive(true);
 
         Debug.Log("[CrankGame] Dimulai!");
     }
 
     public void StopMinigame()
     {
-         _isActive = false;
+        _isActive = false;
         _progress = 0f;
         StopCrankSound();
 
         if (crankPanel != null)
-        crankPanel.SetActive(false);
+            crankPanel.SetActive(false);
     }
 
     private IEnumerator CompleteMinigame()

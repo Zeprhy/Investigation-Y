@@ -106,6 +106,11 @@ public class NewEnemyAI : MonoBehaviour
         }
     }
 
+    public void EnemyActivation()
+    {
+        gameObject.SetActive(true);
+    }
+
     private void UpdateMusicStatus()
     {
         if (AudioManager.Instance == null) return;
