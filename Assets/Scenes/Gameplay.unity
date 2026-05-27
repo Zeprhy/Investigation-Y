@@ -483,6 +483,118 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4626805201237154983, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+--- !u!1 &27287360
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 27287361}
+  - component: {fileID: 27287364}
+  - component: {fileID: 27287363}
+  - component: {fileID: 27287362}
+  m_Layer: 0
+  m_Name: TeleportArea (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &27287361
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27287360}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -19.33, y: 0.28, z: 102.52}
+  m_LocalScale: {x: 5.8146005, y: 0.5590949, z: 5.5075874}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1087179263}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &27287362
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27287360}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &27287363
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27287360}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &27287364
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27287360}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!64 &31022084
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -20699,6 +20811,11 @@ MonoBehaviour:
   fadeSpeed: 1
   elevatorSFX: {fileID: 0}
   arrivalDing: {fileID: 0}
+  isCrashEvent: 0
+  waitBeforeCrash: 7
+  shakingDuration: 3
+  rumbleSFX: {fileID: 0}
+  crashSFX: {fileID: 0}
 --- !u!1 &638393318 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5837902399174218861, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
@@ -27174,6 +27291,11 @@ MonoBehaviour:
   fadeSpeed: 1
   elevatorSFX: {fileID: 0}
   arrivalDing: {fileID: 0}
+  isCrashEvent: 0
+  waitBeforeCrash: 7
+  shakingDuration: 3
+  rumbleSFX: {fileID: 0}
+  crashSFX: {fileID: 0}
 --- !u!1 &779412323 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -7636026843832297736, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
@@ -35673,7 +35795,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1087179263}
   m_Layer: 0
-  m_Name: Lift-3 (1)
+  m_Name: Lift-4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35688,14 +35810,15 @@ Transform:
   m_GameObject: {fileID: 1087179262}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.3817415, y: -10.252569, z: -29.032383}
+  m_LocalPosition: {x: -8.679118, y: -9.886369, z: 129.69577}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 166958054}
   - {fileID: 1624581194}
   - {fileID: 1753964865}
-  m_Father: {fileID: 1303993538}
+  - {fileID: 27287361}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1088950467 stripped
 GameObject:
@@ -41959,7 +42082,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 953266439}
-  - {fileID: 1087179263}
   - {fileID: 1750606188}
   - {fileID: 474245169}
   - {fileID: 1605328476}
@@ -59502,6 +59624,7 @@ GameObject:
   - component: {fileID: 1753964868}
   - component: {fileID: 1753964867}
   - component: {fileID: 1753964866}
+  - component: {fileID: 1753964869}
   m_Layer: 0
   m_Name: TeleportArea
   m_TagString: Untagged
@@ -59602,6 +59725,31 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1753964864}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1753964869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753964864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a68b3aec82a4a1ee6b87f5137565fd3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TeleportLift
+  isEnabled: 1
+  destination: {fileID: 27287361}
+  targetTag: Player
+  travelDelay: 3
+  fadeCanvasGroup: {fileID: 362284827}
+  fadeSpeed: 1
+  elevatorSFX: {fileID: 0}
+  arrivalDing: {fileID: 0}
+  isCrashEvent: 1
+  waitBeforeCrash: 10
+  shakingDuration: 10
+  rumbleSFX: {fileID: 0}
+  crashSFX: {fileID: 0}
 --- !u!1 &1756225233
 GameObject:
   m_ObjectHideFlags: 0
@@ -75312,5 +75460,6 @@ SceneRoots:
   - {fileID: 1898316911}
   - {fileID: 1303993538}
   - {fileID: 582708305}
+  - {fileID: 1087179263}
   - {fileID: 643925691}
   - {fileID: 1635242116}
