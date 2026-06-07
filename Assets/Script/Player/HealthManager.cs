@@ -133,22 +133,31 @@ public class HealthManager : MonoBehaviour
     IEnumerator RespawnSequence(NewEnemyAI attacker)
     {
         isDead = true;
-        currentHealTimer = 0f; // Reset timer saat mati
+        currentHealTimer = 0f;
 
-        // Matikan kontrol & jalankan cinematic
         MovementPlayer moveScript = GetComponent<MovementPlayer>();
         if (moveScript != null) moveScript.isDead = true;
 
         PlayerInteraction interactScript = GetComponent<PlayerInteraction>();
         if (interactScript != null) interactScript.DropEquipped();
-        
-        if (stabCinematic == null) SetupReferences();
-        if (stabCinematic != null) stabCinematic.TriggerStab();
-    
-        if (attacker != null)
+
+        bool hasKillCutscene = attacker != null;
+
+        if (hasKillCutscene)
         {
-            transform.LookAt(new Vector3(attacker.transform.position.x, transform.position.y, attacker.transform.position.z));
+            transform.LookAt(new Vector3(
+                attacker.transform.position.x,
+                transform.position.y,
+                attacker.transform.position.z
+            ));
             attacker.TriggerKillAnimation();
+
+            if (moveScript != null) moveScript.SetminigameState(true);
+        }
+        else
+        {
+            if (stabCinematic == null) SetupReferences();
+            if (stabCinematic != null) stabCinematic.TriggerStab();
         }
 
         targetAlpha = maxAlpha;
