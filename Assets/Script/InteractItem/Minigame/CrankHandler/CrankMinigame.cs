@@ -33,6 +33,11 @@ public class CrankMinigame : MonoBehaviour
     [Header("== Events ==")]
     public UnityEvent onCrankComplete;   // Dipanggil saat progress penuh
     public UnityEvent onCrankCancelled;  // Dipanggil saat player berhenti
+
+    [Header("Pengaturan Kamera")]
+    [SerializeField] private bool useCameraLock = true;
+    [SerializeField] private MonoBehaviour[] scriptsToDisable;
+    [SerializeField] private bool unlockCursorForUI = false;
  
     // ---- State ----
     private float _progress = 0f;        // 0 sampai 1
@@ -126,6 +131,20 @@ public class CrankMinigame : MonoBehaviour
         if (crankPanel != null)
             crankPanel.SetActive(true);
 
+        if (useCameraLock && scriptsToDisable != null)
+        {
+            foreach (MonoBehaviour script in scriptsToDisable)
+            {
+                if (script != null) script.enabled = false;
+            }
+
+            if (unlockCursorForUI)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+
         Debug.Log("[CrankGame] Dimulai!");
     }
 
@@ -137,6 +156,20 @@ public class CrankMinigame : MonoBehaviour
 
         if (crankPanel != null)
             crankPanel.SetActive(false);
+
+        if (useCameraLock && scriptsToDisable != null)
+        {
+            foreach (MonoBehaviour script in scriptsToDisable)
+            {
+                if (script != null) script.enabled = true;
+            }
+
+            if (unlockCursorForUI)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        }
     }
 
     private IEnumerator CompleteMinigame()

@@ -6,6 +6,11 @@ public class LockpickMinigame : MonoBehaviour
 {
     [Header(" Pengaturan Minigame ")]
     [SerializeField] private float needleSpeed = 180f;
+
+    [Header("Pengaturan Kamera")]
+    [SerializeField] private bool useCameraLock = true;
+    [SerializeField] private MonoBehaviour[] scriptsToDisable;
+    [SerializeField] private bool unlockCursorForUI = true;
  
     [Range(10f, 60f)]
     [SerializeField] private float successZoneSize = 30f;
@@ -27,7 +32,7 @@ public class LockpickMinigame : MonoBehaviour
  
     private float _currentAngle = 0f;
     private float _successZoneStartAngle = 0f;
-    private float _baseNeedleSpeed;
+    private float _baseNeedleSpeed; 
     private bool _isActive = false;
     public bool IsActive => _isActive;
     private int _currentSuccesses = 0;
@@ -84,6 +89,24 @@ public class LockpickMinigame : MonoBehaviour
  
         if (minigamePanel != null)
             minigamePanel.SetActive(true);
+
+
+        if (useCameraLock)
+        {
+            if (useCameraLock)
+            {
+                foreach (MonoBehaviour script in scriptsToDisable)
+                {
+                    if (script != null) script.enabled = false;
+                }
+            }
+
+            if (unlockCursorForUI)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = false;
+            }
+        }
     }
 
     public void StopMinigame()
@@ -92,6 +115,20 @@ public class LockpickMinigame : MonoBehaviour
         if (minigamePanel != null)
         {
             minigamePanel.SetActive(false);
+        }
+
+        if (useCameraLock)
+        {
+            foreach (MonoBehaviour script in scriptsToDisable)
+            {
+                if (script != null) script.enabled = true;
+            }
+
+            if (unlockCursorForUI)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
         }
     }
 

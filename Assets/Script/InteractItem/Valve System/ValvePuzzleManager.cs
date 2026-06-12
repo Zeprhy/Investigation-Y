@@ -7,6 +7,10 @@ public class ValvePuzzleManager : MonoBehaviour
     [Header("Valve List")]
     [SerializeField] private List<ValveInteraction> valves = new List<ValveInteraction>();
 
+    // === KODE BARU: Properti agar script UI bisa mengakses list valve secara aman ===
+    public List<ValveInteraction> Valves => valves;
+    // ==============================================================================
+
     [Header("succes Events")]
     public UnityEvent onAllValveComplete;
 
@@ -21,7 +25,6 @@ public class ValvePuzzleManager : MonoBehaviour
                 valve.onValveComplete.AddListener(CheckValves);
             }
         }
-
     }
 
     private void CheckValves()

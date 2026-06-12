@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-
+using System.Collections.Generic; // WAJIB DITAMBAHKAN UNTUK LIST
 
 public class ValveProgressUI : MonoBehaviour
 {
-    [Header("  References  ")]
-    [Tooltip("Reference to the ValveInteraction script")]
-    [SerializeField] private ValveInteraction valveInteraction;
+    [Header("   References   ")]
+    [Tooltip("Reference ke Valve Puzzle Manager untuk mengambil semua data valve secara otomatis")]
+    [SerializeField] private ValvePuzzleManager puzzleManager;
     
-    [Header("  UI Elements  ")]
+    [Header("   UI Elements   ")]
     [Tooltip("The Canvas Group for fade in/out control")]
     [SerializeField] private CanvasGroup canvasGroup;
     
@@ -25,7 +25,7 @@ public class ValveProgressUI : MonoBehaviour
     [Tooltip("Arrow/Icon showing fill direction")]
     [SerializeField] private Image fillIcon;
     
-    [Header("  Visual Settings  ")]
+    [Header("   Visual Settings   ")]
     [Tooltip("Color when progress is increasing")]
     [SerializeField] private Color fillColor = Color.green;
     
@@ -35,7 +35,7 @@ public class ValveProgressUI : MonoBehaviour
     [Tooltip("Color when idle (no change)")]
     [SerializeField] private Color idleColor = Color.white;
     
-    [Header("  Animation Settings  ")]
+    [Header("   Animation Settings   ")]
     [Tooltip("Fade in duration (seconds)")]
     [SerializeField] private float fadeInDuration = 0.3f;
     
@@ -45,9 +45,10 @@ public class ValveProgressUI : MonoBehaviour
     [Tooltip("How long to wait before fading out after interaction stops")]
     [SerializeField] private float displayDuration = 2f;
     
-    // --- State ---
+    // --- State Internal ---
+    private List<ValveInteraction> _valves = new List<ValveInteraction>();
+    private float[] _lastProgressValues; // Menyimpan progress terakhir tiap valve untuk deteksi delta
     private bool _isVisible = false;
-    private float _lastProgress = 0f;
     private Coroutine _fadeCoroutine;
     private Coroutine _hideCoroutine;
 
@@ -64,28 +65,64 @@ public class ValveProgressUI : MonoBehaviour
         if (fillIcon != null)
             fillIcon.enabled = false;
 
-        if (valveInteraction == null)
+        // === MODIFIKASI: Ambil list valve dari Puzzle Manager ===
+        if (puzzleManager != null)
         {
-            Debug.LogError("ValveInteraction.cs Hilang dari refrensi");
+            _valves = puzzleManager.Valves;
+            if (_valves != null && _valves.Count > 0)
+            {
+                // Inisialisasi array tracking sesuai jumlah valve
+                _lastProgressValues = new float[_valves.Count];
+                for (int i = 0; i < _valves.Count; i++)
+                {
+                    if (_valves[i] != null)
+                        _lastProgressValues[i] = _valves[i].Progress;
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("ValvePuzzleManager belum dimasukkan ke referensi ValveProgressUI!");
         }
     }
 
     void Update()
     {
-        if (valveInteraction == null) return;
+        if (_valves == null || _valves.Count == 0) return;
     
-        float currentProgress = valveInteraction.Progress;
+        ValveInteraction activeValve = null;
+        float targetProgress = 0f;
+        float currentDelta = 0f;
 
-        bool isActive = Mathf.Abs(currentProgress - _lastProgress) > 0.001f;
+        // Loop untuk mengecek apakah ada salah satu valve yang sedang berputar
+        for (int i = 0; i < _valves.Count; i++)
+        {
+            if (_valves[i] == null) continue;
 
-        if (isActive)
+            float currentProgress = _valves[i].Progress;
+            float delta = currentProgress - _lastProgressValues[i];
+
+            // Jika ada perubahan nilai progress pada frame ini
+            if (Mathf.Abs(delta) > 0.001f)
+            {
+                activeValve = _valves[i];
+                targetProgress = currentProgress;
+                currentDelta = delta;
+            }
+
+            // Update catatan progress terakhir untuk frame berikutnya
+            _lastProgressValues[i] = currentProgress;
+        }
+
+        // Jika terdeteksi ada valve yang aktif berputar
+        if (activeValve != null)
         {
             if (!_isVisible)
             {
                 ShowPanel();
             }
 
-            UpdateProgressVisuals(currentProgress);
+            UpdateProgressVisuals(targetProgress, currentDelta);
 
             if (_hideCoroutine != null)
             {
@@ -93,10 +130,10 @@ public class ValveProgressUI : MonoBehaviour
             }
             _hideCoroutine = StartCoroutine(AutoHidePanel());
         }
-        _lastProgress = currentProgress;
     }
 
-    private void UpdateProgressVisuals(float progress)
+    // Menggunakan parameter delta langsung dari kalkulasi Update loop
+    private void UpdateProgressVisuals(float progress, float delta)
     {
         if (progressFill != null)
         {
@@ -108,26 +145,24 @@ public class ValveProgressUI : MonoBehaviour
             progressText.text = $"{Mathf.RoundToInt(progress * 100)}%";
         }
 
-        float delta = progress - _lastProgress;
-        if (delta > 0.001f)
+        if (delta > 0.001f) // Sedang Mengisi (Filling)
         {
             if (progressFill != null) progressFill.color = fillColor;
             if (fillIcon != null) fillIcon.enabled = true;
             if (drainIcon != null) drainIcon.enabled = false;
         }
-        else if (delta < -0.001f) // Draining
+        else if (delta < -0.001f) // Sedang Berkurang (Draining)
         {
             if (progressFill != null) progressFill.color = drainColor;
             if (drainIcon != null) drainIcon.enabled = true;
             if (fillIcon != null) fillIcon.enabled = false;
         }
-        else // Idle
+        else // Diam (Idle)
         {
             if (progressFill != null) progressFill.color = idleColor;
             if (drainIcon != null) drainIcon.enabled = false;
             if (fillIcon != null) fillIcon.enabled = false;
         }
-
     }
 
     private void ShowPanel()
@@ -183,5 +218,4 @@ public class ValveProgressUI : MonoBehaviour
         yield return new WaitForSeconds(displayDuration);
         HidePanel();
     }
-
 }

@@ -9,6 +9,7 @@
   <Project Path="Unity.Multiplayer.Center.Editor.csproj" />
   <Project Path="Unity.RenderPipelines.Core.Editor.csproj" />
   <Project Path="Unity.Collections.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="UnityEngine.UI.csproj" />
   <Project Path="Unity.RenderPipelines.Universal.2D.Runtime.csproj" />
   <Project Path="Unity.ProBuilder.Poly2Tri.csproj" />
@@ -55,7 +56,6 @@
   <Project Path="Unity.Multiplayer.Center.Common.csproj" />
   <Project Path="Unity.ProBuilder.KdTree.csproj" />
   <Project Path="Unity.ProBuilder.AddOns.Editor.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.InputSystem.ForUI.csproj" />
   <Project Path="Unity.AI.Navigation.csproj" />
   <Project Path="Unity.Collections.CodeGen.csproj" />
