@@ -17691,63 +17691,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4148976572847515007, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
---- !u!1001 &544368246
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 7.833335
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.52632654
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 126.47777
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
-      propertyPath: m_Name
-      value: crank handle
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1fb2ab9b55dbea546bebfb8334216b9f, type: 3}
 --- !u!1 &544500975
 GameObject:
   m_ObjectHideFlags: 0
@@ -77354,4 +77297,3 @@ SceneRoots:
   - {fileID: 1087179263}
   - {fileID: 643925691}
   - {fileID: 1635242116}
-  - {fileID: 544368246}
