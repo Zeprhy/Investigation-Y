@@ -494,6 +494,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 233364127}
   m_CullTransparentMesh: 1
+--- !u!23 &378471842 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3097981197897775701, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+  m_PrefabInstance: {fileID: 1206369179}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &420871712
 GameObject:
   m_ObjectHideFlags: 0
@@ -2118,9 +2123,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -3343840254241565385, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3343840254241565385, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b9bfb80e58012f949a3fd2993baa3b9f, type: 2}
+    - target: {fileID: -3097981197897775701, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b9bfb80e58012f949a3fd2993baa3b9f, type: 2}
     - target: {fileID: 919132149155446097, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
       propertyPath: m_Name
       value: Basement map
+      objectReference: {fileID: 0}
+    - target: {fileID: 3609929984362357572, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5456371767353309005, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6710048047270813551, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
       propertyPath: m_IsActive
@@ -2436,6 +2461,7 @@ GameObject:
   - component: {fileID: 1368867556}
   - component: {fileID: 1368867555}
   - component: {fileID: 1368867554}
+  - component: {fileID: 1368867557}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -2504,6 +2530,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1368867557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1368867553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6890e2ca4c827c4c9656652b89588a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  daftarLampu:
+  - namaLampu: LampuMainMenu1
+    rendererLampu: {fileID: 1434964617}
+    objekSpot: {fileID: 1585273088}
+    warnaNyala: {r: 1, g: 1, b: 1, a: 0}
+    warnaMati: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 0}
+    materialLampu: {fileID: 0}
+  - namaLampu: LampuMainMenu2
+    rendererLampu: {fileID: 378471842}
+    objekSpot: {fileID: 1849469353}
+    warnaNyala: {r: 1, g: 1, b: 1, a: 0}
+    warnaMati: {r: 0.22745098, g: 0.22745098, b: 0.22745098, a: 0}
+    materialLampu: {fileID: 0}
+  jedaNyala: 0.7
+  jedaMati: 0.7
+--- !u!23 &1434964617 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3343840254241565385, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+  m_PrefabInstance: {fileID: 1206369179}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1511622689
 GameObject:
   m_ObjectHideFlags: 0
@@ -2583,6 +2641,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1511622689}
   m_CullTransparentMesh: 1
+--- !u!1 &1585273088 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5081983551479847769, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+  m_PrefabInstance: {fileID: 1206369179}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1759019848
 GameObject:
   m_ObjectHideFlags: 0
@@ -3093,6 +3156,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1848868768}
   m_CullTransparentMesh: 1
+--- !u!1 &1849469353 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -8369108406639210881, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
+  m_PrefabInstance: {fileID: 1206369179}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2016356116
 GameObject:
   m_ObjectHideFlags: 0
