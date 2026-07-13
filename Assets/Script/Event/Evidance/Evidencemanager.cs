@@ -18,8 +18,7 @@ public class EvidenceManager : MonoBehaviour
  
     [Tooltip("Nama trigger animator saat evidence baru masuk")]
     [SerializeField] private string newEvidenceTrigger = "NewEvidence";
- 
-    // ---- Data ----
+
     private List<EvidenceData> _collectedEvidence = new List<EvidenceData>();
     public int EvidenceCount => _collectedEvidence.Count;
 

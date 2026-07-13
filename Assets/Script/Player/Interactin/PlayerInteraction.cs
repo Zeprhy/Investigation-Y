@@ -35,7 +35,7 @@ public class PlayerInteraction : MonoBehaviour
     private EvidenceInspector evidenceInspector;
     private PuzzleSocket _lastViewedSocket;
 
-    void Start()
+    public void Initialize()
     {
         dragHandler = GetComponent<DragHandler>();
         player = GetComponent<MovementPlayer>();
@@ -148,7 +148,6 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (equippedItem == null) return;
 
-        // Jika belum di-cache, ambil dulu
         if (cachedColliders == null || (cachedColliders.Length > 0 && cachedColliders[0] == null))
             cachedColliders = equippedItem.GetComponentsInChildren<Collider>();
         

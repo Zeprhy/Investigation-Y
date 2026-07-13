@@ -24,16 +24,22 @@ public class HealthManager : MonoBehaviour
     public StabSequence stabCinematic;
 
     private float targetAlpha;
+    private MovementPlayer movementPlayer;
+    private PlayerInteraction playerInteraction;
 
-    void Awake()
-    {
-        currentHealth = maxHealth;
-        ResetBloodUI();
-    }
-
-    void Start()
+    public void Initialize()
     {
         SetupReferences();
+
+        currentHealth = maxHealth;
+
+        currentHealTimer = 0;
+
+        isDead = false;
+
+        targetAlpha = 0;
+
+        ResetBloodUI();
     }
 
     void Update()
@@ -135,11 +141,9 @@ public class HealthManager : MonoBehaviour
         isDead = true;
         currentHealTimer = 0f;
 
-        MovementPlayer moveScript = GetComponent<MovementPlayer>();
-        if (moveScript != null) moveScript.isDead = true;
+        if (movementPlayer != null) movementPlayer.isDead = true;
 
-        PlayerInteraction interactScript = GetComponent<PlayerInteraction>();
-        if (interactScript != null) interactScript.DropEquipped();
+        if (playerInteraction != null) playerInteraction.DropEquipped();
 
         bool hasKillCutscene = attacker != null;
 
@@ -152,7 +156,7 @@ public class HealthManager : MonoBehaviour
             ));
             attacker.TriggerKillAnimation();
 
-            if (moveScript != null) moveScript.SetminigameState(true);
+            if (movementPlayer != null) movementPlayer.SetminigameState(true);
         }
         else
         {

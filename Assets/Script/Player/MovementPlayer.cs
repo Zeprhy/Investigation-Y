@@ -27,8 +27,8 @@ public class MovementPlayer : MonoBehaviour
     [Header("Stealth & Hide")]
     [SerializeField] private LayerMask obstacleMask;
     
-    [Header("Flashlight Settings")]
-    [SerializeField] private GameObject flashlightObject;
+    // [Header("Flashlight Settings")]
+    // [SerializeField] private GameObject flashlightObject;
 
     [Header("Noise System")]
     [SerializeField] private float baseNoiseRadius = 5f;
@@ -66,7 +66,6 @@ public class MovementPlayer : MonoBehaviour
     private bool isRunning;
     private bool isCrouching;
     private bool isBlockedAbove;
-    private bool isFlashlightOn = false;
     private bool isExhausted = false;
     public bool IsHidden { get; set; }
     private bool _isMinigameActive = false;
@@ -74,7 +73,7 @@ public class MovementPlayer : MonoBehaviour
 
     public Transform PlayerCamera => playerCamera;
 
-    void Start()
+    public void Initialize()
     {
         characterController = GetComponent<CharacterController>();
         savedFOV = PlayerPrefs.GetFloat("Settings_FOV", 60f);
@@ -82,11 +81,6 @@ public class MovementPlayer : MonoBehaviour
         currentStamina = maxStamina;
 
         SetCursorState(false);
-
-        if (flashlightObject != null)
-        {
-            flashlightObject.SetActive(false);
-        }
     }
 
     public void UpdateSavedFOV(float newFOV)
@@ -96,7 +90,6 @@ public class MovementPlayer : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext context) => inputMove = context.ReadValue<Vector2>();
     public void OnLook(InputAction.CallbackContext context) => inputLook = context.ReadValue<Vector2>();
-    //public void OnJump(InputAction.CallbackContext context) { if (context.performed) ApplyJump(); }
     public void OnSprint(InputAction.CallbackContext context) => isRunning = context.performed;
     public void OnCrouch(InputAction.CallbackContext context) => isCrouching = context.performed;
 
@@ -332,23 +325,7 @@ public class MovementPlayer : MonoBehaviour
             characterController.height = defaultHeight;
         }
     }
-
-    public void OnFlashlight(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            ToggleFlashlight();
-        }
-    }
-
-    private void ToggleFlashlight()
-    {
-        if (flashlightObject != null)
-        {
-            isFlashlightOn = !isFlashlightOn;
-            flashlightObject.SetActive(isFlashlightOn);
-        }
-    }   
+ 
     private void HandleNoiseEmission()
     {
         if (characterController.velocity.sqrMagnitude > 0.01f)
