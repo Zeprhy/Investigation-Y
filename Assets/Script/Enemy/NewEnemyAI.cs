@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 
 public class NewEnemyAI : MonoBehaviour
 {
@@ -177,7 +176,7 @@ public class NewEnemyAI : MonoBehaviour
     {
         bool canSeePlayer = false;
     
-        if (playerScript != null && playerScript.IsHidden)
+        if (playerScript != null && GameManager.Instance.hideManager.IsHidden)
         {
             awarenessMeter = Mathf.MoveTowards(awarenessMeter, 0f, awarenessDecreaseSpeed * Time.deltaTime);
             if (currentState == EnemyState.Chasing || currentState == EnemyState.Attacking)
@@ -196,7 +195,7 @@ public class NewEnemyAI : MonoBehaviour
             {
                 if (!Physics.Raycast(transform.position + Vector3.up, dirToPlayer, distToPlayer, obstacleMask))
                 {
-                    if (!playerScript.IsHidden) canSeePlayer = true;
+                    if (!GameManager.Instance.hideManager.IsHidden) canSeePlayer = true;
                 }
             }
         }
@@ -206,7 +205,7 @@ public class NewEnemyAI : MonoBehaviour
             awarenessMeter = Mathf.MoveTowards(awarenessMeter, awarenessThreshold + 0.1f, awarenessIncreaseSpeed * Time.deltaTime);
             lastKnownPosition = player.position;
     
-            // ✅ Langsung chase begitu melihat player, tanpa tunggu awareness penuh
+            // Langsung chase begitu melihat player, tanpa tunggu awareness penuh
             if (currentState != EnemyState.Attacking && currentState != EnemyState.Chasing)
             {
                 ChangeState(EnemyState.Chasing);

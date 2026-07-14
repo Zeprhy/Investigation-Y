@@ -2,15 +2,20 @@ using UnityEngine;
 
 public class HideManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private CharacterController characterController;
+
+    public bool IsHidden { get; private set; }
+
+    public void Initialize()
     {
-        
+        characterController = GetComponent<CharacterController>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetHidden(bool hidden)
     {
-        
+        IsHidden = hidden;
+
+        if (characterController != null)
+            characterController.enabled = !hidden;
     }
 }

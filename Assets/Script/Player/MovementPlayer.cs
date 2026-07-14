@@ -17,18 +17,12 @@ public class MovementPlayer : MonoBehaviour
     [SerializeField] private float crouchSpeed = 3f;
 
     [Header("Fisika")]
-    //[SerializeField] private float jumpPower = 7f;
     [SerializeField] private float gravity = 20f;
     [SerializeField] private float defaultHeight = 2f;
     [SerializeField] private float crouchHeight = 1f;
-    //[SerializeField] private float jumpCooldown = 0.1f; 
-    //[SerializeField] private float jumpForwardForce = 2f;
 
     [Header("Stealth & Hide")]
     [SerializeField] private LayerMask obstacleMask;
-    
-    // [Header("Flashlight Settings")]
-    // [SerializeField] private GameObject flashlightObject;
 
     [Header("Noise System")]
     [SerializeField] private float baseNoiseRadius = 5f;
@@ -61,13 +55,12 @@ public class MovementPlayer : MonoBehaviour
     private Vector2 inputLook;
     private float rotationX = 0;
     private bool isCursorLocked;
-    //private float lastJumpTime;
 
     private bool isRunning;
     private bool isCrouching;
     private bool isBlockedAbove;
     private bool isExhausted = false;
-    public bool IsHidden { get; set; }
+    // public bool IsHidden { get; set; }
     private bool _isMinigameActive = false;
     public bool isDead = false;
 
@@ -102,12 +95,6 @@ public class MovementPlayer : MonoBehaviour
         
         HandleStamina();
         UpdateStaminaUI();
-
-        if (IsHidden) 
-        {
-            moveDirection = Vector3.zero;
-            return; 
-        }
 
         ClimbingSystem climbing = GetComponent<ClimbingSystem>();
         if (climbing != null && climbing.IsClimbing) 
@@ -150,21 +137,11 @@ public class MovementPlayer : MonoBehaviour
         _isMinigameActive = active;
     }
 
-    public void SetHiddenStatus(bool status)
-    {
-        IsHidden = status;
-
-        if (characterController != null) 
-        {
-            characterController.enabled = !status;
-        }
-    }
-
     private void HandleStamina()
     {
         bool isMovingState = characterController.velocity.magnitude > 0.1f;
 
-        if (isRunning && isMovingState && !isExhausted && !isCrouching && !IsHidden)
+        if (isRunning && isMovingState && !isExhausted && !isCrouching)
         {
             currentStamina -= staminaDrain * Time.deltaTime;
             if (currentStamina <= 0)
@@ -210,7 +187,7 @@ public class MovementPlayer : MonoBehaviour
 
     private void ApplyRotation()
     {
-        if (_isMinigameActive || PauseMenu.isPausedStatic || IsHidden || isDead) return;
+        if (_isMinigameActive || PauseMenu.isPausedStatic || isDead) return;
 
         // Modifikasi: Mouse hanya bisa digerakkan jika masih hidup
         float mouseInputX = isDead ? 0 : inputLook.x;
@@ -248,11 +225,6 @@ public class MovementPlayer : MonoBehaviour
 
     private void ApplyMovement()
     {
-        if (IsHidden) 
-        {
-            moveDirection = Vector3.zero;
-            return;
-        }
 
         Vector2 finalInput = characterController.isGrounded ? inputMove : Vector2.zero;
 
@@ -282,24 +254,6 @@ public class MovementPlayer : MonoBehaviour
 
         moveDirection.y = verticalTemp;
     }
-
-    /*private void ApplyJump()
-    {
-        // Cek apakah di tanah, sedang tidak cooldown, dan tidak lelah
-        if (characterController.isGrounded && Time.time >= lastJumpTime + jumpCooldown && !isExhausted)
-        {
-            moveDirection.y = jumpPower;
-            currentStamina -= 10f; // Kurangi 10 stamina setiap lompat
-            regenDelayTimer = staminaRegenDelay; // Reset delay regenerasi
-
-            // Berikan dorongan ke depan saat melompat
-            Vector3 forwardJump = transform.forward * jumpForwardForce;
-            moveDirection.x = forwardJump.x;
-            moveDirection.z = forwardJump.z;
-
-            lastJumpTime = Time.time; // Catat waktu lompat
-        }
-    }*/
 
     private void ApplyGravity()
     {

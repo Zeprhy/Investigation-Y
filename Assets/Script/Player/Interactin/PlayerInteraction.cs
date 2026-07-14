@@ -27,6 +27,7 @@ public class PlayerInteraction : MonoBehaviour
     private Locker currentLocker;
     private Outline lastHighlightedItem;
     private PuzzleSocket currentViewedSocket;
+    private HideManager hideManager;
 
     private bool isHidden;
     private bool isInsideLocker = false;
@@ -40,6 +41,7 @@ public class PlayerInteraction : MonoBehaviour
         dragHandler = GetComponent<DragHandler>();
         player = GetComponent<MovementPlayer>();
         evidenceInspector = GetComponent<EvidenceInspector>();
+        hideManager = GetComponent<HideManager>();
     }
 
     void Update()
@@ -313,7 +315,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         isHidden = status;
         isInsideLocker = status;
-        player.IsHidden = status;
+        hideManager.SetHidden(status);
 
         if (equippedItem != null)
         {
