@@ -114,12 +114,14 @@ public class EvidenceInspector : MonoBehaviour
     }
 
     public bool TryHandleInteract()
-{
-    Debug.Log($"[TryHandleInteract] _isInspecting: {_isInspecting}");
+    {
+    //Debug.Log($"[TryHandleInteract] _isInspecting: {_isInspecting}");
+
+    if (_isReturning) return false;
 
     if (_isInspecting)
     {
-        Debug.Log("[TryHandleInteract] → CollectCurrent");
+        //Debug.Log("[TryHandleInteract] → CollectCurrent");
         CollectCurrent();
         return true;
     }
@@ -156,7 +158,8 @@ public class EvidenceInspector : MonoBehaviour
     public void OnPutBack(InputAction.CallbackContext context)
     {
         if (!context.performed || PauseMenu.isPausedStatic) return;
-        if (!_isInspecting) return;
+
+        if (!_isInspecting || _isReturning) return;
 
         PutBackCurrent();
     }
@@ -232,7 +235,7 @@ public class EvidenceInspector : MonoBehaviour
 
             _returnTargetPos = _currentEvidence.OriginalPosition;
             _returnTargetRot = _currentEvidence.OriginalRotation;
-            _currentDocument.StopInspect();
+            _currentEvidence.StopInspect();
             _isReturning = true;
             
         }
