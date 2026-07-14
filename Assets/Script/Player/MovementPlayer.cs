@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
@@ -25,16 +24,13 @@ public class MovementPlayer : MonoBehaviour
    /* [Header("Noise System")]
     [SerializeField] private float baseNoiseRadius = 5f;
     [SerializeField] private float sprintNoiseMultiplier = 2f;
-    [SerializeField] private float crouchNoiseMultiplier = 0.5f;*/
+    [SerializeField] private float crouchNoiseMultiplier = 0.5f;
     [SerializeField] private LayerMask enemyLayer;
+    
+    */
 
     [Header("Stamina System")]
-    [SerializeField] private float maxStamina = 100f;
-    [SerializeField] private float currentStamina;
-    [SerializeField] private float staminaDrain = 20f;
-    [SerializeField] private float staminaRegen = 15f;
-    [SerializeField] private float staminaRegenDelay = 2f;
-    [SerializeField] private Image staminaBarFill;
+    private PlayerStamina playerStamina;
 
     [Header("Health Integration")]
     [SerializeField] private HealthManager health;
@@ -45,8 +41,6 @@ public class MovementPlayer : MonoBehaviour
     private Collider[] enemyBuffer = new Collider[5]; 
 
     private Transform myTransform;
-    private float lastStaminaPercent = -1f;
-    private float regenDelayTimer;
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
     private Vector2 inputMove;
@@ -57,7 +51,7 @@ public class MovementPlayer : MonoBehaviour
     private bool isRunning;
     private bool isCrouching;
     private bool isBlockedAbove;
-    private bool isExhausted = false;
+    
     // public bool IsHidden { get; set; }
     private bool _isMinigameActive = false;
     public bool isDead = false;
@@ -69,7 +63,6 @@ public class MovementPlayer : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         savedFOV = PlayerPrefs.GetFloat("Settings_FOV", 60f);
         myTransform = transform;
-        currentStamina = maxStamina;
 
         SetCursorState(false);
     }
@@ -90,9 +83,14 @@ public class MovementPlayer : MonoBehaviour
         if (_isMinigameActive) return;
 
         ApplyRotation();
+
+        bool isMovingState = characterController.velocity.magnitude > 0.1f;
+        if (playerStamina != null)
+        {
+            playerStamina.HandleStamina(isRunning, isMovingState, isCrouching);
+            playerStamina.UpdateStaminaUI();
+        }
         
-        HandleStamina();
-        UpdateStaminaUI();
 
         ClimbingSystem climbing = GetComponent<ClimbingSystem>();
         if (climbing != null && climbing.IsClimbing) 
@@ -107,7 +105,7 @@ public class MovementPlayer : MonoBehaviour
         ApplyGravity();
         ApplyCrouch();
 
-        float targetFOV = (isRunning && !isExhausted && inputMove.magnitude > 0.1f) ? savedFOV + 10f : savedFOV;
+        float targetFOV = (isRunning && !playerStamina.isExhausted && inputMove.magnitude > 0.1f) ? savedFOV + 10f : savedFOV;
         Camera lens = playerCamera.GetComponentInChildren<Camera>();
         if (lens != null) {
             lens.fieldOfView = Mathf.Lerp(lens.fieldOfView, targetFOV, Time.deltaTime * 5f);
@@ -126,54 +124,6 @@ public class MovementPlayer : MonoBehaviour
     public void SetminigameState(bool active)
     {
         _isMinigameActive = active;
-    }
-
-    private void HandleStamina()
-    {
-        bool isMovingState = characterController.velocity.magnitude > 0.1f;
-
-        if (isRunning && isMovingState && !isExhausted && !isCrouching)
-        {
-            currentStamina -= staminaDrain * Time.deltaTime;
-            if (currentStamina <= 0)
-            {
-                currentStamina = 0;
-                isExhausted = true;
-                regenDelayTimer = staminaRegenDelay;
-            }
-        }
-        else
-        {
-            if (regenDelayTimer > 0)
-            {
-                regenDelayTimer -= Time.deltaTime;
-            }
-            else
-            {
-                currentStamina += staminaRegen * Time.deltaTime;
-            }
-
-            if (isExhausted && currentStamina >= (maxStamina * 0.2f))
-            {
-                isExhausted = false;
-            }
-        }
-
-        currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
-    }
-
-    private void UpdateStaminaUI()
-    {
-        if (staminaBarFill != null)
-        {
-            float currentPercent = currentStamina / maxStamina;
-
-            if (Mathf.Abs(lastStaminaPercent - currentPercent) > 0.001f)
-            {
-                staminaBarFill.fillAmount = currentPercent;
-                lastStaminaPercent = currentPercent;
-            }
-        }
     }
 
     private void ApplyRotation()
@@ -219,7 +169,7 @@ public class MovementPlayer : MonoBehaviour
 
         Vector2 finalInput = characterController.isGrounded ? inputMove : Vector2.zero;
 
-        bool canRun = isRunning && !isExhausted && !isCrouching;
+        bool canRun = isRunning && !playerStamina.isExhausted && !isCrouching;
         float currentSpeed = isCrouching ? crouchSpeed : (canRun ? runSpeed : walkSpeed);
 
         if (health != null)
@@ -250,7 +200,7 @@ public class MovementPlayer : MonoBehaviour
     {
         if (characterController.isGrounded && moveDirection.y < 0)
         {
-            moveDirection.y = -2f; // Pastikan karakter tetap menempel tanah
+            moveDirection.y = -2f;
         }
         else
         {
@@ -271,12 +221,15 @@ public class MovementPlayer : MonoBehaviour
         }
     }
 
+    /*
 
-   /* private void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         float previewRadius = isCrouching ? baseNoiseRadius * crouchNoiseMultiplier : 
                              (isRunning ? baseNoiseRadius * sprintNoiseMultiplier : baseNoiseRadius);
         Gizmos.DrawWireSphere(transform.position, previewRadius);
-    }*/
+    }
+    
+    */
 }
