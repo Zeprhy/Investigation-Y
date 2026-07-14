@@ -7126,6 +7126,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 511692104}
   m_CullTransparentMesh: 1
+--- !u!1 &526078128 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3398847915844436771, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
+  m_PrefabInstance: {fileID: 2260874477487786541}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &526078129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526078128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a130e7d8d818e57d9c468a0d3709b0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  movementPlayer: {fileID: 0}
+  healthManager: {fileID: 0}
+  playerInteraction: {fileID: 0}
+  evidenceManager: {fileID: 977741239}
+  audioManager: {fileID: 0}
+  cameraShakeManager: {fileID: 0}
+  dialogueManager: {fileID: 0}
+  checkpointManager: {fileID: 0}
+  dataPersistenceManager: {fileID: 0}
 --- !u!1 &567034925
 GameObject:
   m_ObjectHideFlags: 0
@@ -7537,7 +7563,6 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 8
-  flashlightObject: {fileID: 1570782866}
   baseNoiseRadius: 5
   sprintNoiseMultiplier: 2
   crouchNoiseMultiplier: 0.5
@@ -8867,6 +8892,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963126807}
   m_CullTransparentMesh: 1
+--- !u!114 &977741239 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5395689185339446633, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
+  m_PrefabInstance: {fileID: 2260874477487786541}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f66c777b5ff1e45868171369084ba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EvidenceManager
 --- !u!1 &991758192
 GameObject:
   m_ObjectHideFlags: 0
@@ -15749,7 +15785,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3398847915844436771, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 526078129}
   m_SourcePrefab: {fileID: 100100000, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
 --- !u!1001 &2994346617017303370
 PrefabInstance:

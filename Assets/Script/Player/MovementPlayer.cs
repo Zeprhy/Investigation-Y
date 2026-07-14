@@ -21,13 +21,11 @@ public class MovementPlayer : MonoBehaviour
     [SerializeField] private float defaultHeight = 2f;
     [SerializeField] private float crouchHeight = 1f;
 
-    [Header("Stealth & Hide")]
-    [SerializeField] private LayerMask obstacleMask;
 
-    [Header("Noise System")]
+   /* [Header("Noise System")]
     [SerializeField] private float baseNoiseRadius = 5f;
     [SerializeField] private float sprintNoiseMultiplier = 2f;
-    [SerializeField] private float crouchNoiseMultiplier = 0.5f;
+    [SerializeField] private float crouchNoiseMultiplier = 0.5f;*/
     [SerializeField] private LayerMask enemyLayer;
 
     [Header("Stamina System")]
@@ -108,13 +106,6 @@ public class MovementPlayer : MonoBehaviour
         ApplyMovement();
         ApplyGravity();
         ApplyCrouch();
-
-        noiseTimer += Time.deltaTime;
-        if (noiseTimer >= noiseUpdateFrequency)
-        {
-            HandleNoiseEmission();
-            noiseTimer = 0;    
-        }
 
         float targetFOV = (isRunning && !isExhausted && inputMove.magnitude > 0.1f) ? savedFOV + 10f : savedFOV;
         Camera lens = playerCamera.GetComponentInChildren<Camera>();
@@ -279,34 +270,13 @@ public class MovementPlayer : MonoBehaviour
             characterController.height = defaultHeight;
         }
     }
- 
-    private void HandleNoiseEmission()
-    {
-        if (characterController.velocity.sqrMagnitude > 0.01f)
-        {
-            float multiplier = isCrouching ? crouchNoiseMultiplier : (isRunning ? sprintNoiseMultiplier : 1f);
-            EmitNoise(baseNoiseRadius * multiplier);
-        }
-    }
 
-    private void EmitNoise(float radius)
-    {
-        int numEnemies = Physics.OverlapSphereNonAlloc(myTransform.position, radius, enemyBuffer, enemyLayer);
-        
-        for (int i = 0; i < numEnemies; i++)
-        {
-            if (enemyBuffer[i].TryGetComponent(out NewEnemyAI enemyScript))
-            {
-                enemyScript.OnHeardNoise(myTransform.position);
-            }
-        }
-    }
 
-    private void OnDrawGizmosSelected()
+   /* private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         float previewRadius = isCrouching ? baseNoiseRadius * crouchNoiseMultiplier : 
                              (isRunning ? baseNoiseRadius * sprintNoiseMultiplier : baseNoiseRadius);
         Gizmos.DrawWireSphere(transform.position, previewRadius);
-    }
+    }*/
 }
