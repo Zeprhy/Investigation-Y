@@ -17,10 +17,28 @@ public class DialogueManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
-        dialogueCanvasGroup.alpha = 0;
+        if (Instance == null)
+            Instance = this;
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+    
+    public void Initialize()
+    {
+        if (dialogueCanvasGroup != null)
+        {
+            dialogueCanvasGroup.alpha = 0;
+            dialogueCanvasGroup.blocksRaycasts = false;
+            dialogueCanvasGroup.interactable = false;
+        }
+    
+        if (dialogueText != null)
+        {
+            dialogueText.text = "";
+        }
     }
 
     public void ShowDialogue(string message, float duration = 0)

@@ -4,37 +4,29 @@ using System.Collections.Generic;
 
 public class EvidenceManager : MonoBehaviour
 {
-    public static EvidenceManager Instance;
- 
+ /*
     [Header("== UI Counter ==")]
     [Tooltip("Icon barang bukti di HUD")]
-    [SerializeField] private GameObject evidenceIconUI;
+    [SerializeField] private GameObject evidenceIconUI;*/
  
     [Tooltip("Text counter jumlah barang bukti")]
     [SerializeField] private TextMeshProUGUI evidenceCountText;
  
-    [Tooltip("Animasi saat barang bukti baru masuk (opsional)")]
-    [SerializeField] private Animator counterAnimator;
+    // [Tooltip("Animasi saat barang bukti baru masuk (opsional)")]
+    // [SerializeField] private Animator counterAnimator;
  
-    [Tooltip("Nama trigger animator saat evidence baru masuk")]
-    [SerializeField] private string newEvidenceTrigger = "NewEvidence";
+    // [Tooltip("Nama trigger animator saat evidence baru masuk")]
+    // [SerializeField] private string newEvidenceTrigger = "NewEvidence";
 
     private List<EvidenceData> _collectedEvidence = new List<EvidenceData>();
     public int EvidenceCount => _collectedEvidence.Count;
 
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+    // void Awake()
+    // {
+    //     Destroy(gameObject);
+    // }
 
-    void Start()
+    public void Initialize()
     {
         UpdateUI();
     }
@@ -50,8 +42,8 @@ public class EvidenceManager : MonoBehaviour
 
         _collectedEvidence.Add(data);
         UpdateUI();
-        if (counterAnimator != null)
-            counterAnimator.SetTrigger(newEvidenceTrigger);
+        // if (counterAnimator != null)
+        //     counterAnimator.SetTrigger(newEvidenceTrigger);
 
         if (id == "BloodSlash")
         {
@@ -63,8 +55,9 @@ public class EvidenceManager : MonoBehaviour
         if (evidenceCountText != null)
             evidenceCountText.text = _collectedEvidence.Count.ToString();
 
-        if (evidenceIconUI != null)
+        /*if (evidenceIconUI != null)
             evidenceIconUI.SetActive(_collectedEvidence.Count > 0);
+            */
     }
 
     [System.Serializable]

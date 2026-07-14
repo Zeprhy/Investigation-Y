@@ -9,7 +9,7 @@ public class Checkpoint : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             // Gunakan fungsi dari Manager agar terpusat
-            CheckpointManager.Instance.SetNewCheckpoint(other.transform.position);
+            GameManager.Instance.checkpointManager.SetNewCheckpoint(other.transform.position);
             Debug.Log($"Checkpoint {checkpointID} Disimpan!");
             GetComponent<Collider>().enabled = false;
         }

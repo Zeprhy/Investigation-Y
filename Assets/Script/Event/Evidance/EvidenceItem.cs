@@ -96,7 +96,7 @@ public class EvidenceItem : MonoBehaviour
 
     public void CollectEvidence()
     {
-        EvidenceManager.Instance?.AddEvidence(evidenceName, description, evidenceID);
+        GameManager.Instance.evidenceManager.AddEvidence(evidenceName, description, evidenceID);
 
         if (canBePickedUp)
         {

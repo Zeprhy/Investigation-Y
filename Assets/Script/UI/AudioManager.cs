@@ -58,7 +58,7 @@ public class AudioManager : MonoBehaviour, IDataPersistence
         }
     }
 
-    private void Start()
+    public void Initialize()
     {
         SetupSource(ambientSource, 1f);
         SetupSource(investigateSource, 0f);
@@ -78,7 +78,11 @@ public class AudioManager : MonoBehaviour, IDataPersistence
         {
             source.loop = true;
             source.volume = initialVolume;
-            source.Play();
+
+            if (!source.isPlaying)
+            {
+                source.Play();
+            }
         }
     }
 

@@ -8111,10 +8111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56f66c777b5ff1e45868171369084ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EvidenceManager
-  evidenceIconUI: {fileID: 2019281021}
   evidenceCountText: {fileID: 1708213763}
-  counterAnimator: {fileID: 0}
-  newEvidenceTrigger: NewEvidence
 --- !u!1 &121026010
 GameObject:
   m_ObjectHideFlags: 0
@@ -19675,7 +19672,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &614701508
 Transform:
   m_ObjectHideFlags: 0
@@ -19991,7 +19988,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &629410747
 Transform:
   m_ObjectHideFlags: 0
@@ -23086,7 +23083,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &737835946
 Transform:
   m_ObjectHideFlags: 0
@@ -24111,8 +24108,8 @@ GameObject:
   - component: {fileID: 769955100}
   - component: {fileID: 769955099}
   - component: {fileID: 769955104}
-  - component: {fileID: 769955098}
   - component: {fileID: 769955103}
+  - component: {fileID: 769955098}
   - component: {fileID: 769955106}
   - component: {fileID: 769955105}
   - component: {fileID: 769955107}
@@ -33697,6 +33694,10 @@ MonoBehaviour:
   movementPlayer: {fileID: 769955098}
   healthManager: {fileID: 769955107}
   playerInteraction: {fileID: 769955106}
+  evidenceManager: {fileID: 119511638}
+  audioManager: {fileID: 922347295}
+  cameraShakeManager: {fileID: 1712904484}
+  dialogueManager: {fileID: 1092385922}
 --- !u!1 &1081087659 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9055981915347568062, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
@@ -33997,7 +33998,7 @@ GameObject:
   - component: {fileID: 1092385921}
   - component: {fileID: 1092385922}
   m_Layer: 0
-  m_Name: DialogSystem
+  m_Name: Dialog Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44145,7 +44146,7 @@ GameObject:
   - component: {fileID: 1481385307}
   - component: {fileID: 1481385308}
   m_Layer: 0
-  m_Name: Check Point
+  m_Name: CheckPoint Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

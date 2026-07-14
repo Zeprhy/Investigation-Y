@@ -21,24 +21,15 @@ public class CameraShakeManager : MonoBehaviour
 
     Coroutine currentShake;
 
-    private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
-    private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
-
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void Initialize()
     {
         targetCamera = Camera.main;
-    }
-
-    void Start()
-    {
-        if (targetCamera == null)
-            targetCamera = Camera.main;
     }
 
     public void ShakeLight() => TriggerShake(lightDuration, lightMagnitude);

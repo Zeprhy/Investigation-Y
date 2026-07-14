@@ -5,36 +5,12 @@ using System.Collections;
 
 public class CheckpointManager : MonoBehaviour
 {
-    public static CheckpointManager Instance { get; private set; }
-    
     private string filePath;
     private GameSaveData currentData = new GameSaveData();
 
-    void Awake()
+    public void Initialize()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            
-            // Menentukan lokasi file (biasanya di AppData/LocalLow)
-            filePath = Path.Combine(Application.persistentDataPath, "checkpoint.json");
-        }
-        else { Destroy(gameObject); }
-    }
-
-    private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
-    private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        StartCoroutine(DeferredLoad());
-    }
-
-    private IEnumerator DeferredLoad()
-    {
-        yield return null; // Tunggu 1 frame agar Player spawn
-        LoadCheckpoint();
+        filePath = Path.Combine(Application.persistentDataPath, "checkpoint.json");
     }
 
     public void SetNewCheckpoint(Vector3 pos)

@@ -106,7 +106,7 @@ public class DocumentItem : MonoBehaviour
     }
     public void CollectDocument()
     {
-        EvidenceManager.Instance?.AddEvidence(documentTitle,documentText,documentID);
+        GameManager.Instance.evidenceManager.AddEvidence(documentTitle,documentText,documentID);
         Destroy(gameObject);
     }
 }
