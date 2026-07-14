@@ -1,8 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI; 
 
 public class PlayerStamina : MonoBehaviour
 {
+    [Header("Settings")]
     [SerializeField] private float maxStamina = 100f;
     [SerializeField] private float currentStamina;
     [SerializeField] private float staminaDrain = 20f;
@@ -10,26 +11,24 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] private float staminaRegenDelay = 2f;
     [SerializeField] private Image staminaBarFill;
 
-    private float lastStaminaPercent = -1f;
     private float regenDelayTimer;
-    public bool isExhausted { get; private set; }
+    private float lastStaminaPercent = -1f;
+    public bool IsExhausted { get; private set; } 
 
-    void Start()
+    private void Start()
     {
-         currentStamina = maxStamina;
+        currentStamina = maxStamina;
     }
 
     public void HandleStamina(bool isRunning, bool isMovingState, bool isCrouching)
     {
-       
-
-        if (isRunning && isMovingState && !isExhausted && !isCrouching)
+        if (isRunning && isMovingState && !IsExhausted && !isCrouching)
         {
             currentStamina -= staminaDrain * Time.deltaTime;
             if (currentStamina <= 0)
             {
                 currentStamina = 0;
-                isExhausted = true;
+                IsExhausted = true;
                 regenDelayTimer = staminaRegenDelay;
             }
         }
@@ -44,9 +43,9 @@ public class PlayerStamina : MonoBehaviour
                 currentStamina += staminaRegen * Time.deltaTime;
             }
 
-            if (isExhausted && currentStamina >= (maxStamina * 0.2f))
+            if (IsExhausted && currentStamina >= (maxStamina * 0.2f))
             {
-                isExhausted = false;
+                IsExhausted = false;
             }
         }
 

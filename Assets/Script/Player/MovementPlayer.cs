@@ -20,26 +20,14 @@ public class MovementPlayer : MonoBehaviour
     [SerializeField] private float defaultHeight = 2f;
     [SerializeField] private float crouchHeight = 1f;
 
-
-   /* [Header("Noise System")]
-    [SerializeField] private float baseNoiseRadius = 5f;
-    [SerializeField] private float sprintNoiseMultiplier = 2f;
-    [SerializeField] private float crouchNoiseMultiplier = 0.5f;
-    [SerializeField] private LayerMask enemyLayer;
-    
-    */
-
     [Header("Stamina System")]
-    private PlayerStamina playerStamina;
+    [SerializeField] private  PlayerStamina playerStamina;
 
     [Header("Health Integration")]
     [SerializeField] private HealthManager health;
 
     [Header("Optimization Settings")]
     [SerializeField] private float noiseUpdateFrequency = 0.2f;
-    private float noiseTimer;
-    private Collider[] enemyBuffer = new Collider[5]; 
-
     private Transform myTransform;
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
@@ -53,7 +41,6 @@ public class MovementPlayer : MonoBehaviour
     private bool isBlockedAbove;
     
     // public bool IsHidden { get; set; }
-    private bool _isMinigameActive = false;
     public bool isDead = false;
 
     public Transform PlayerCamera => playerCamera;
@@ -79,8 +66,9 @@ public class MovementPlayer : MonoBehaviour
 
     void Update()
     {
+        if(characterController == null ) return;
+
         if (PauseMenu.isPausedStatic) return;
-        if (_isMinigameActive) return;
 
         ApplyRotation();
 
@@ -105,7 +93,7 @@ public class MovementPlayer : MonoBehaviour
         ApplyGravity();
         ApplyCrouch();
 
-        float targetFOV = (isRunning && !playerStamina.isExhausted && inputMove.magnitude > 0.1f) ? savedFOV + 10f : savedFOV;
+        float targetFOV = (isRunning && playerStamina!= null && !playerStamina.IsExhausted && inputMove.magnitude > 0.1f) ? savedFOV + 10f : savedFOV;
         Camera lens = playerCamera.GetComponentInChildren<Camera>();
         if (lens != null) {
             lens.fieldOfView = Mathf.Lerp(lens.fieldOfView, targetFOV, Time.deltaTime * 5f);
@@ -121,14 +109,14 @@ public class MovementPlayer : MonoBehaviour
         Cursor.visible = locked;
     }
 
-    public void SetminigameState(bool active)
+   /* public void SetminigameState(bool active)
     {
         _isMinigameActive = active;
-    }
+    }*/
 
     private void ApplyRotation()
     {
-        if (_isMinigameActive || PauseMenu.isPausedStatic || isDead) return;
+        if ( PauseMenu.isPausedStatic || isDead) return;
 
         // Modifikasi: Mouse hanya bisa digerakkan jika masih hidup
         float mouseInputX = isDead ? 0 : inputLook.x;
@@ -169,7 +157,7 @@ public class MovementPlayer : MonoBehaviour
 
         Vector2 finalInput = characterController.isGrounded ? inputMove : Vector2.zero;
 
-        bool canRun = isRunning && !playerStamina.isExhausted && !isCrouching;
+        bool canRun = isRunning && playerStamina != null && !playerStamina.IsExhausted && !isCrouching;
         float currentSpeed = isCrouching ? crouchSpeed : (canRun ? runSpeed : walkSpeed);
 
         if (health != null)

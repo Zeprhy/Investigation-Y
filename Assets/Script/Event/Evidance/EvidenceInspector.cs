@@ -331,7 +331,7 @@ public class EvidenceInspector : MonoBehaviour
     private void FreezePlayer(bool freeze)
     {
         if (movementPlayer != null)
-            movementPlayer.SetminigameState(freeze);
+            movementPlayer.enabled = !freeze;
 
         Cursor.lockState = freeze ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = freeze;

@@ -24116,6 +24116,7 @@ GameObject:
   - component: {fileID: 769955108}
   - component: {fileID: 769955109}
   - component: {fileID: 769955110}
+  - component: {fileID: 769955111}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -24145,21 +24146,7 @@ MonoBehaviour:
   gravity: 12
   defaultHeight: 2
   crouchHeight: 0.03
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 8
-  baseNoiseRadius: 5
-  sprintNoiseMultiplier: 3
-  crouchNoiseMultiplier: 0.5
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  maxStamina: 100
-  currentStamina: 0
-  staminaDrain: 20
-  staminaRegen: 15
-  staminaRegenDelay: 2
-  staminaBarFill: {fileID: 1610046834}
+  playerStamina: {fileID: 769955111}
   health: {fileID: 769955107}
   noiseUpdateFrequency: 0.2
   isDead: 0
@@ -24740,6 +24727,24 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &769955111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 769955097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d28928ce2e73464191bfeb8d06f4bb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStamina
+  maxStamina: 100
+  currentStamina: 0
+  staminaDrain: 20
+  staminaRegen: 15
+  staminaRegenDelay: 2
+  staminaBarFill: {fileID: 1610046834}
 --- !u!64 &771223816
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -33695,9 +33700,12 @@ MonoBehaviour:
   healthManager: {fileID: 769955107}
   playerInteraction: {fileID: 769955106}
   evidenceManager: {fileID: 119511638}
+  hideManager: {fileID: 0}
   audioManager: {fileID: 922347295}
   cameraShakeManager: {fileID: 1712904484}
   dialogueManager: {fileID: 1092385922}
+  checkpointManager: {fileID: 0}
+  dataPersistenceManager: {fileID: 0}
 --- !u!1 &1081087659 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9055981915347568062, guid: 7c6a9c4cbd7ebcab8bf13745325af49a, type: 3}
