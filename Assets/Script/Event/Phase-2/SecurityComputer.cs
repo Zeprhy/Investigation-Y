@@ -48,9 +48,9 @@ public class SecurityComputer : MonoBehaviour
         if (LockdownManager.Instance != null && LockdownManager.Instance.IsLockdownActive)
         {
             // Mainkan suara ketik/akses diijinkan
-            if (typingAndClickSFX != null && AudioManager.Instance != null)
+            if (typingAndClickSFX != null && GameManager.Instance.audioManager != null)
             {
-                AudioManager.Instance.PlaySFX(typingAndClickSFX);
+                GameManager.Instance.audioManager.PlaySFX(typingAndClickSFX);
             }
 
             // 2. Matikan lockdown melalui manager

@@ -6,9 +6,11 @@ public class EnemyStalker : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private Transform player;
     [SerializeField] private float disappearDistance = 8f;
-    [SerializeField] private AudioClip dissapearSFX;
     [SerializeField] private float slideSpeed = 25f;
     [SerializeField] private float slideDistance = 5f;
+
+    [Header (" Audio Clip ")]
+    [SerializeField] private AudioClip dissapearSFX;
 
     private bool _hasDisappeared = false;
 
@@ -28,9 +30,9 @@ public class EnemyStalker : MonoBehaviour
     {
         _hasDisappeared = true;
 
-        if (dissapearSFX != null && AudioManager.Instance != null)
+        if (dissapearSFX != null && GameManager.Instance.audioManager != null)
         {
-            AudioManager.Instance.PlaySFX(dissapearSFX);
+            GameManager.Instance.audioManager.PlaySFX(dissapearSFX);
         }
 
         Vector3 targetPosition = transform.position + (transform.right * slideDistance);

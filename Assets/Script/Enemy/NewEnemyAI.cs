@@ -152,23 +152,23 @@ public class NewEnemyAI : MonoBehaviour
 
     private void UpdateMusicStatus()
     {
-        if (AudioManager.Instance == null) return;
+        if (GameManager.Instance.audioManager == null) return;
 
         float dist = Vector3.Distance(transform.position, player.position);
 
         if (currentState == EnemyState.Chasing || currentState == EnemyState.Attacking)
         {
-            AudioManager.Instance.SetMusicState(AudioManager.MusicState.Chase);
+            GameManager.Instance.audioManager.SetMusicState(AudioManager.MusicState.Chase);
         }
 
         else if (currentState == EnemyState.Investigating || dist <= suspensesDistance)
         {
-            AudioManager.Instance.SetMusicState(AudioManager.MusicState.Investigate);
+            GameManager.Instance.audioManager.SetMusicState(AudioManager.MusicState.Investigate);
         }
 
         else
         {
-            AudioManager.Instance.SetMusicState(AudioManager.MusicState.Ambient);
+           GameManager.Instance.audioManager.SetMusicState(AudioManager.MusicState.Ambient);
         }
     }
 

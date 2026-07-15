@@ -25,10 +25,8 @@ public class AudioManager : MonoBehaviour, IDataPersistence
 
     [Header("Item Audio Clips (Optional References)")]
     public AudioClip StepSound;
-    public AudioClip PryingSound;
-    public AudioClip pickupSound;
-    public AudioClip collectSound;
 
+    
     private float currentVolume = 0.5f;
 
     private void Awake()

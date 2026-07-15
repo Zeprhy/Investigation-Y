@@ -5,13 +5,17 @@ using System.Collections;
 public class CrankMinigame : MonoBehaviour
 {
     // KODE BARU: Gembok cerita
-    [Header("== Story Event ==")]
+    [Header(" Story Event ")]
     [Tooltip("Jika false, minigame tidak akan bisa dimulai meskipun player membawa Crank Handle")]
     public bool isStoryUnlocked = false;
 
-    [Header("== Pengaturan ==")]
+    [Header(" Pengaturan ")]
     [Tooltip("Seberapa cepat progress naik saat mouse diputar searah jarum jam")]
     [SerializeField] private float fillSpeed = 0.4f;
+
+    [Header (" Audio ")]
+    [SerializeField] private AudioClip completeSound;
+    [SerializeField] private AudioClip crankingSound;
  
     [Tooltip("Seberapa cepat progress mundur saat tidak diputar")]
     [SerializeField] private float drainSpeed = 0.15f;
@@ -25,10 +29,6 @@ public class CrankMinigame : MonoBehaviour
     [Header("== UI ==")]
     [Tooltip("Panel UI minigame")]
     [SerializeField] private GameObject crankPanel;
- 
-    [Header("== Audio ==")]
-    [SerializeField] private AudioClip crankingSound;
-    [SerializeField] private AudioClip completeSound;
  
     [Header("== Events ==")]
     public UnityEvent onCrankComplete;   // Dipanggil saat progress penuh
@@ -180,9 +180,9 @@ public class CrankMinigame : MonoBehaviour
         
 
         StopCrankSound();
-        PlaySFX(completeSound);
+        GameManager.Instance.audioManager.PlaySFX(completeSound);
 
-        Debug.Log("[CrankMinigame] selesai pintu terbuka!");
+        //Debug.Log("[CrankMinigame] selesai pintu terbuka!");
 
         yield return _completeWait;
         StopMinigame();
@@ -195,8 +195,8 @@ public class CrankMinigame : MonoBehaviour
     {
         if (crankingSound == null || _isCrankPlaying) return;
  
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(crankingSound);
+        if (GameManager.Instance.audioManager != null)
+            GameManager.Instance.audioManager.PlaySFX(crankingSound);
  
         _isCrankPlaying = true;
     }
@@ -206,13 +206,5 @@ public class CrankMinigame : MonoBehaviour
         _isCrankPlaying = false;
     }
  
-    private void PlaySFX(AudioClip clip)
-    {
-        if (clip == null) return;
- 
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(clip);
-        else
-            AudioSource.PlayClipAtPoint(clip, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
-    }
+    
 }

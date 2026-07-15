@@ -2,12 +2,15 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
 using TMPro;
-using System.Net.NetworkInformation;
+
 
 public class BoardedWall : MonoBehaviour, IInteractable
 {
    [Header("Boards")]
    public List<Rigidbody> boards;
+
+   [Header ("Audio")]
+   [SerializeField] private AudioClip PryingSound;
 
    [Header("Settings")]
    public float fallForceMin = 1f;
@@ -93,9 +96,9 @@ public class BoardedWall : MonoBehaviour, IInteractable
         if (isDone) return;
         if (boardsRemoved >= boards.Count) return;
 
-        if (AudioManager.Instance != null && AudioManager.Instance.PryingSound != null)
+        if (GameManager.Instance.audioManager != null && PryingSound != null)
         {
-            AudioManager.Instance.PlaySFX(AudioManager.Instance.PryingSound);
+            GameManager.Instance.audioManager.PlaySFX(PryingSound);
         }
 
         Rigidbody board = boards[boardsRemoved];

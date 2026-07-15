@@ -47,8 +47,8 @@ public class ElevatorButton : MonoBehaviour
         if (elevatorDoor != null)
         {
             elevatorDoor.Interact(); // Calls the door
-            if (AudioManager.Instance != null)
-                AudioManager.Instance.PlaySFX(buttonSFX);
+            if (GameManager.Instance.audioManager != null)
+                GameManager.Instance.audioManager.PlaySFX(buttonSFX);
         }
     }
 

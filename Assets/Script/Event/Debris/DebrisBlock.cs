@@ -35,7 +35,7 @@ public class DebrisBlock : MonoBehaviour
 
         hasLanded = true;
 
-        if ( impactSFX != null) AudioManager.Instance.PlaySFX(impactSFX);
+        if ( impactSFX != null) GameManager.Instance.audioManager.PlaySFX(impactSFX);
         if (impactDust != null) impactDust.Play(); 
         CameraShakeManager.Instance.ShakeHeavy();
 

@@ -17,7 +17,6 @@ public class ProjectorPuzzleManager : MonoBehaviour
     [SerializeField] private Material blankLightMaterial;
     [Tooltip("Material berisi angka 1985 (Setelah Solve)")]
     [SerializeField] private Material code1985Material;
-    [SerializeField] private AudioClip projectorChangeSFX;
 
     [Header("== Drawer & Evidence Settings ==")]
     [SerializeField] private Drawer ProjectorDrawer;
@@ -34,8 +33,11 @@ public class ProjectorPuzzleManager : MonoBehaviour
     [Tooltip("Masukkan script CrankMinigame dari Pintu Maintenance")]
     [SerializeField] private CrankMinigame maintenanceDoorCrank;
 
-    [Header("== Objective Manager ==")]
+    [Header(" Objective Manager ")]
     [SerializeField] ObjectiveManager objectiveManager;
+
+    [Header (" Audio ")]
+    [SerializeField] private AudioClip projectorChangeSFX;
 
     void Start()
     {
@@ -76,8 +78,8 @@ public class ProjectorPuzzleManager : MonoBehaviour
     private IEnumerator SolvePuzzleRoutine()
     {
         // 1. Ubah visual Proyektor menjadi angka "1985"
-        if (AudioManager.Instance != null && projectorChangeSFX != null)
-            AudioManager.Instance.PlaySFX(projectorChangeSFX);
+        if (GameManager.Instance.audioManager != null && projectorChangeSFX != null)
+            GameManager.Instance.audioManager.PlaySFX(projectorChangeSFX);
             
         if (projectorScreenRenderer != null)
             projectorScreenRenderer.material = code1985Material;

@@ -17,13 +17,15 @@ public class TeleportLift : MonoBehaviour
     [Tooltip("Waktu tunggu untuk teleport lift normal")]
     [SerializeField] private float travelDelay = 3.0f;
 
+    [Header ( "Audio ")]
+    [SerializeField] private AudioClip crashSFX;
+    [SerializeField] private AudioClip rumbleSFX;
+    [SerializeField] private AudioClip arrivalDing;
+    [SerializeField] private AudioClip elevatorSFX;
+
     [Header("== Normal Fade Settings ==")]
     [SerializeField] private CanvasGroup fadeCanvasGroup;
     [SerializeField] private float fadeSpeed = 1.0f;
-
-    [Header("== Audio Settings ==")]
-    [SerializeField] private AudioClip elevatorSFX;
-    [SerializeField] private AudioClip arrivalDing;
 
     [Header("== Crash Event Settings (Story) ==")]
     [Tooltip("Centang ini HANYA untuk lift yang akan jatuh")]
@@ -32,9 +34,6 @@ public class TeleportLift : MonoBehaviour
     [SerializeField] private float waitBeforeCrash = 7.0f;
     [Tooltip("Durasi getaran sebelum lift benar-benar jatuh (detik)")]
     [SerializeField] private float shakingDuration = 3.0f;
-    
-    [SerializeField] private AudioClip rumbleSFX; // Suara mesin rusak/bergetar
-    [SerializeField] private AudioClip crashSFX;  // Suara lift putus/jatuh
 
     private bool _isTeleporting = false;
 
@@ -72,8 +71,8 @@ public class TeleportLift : MonoBehaviour
         _isTeleporting = true;
         CharacterController controller = player.GetComponent<CharacterController>();
 
-        if (AudioManager.Instance != null && elevatorSFX != null)
-            AudioManager.Instance.PlaySFX(elevatorSFX);
+        if (GameManager.Instance.audioManager != null && elevatorSFX != null)
+            GameManager.Instance.audioManager.PlaySFX(elevatorSFX);
 
         yield return StartCoroutine(Fade(1f));
         yield return new WaitForSeconds(travelDelay);
@@ -83,8 +82,8 @@ public class TeleportLift : MonoBehaviour
         player.transform.rotation = destination.rotation;
         if (controller != null) controller.enabled = true;
 
-        if (AudioManager.Instance != null && arrivalDing != null)
-            AudioManager.Instance.PlaySFX(arrivalDing);
+        if (GameManager.Instance.audioManager != null && arrivalDing != null)
+            GameManager.Instance.audioManager.PlaySFX(arrivalDing);
 
         yield return StartCoroutine(Fade(0f));
         _isTeleporting = false;
@@ -102,14 +101,14 @@ public class TeleportLift : MonoBehaviour
         // tidak bisa keluar dari lift saat pintu lift menutup / lift berjalan.
         
         // Fase 1: Lift berjalan normal selama beberapa detik
-        if (AudioManager.Instance != null && elevatorSFX != null)
-            AudioManager.Instance.PlaySFX(elevatorSFX);
+        if (GameManager.Instance.audioManager != null && elevatorSFX != null)
+            GameManager.Instance.audioManager.PlaySFX(elevatorSFX);
 
         yield return new WaitForSeconds(waitBeforeCrash);
 
         // Fase 2: Mesin bermasalah, lift mulai bergetar!
-        if (AudioManager.Instance != null && rumbleSFX != null)
-            AudioManager.Instance.PlaySFX(rumbleSFX);
+        if (GameManager.Instance.audioManager != null && rumbleSFX != null)
+            GameManager.Instance.audioManager.PlaySFX(rumbleSFX);
 
         float elapsed = 0;
         while(elapsed < shakingDuration)
@@ -122,8 +121,8 @@ public class TeleportLift : MonoBehaviour
         }
 
         // Fase 3: CRASH! Tali putus dan jatuh
-        if (AudioManager.Instance != null && crashSFX != null)
-            AudioManager.Instance.PlaySFX(crashSFX);
+        if (GameManager.Instance.audioManager != null && crashSFX != null)
+            GameManager.Instance.audioManager.PlaySFX(crashSFX);
         
         CameraShakeManager.Instance.ShakeImpact(); // Getaran super keras!
 

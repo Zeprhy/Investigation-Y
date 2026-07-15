@@ -14,9 +14,13 @@ using TMPro;
 /// </summary>
 public class EvidenceInspector : MonoBehaviour
 {
-    [Header("== Referensi ==")]
+    [Header(" Referensi ")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private InspectionUIManager inspectionUIManager;
+
+    [Header(" Audio ")]
+    [SerializeField] private AudioClip pickupSound;
+    [SerializeField] private AudioClip collectSound;
 
     [Tooltip("Transform titik inspeksi — buat GameObject kosong di depan kamera")]
     [SerializeField] private Transform inspectionPoint;
@@ -151,7 +155,7 @@ public class EvidenceInspector : MonoBehaviour
 
         evidence.StartInspect();
         FreezePlayer(true);
-        GameManager.Instance.audioManager.PlaySFX(GameManager.Instance.audioManager.pickupSound);
+        GameManager.Instance.audioManager.PlaySFX(pickupSound);
 
         inspectionUIManager.ShowInspectUI(evidence.EvidenceName, evidence.Description);
         inspectionUIManager.ShowHint(HINT_COLLECT);
@@ -166,7 +170,7 @@ public class EvidenceInspector : MonoBehaviour
 
         document.StartInspect();
         FreezePlayer(true);
-        GameManager.Instance.audioManager.PlaySFX(GameManager.Instance.audioManager.pickupSound);
+        GameManager.Instance.audioManager.PlaySFX(pickupSound);
 
         inspectionUIManager.ShowInspectUI(document.DocumentName, "");
         inspectionUIManager.ShowHint(HINT_COLLECT);
@@ -176,7 +180,7 @@ public class EvidenceInspector : MonoBehaviour
 
     private void CollectCurrent()
     {
-        GameManager.Instance.audioManager.PlaySFX(GameManager.Instance.audioManager.collectSound);
+        GameManager.Instance.audioManager.PlaySFX(collectSound);
         inspectionUIManager.HideInspectUI();
         FreezePlayer(false);
 

@@ -64,7 +64,7 @@ public class StunGun : MonoBehaviour
         {
             if (emptySound != null)
             {
-                AudioManager.Instance.PlaySFX(emptySound);
+                GameManager.Instance.audioManager.PlaySFX(emptySound);
             }
             return;
         }
@@ -80,7 +80,7 @@ public class StunGun : MonoBehaviour
 
         //efek muzzle
         if (muzzleFlash) muzzleFlash.Play();
-        if (fireSound != null) AudioManager.Instance.PlaySFX(fireSound);
+        if (fireSound != null) GameManager.Instance.audioManager.PlaySFX(fireSound);
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f ,0.5f ,0f ));
         RaycastHit hit;
@@ -155,7 +155,7 @@ public class StunGun : MonoBehaviour
     {
         if (!chargingSoundPlayed && chargingSound != null)
         {
-            AudioManager.Instance.PlaySFX(chargingSound);
+            GameManager.Instance.audioManager.PlaySFX(chargingSound);
             chargingSoundPlayed = true;
         }
     }

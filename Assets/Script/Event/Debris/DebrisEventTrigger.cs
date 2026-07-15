@@ -65,7 +65,7 @@ public class DebrisEventTrigger : MonoBehaviour, IDataPersistence
         yield return new WaitUntil(() => !PauseMenu.isPausedStatic);
 
         // === FASE 1: WARNING (crack kecil + shake ringan berulang) ===
-        if (crackSFX != null) AudioManager.Instance.PlaySFX(crackSFX);
+        if (crackSFX != null) GameManager.Instance.audioManager.PlaySFX(crackSFX);
         if (dustParticle != null) dustParticle.Play();
         if (warningLight != null) StartCoroutine(FlickerLight(warningDuration));
 
@@ -75,7 +75,7 @@ public class DebrisEventTrigger : MonoBehaviour, IDataPersistence
         yield return new WaitForSeconds(warningDuration * 0.6f);
 
         // === FASE 2: CLIMAX (intensitas naik, gemuruh makin keras) ===
-        if (rumbleSFX != null) AudioManager.Instance.PlaySFX(rumbleSFX);
+        if (rumbleSFX != null) GameManager.Instance.audioManager.PlaySFX(rumbleSFX);
         CameraShakeManager.Instance.ShakeHeavy();
 
         yield return new WaitForSeconds(warningDuration * 0.4f);
@@ -83,7 +83,7 @@ public class DebrisEventTrigger : MonoBehaviour, IDataPersistence
         // === FASE 3: IMPACT (debris jatuh) ===
         GameObject debris = Instantiate(debrisPrefab, spawnPoint.position, Quaternion.identity);
 
-        if (impactSFX != null) AudioManager.Instance.PlaySFX(impactSFX);
+        if (impactSFX != null) GameManager.Instance.audioManager.PlaySFX(impactSFX);
         if (impactDustParticle != null) impactDustParticle.Play();
 
         // Shake paling keras saat impact

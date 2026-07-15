@@ -68,7 +68,7 @@ public class ApartmentEventManager : MonoBehaviour
             if (lamp != null) lamp.ForceTurnOff();
         }
 
-        if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(lightOut);
+        if (GameManager.Instance.audioManager != null) GameManager.Instance.audioManager.PlaySFX(lightOut);
 
         if (DialogueManager.Instance != null)
             DialogueManager.Instance.ShowDialogue("Perfect... the power is out. There must be a circuit breaker in the basement.");

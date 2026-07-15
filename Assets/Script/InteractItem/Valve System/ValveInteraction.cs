@@ -15,12 +15,13 @@ public class ValveInteraction : MonoBehaviour
     [Tooltip("The physical valve transform to rotate")]
     [SerializeField] private Transform valveTransform;
     
-    [Header("Audio")]
-    [SerializeField] private AudioClip valveTurningSound;
-    [SerializeField] private AudioClip valveCompleteSound;
-    
+
     [Header("Events")]
     public UnityEvent onValveComplete;
+
+    [Header (" Audio ")]
+    [SerializeField] private AudioClip valveCompleteSound;
+    [SerializeField] private AudioClip valveTurningSound;
     
     private float _progress = 0f;
     private bool _isInteracting = false;
@@ -142,7 +143,7 @@ public class ValveInteraction : MonoBehaviour
         _isInteracting = false;
         _progress = 1f;
         StopValveAudio();
-        PlaySFX(valveCompleteSound);
+        GameManager.Instance.audioManager.PlaySFX(valveCompleteSound);
         yield return new WaitForSeconds(0.3f);
         onValveComplete?.Invoke();
     }
@@ -150,16 +151,9 @@ public class ValveInteraction : MonoBehaviour
     private void PlayValveAudio()
     {
         if (valveTurningSound == null || _isAudioPlaying) return;
-        if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(valveTurningSound);
+        if (GameManager.Instance.audioManager != null) GameManager.Instance.audioManager.PlaySFX(valveTurningSound);
         _isAudioPlaying = true;
     }
 
-    private void StopValveAudio() => _isAudioPlaying = false;
-
-    private void PlaySFX(AudioClip clip)
-    {
-        if (clip == null) return;
-        if (AudioManager.Instance != null) AudioManager.Instance.PlaySFX(clip);
-        else AudioSource.PlayClipAtPoint(clip, _mainCam.transform.position);
-    }
+    private void StopValveAudio() => _isAudioPlaying = false; 
 }

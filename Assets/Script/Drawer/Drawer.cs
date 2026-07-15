@@ -41,10 +41,10 @@ public class Drawer : MonoBehaviour
         if (drawerAnimator != null)
             drawerAnimator.SetBool("isOpen", _isOpen);
 
-        if (AudioManager.Instance != null)
+        if (GameManager.Instance.audioManager != null)
         {
             AudioClip clip = _isOpen ? DrawerOpenSFX : DrawerCloseSFX;
-            AudioManager.Instance.PlaySFX(clip);
+            GameManager.Instance.audioManager.PlaySFX(clip);
         }
     }
 
