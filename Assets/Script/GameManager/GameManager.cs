@@ -66,6 +66,7 @@ public class GameManager : MonoBehaviour
         if (dataPersistenceManager == null) dataPersistenceManager = Object.FindAnyObjectByType<DataPersistenceManager>();
         if (hideManager == null) hideManager = Object.FindAnyObjectByType<HideManager>();
         if (gameplayStateManager == null) gameplayStateManager = Object.FindAnyObjectByType<GameplayStateManager>();
+        
 
         if (movementPlayer != null) movementPlayer.Initialize();
         if (healthManager != null) healthManager.Initialize();
@@ -78,6 +79,7 @@ public class GameManager : MonoBehaviour
         if (dataPersistenceManager != null) dataPersistenceManager.Initialize();
         if (hideManager != null) hideManager.Initialize();
         if (gameplayStateManager != null) gameplayStateManager .Initialize();
+        
     }
 
     private IEnumerator DeferredLoadCheckpoint()

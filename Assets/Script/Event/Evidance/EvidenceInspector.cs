@@ -16,37 +16,17 @@ public class EvidenceInspector : MonoBehaviour
 {
     [Header("== Referensi ==")]
     [SerializeField] private Camera playerCamera;
- 
+    [SerializeField] private InspectionUIManager inspectionUIManager;
+
     [Tooltip("Transform titik inspeksi — buat GameObject kosong di depan kamera")]
     [SerializeField] private Transform inspectionPoint;
  
-    [Tooltip("Script movement player untuk freeze saat inspeksi")]
-    [SerializeField] private MovementPlayer movementPlayer;
- 
-    [Header("== Pengaturan ==")]
+    [Header(" Pengaturan ")]
     [Tooltip("Jarak raycast untuk detect barang bukti")]
     [SerializeField] private float detectRange = 1f;
  
     [Tooltip("Seberapa cepat item bergerak ke inspection point")]
     [SerializeField] private float moveSpeed = 10f;
- 
-    [Header("== UI ==")]
-    [Tooltip("UI hint saat melihat barang bukti")]
-    [SerializeField] private TextMeshProUGUI inspectHintText;
- 
-    [Tooltip("UI nama barang bukti saat sedang diinspeksi")]
-    [SerializeField] private TextMeshProUGUI evidenceNameText;
- 
-    [Tooltip("UI deskripsi saat sedang diinspeksi")]
-    [SerializeField] private TextMeshProUGUI evidenceDescText;
- 
-    [Tooltip("Panel UI yang muncul saat inspeksi aktif")]
-    [SerializeField] private GameObject inspectUIPanel;
- 
-    [Header("== Audio ==")]
-    [SerializeField] private AudioClip pickupSound;
-    [SerializeField] private AudioClip collectSound;
- 
     // ---- State ----
     private EvidenceItem _currentEvidence;
     private DocumentItem _currentDocument;
@@ -89,28 +69,28 @@ public class EvidenceInspector : MonoBehaviour
             {
                 if (LockdownManager.Instance != null && LockdownManager.Instance.IsLockdownActive)
                 {
-                    ShowHint("Press [F] To Acces Security PC");
+                    inspectionUIManager.ShowHint("Press [F] To Acces Security PC");
                 }
                 else
                 {
-                    ShowHint("Security PC offline");
+                    inspectionUIManager.ShowHint("Security PC offline");
                 }
             }
 
             EvidenceItem evidence = hit.collider.GetComponentInParent<EvidenceItem>();
             if (evidence != null)
             {
-                ShowHint(HINT_EVIDENCE);
+                inspectionUIManager.ShowHint(HINT_EVIDENCE);
                 return;
             }
             DocumentItem document = hit.collider.GetComponentInParent<DocumentItem>();
             if (document != null)
             {
-                ShowHint(HINT_EVIDENCE);
+                inspectionUIManager.ShowHint(HINT_EVIDENCE);
                 return;
             }
         }
-        HideHint();
+        inspectionUIManager.HideHint();
     }
 
     public bool TryHandleInteract()
@@ -171,12 +151,12 @@ public class EvidenceInspector : MonoBehaviour
 
         evidence.StartInspect();
         FreezePlayer(true);
-        PlaySFX(pickupSound);
+        GameManager.Instance.audioManager.PlaySFX(GameManager.Instance.audioManager.pickupSound);
 
-        ShowInspectUI(evidence.evidenceName, evidence.Description);
-        ShowHint(HINT_COLLECT);
+        inspectionUIManager.ShowInspectUI(evidence.EvidenceName, evidence.Description);
+        inspectionUIManager.ShowHint(HINT_COLLECT);
 
-         Debug.Log($"[EvidenceInspector] Inspeksi: {evidence.evidenceName}");
+         //Debug.Log($"[EvidenceInspector] Inspeksi: {evidence.evidenceName}");
     }
 
     private void StartInspectDocument(DocumentItem document)
@@ -186,18 +166,18 @@ public class EvidenceInspector : MonoBehaviour
 
         document.StartInspect();
         FreezePlayer(true);
-        PlaySFX(pickupSound);
+        GameManager.Instance.audioManager.PlaySFX(GameManager.Instance.audioManager.pickupSound);
 
-        ShowInspectUI(document.documentTitle, "");
-        ShowHint(HINT_COLLECT);
+        inspectionUIManager.ShowInspectUI(document.DocumentName, "");
+        inspectionUIManager.ShowHint(HINT_COLLECT);
 
-         Debug.Log($"[EvidenceInspector] Membaca: {document.documentTitle}");
+         //Debug.Log($"[EvidenceInspector] Membaca: {document.documentTitle}");
     }
 
     private void CollectCurrent()
     {
-        PlaySFX(collectSound);
-        HideInspectUI();
+        GameManager.Instance.audioManager.PlaySFX(GameManager.Instance.audioManager.collectSound);
+        inspectionUIManager.HideInspectUI();
         FreezePlayer(false);
 
         if(_currentEvidence != null)
@@ -212,16 +192,16 @@ public class EvidenceInspector : MonoBehaviour
         }
 
         _isInspecting = false;
-        HideHint();
+        inspectionUIManager.HideHint();
         
     }
 
     private void PutBackCurrent()
     {
-        HideInspectUI();
+        inspectionUIManager.HideInspectUI();
         FreezePlayer(false);
         _isInspecting = false;
-        HideHint();
+        inspectionUIManager.HideHint();
 
         if (_currentEvidence != null)
         {
@@ -330,49 +310,10 @@ public class EvidenceInspector : MonoBehaviour
 
     private void FreezePlayer(bool freeze)
     {
-        if (movementPlayer != null)
-            movementPlayer.enabled = !freeze;
+        if (GameManager.Instance.movementPlayer != null)
+            GameManager.Instance.movementPlayer.enabled = !freeze;
 
         Cursor.lockState = freeze ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = freeze;
-    }
-
-    private void ShowHint(string text)
-    {
-        if (inspectHintText != null)
-            inspectHintText.text = text;
-    }
-
-    private void HideHint()
-    {
-        if (inspectHintText != null)
-            inspectHintText.text = "";
-    }
-
-    private void ShowInspectUI(string name, string desc)
-    {
-        if (inspectUIPanel != null)
-        {
-            inspectUIPanel.SetActive(true);
-        }
-
-        if (evidenceNameText != null)
-            evidenceNameText.text = name;
-
-        if (evidenceDescText != null)
-            evidenceDescText.text = desc;
-    }
-
-    private void HideInspectUI()
-    {
-        if (inspectUIPanel != null)
-            inspectUIPanel.SetActive(false);
-    }
-
-    private void PlaySFX(AudioClip clip)
-    {
-        if (clip == null) return;
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(clip);
     }
 }

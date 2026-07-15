@@ -75,9 +75,9 @@ public class SettingsManager : MonoBehaviour
 
     public void SetMasterVolume(float value)
     {
-        if (AudioManager.Instance != null)
+        if (GameManager.Instance.audioManager != null)
         {
-            AudioManager.Instance.UpdateMasterVolume(value);
+            GameManager.Instance.audioManager.UpdateMasterVolume(value);
         }
             
 

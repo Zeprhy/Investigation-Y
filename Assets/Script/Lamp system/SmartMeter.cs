@@ -43,8 +43,8 @@ public class SmartMeter : MonoBehaviour
         
         AudioClip clipToPlay = open ? openSound : closeSound;
 
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(clipToPlay);
+        if (GameManager.Instance.audioManager != null)
+            GameManager.Instance.audioManager.PlaySFX(clipToPlay);
     }
 
     private void PerformPowerRestoration()
@@ -53,8 +53,8 @@ public class SmartMeter : MonoBehaviour
 
         _powerIsRestored = true;
 
-        if (AudioManager.Instance != null)
-            AudioManager.Instance.PlaySFX(switchSound);
+        if (GameManager.Instance.audioManager != null)
+            GameManager.Instance.audioManager.PlaySFX(switchSound);
 
         PowerSystem.RestorePower();
 

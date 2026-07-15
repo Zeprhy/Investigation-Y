@@ -5,8 +5,6 @@ using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour, IDataPersistence
 {
-    public static AudioManager Instance;
-
     public enum MusicState { Ambient, Investigate, Chase }
     private MusicState currentMusicState = MusicState.Ambient;
 
@@ -28,22 +26,13 @@ public class AudioManager : MonoBehaviour, IDataPersistence
     [Header("Item Audio Clips (Optional References)")]
     public AudioClip StepSound;
     public AudioClip PryingSound;
+    public AudioClip pickupSound;
+    public AudioClip collectSound;
 
     private float currentVolume = 0.5f;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         poolParent = new GameObject("AudioSourcePool").transform;
         poolParent.SetParent(transform);
 

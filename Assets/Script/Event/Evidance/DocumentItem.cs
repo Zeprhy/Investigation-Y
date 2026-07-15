@@ -8,24 +8,16 @@ using TMPro;
 /// </summary>
 public class DocumentItem : MonoBehaviour
 {
-    [Header("== Data Dokumen ==")]
-    [Tooltip("Judul dokumen")]
-    public string documentTitle = "Surat";
+    [Header(" Data Dokumen ")]
+    public EvidenceDataSO evidenceDataSO;
+    public string DocumentName => evidenceDataSO != null ? evidenceDataSO.itemName : "Barang Bukti";
+    public string Description => evidenceDataSO != null ? evidenceDataSO.description : ""; 
+    public string DocumentID => evidenceDataSO != null ? evidenceDataSO.itemID : "";
+
  
-    [Tooltip("Isi teks dokumen — ini yang muncul di kertas")]
-    [TextArea(4, 10)]
-    public string documentText = "Isi surat di sini...";
- 
-    [Tooltip("ID unik untuk tracking (opsional)")]
-    public string documentID = "";
- 
-    [Header("== Referensi ==")]
-    [Tooltip("Canvas World Space yang nempel di kertas")]
+    [Header(" Referensi ")]
     public Canvas documentCanvas;
- 
-    [Tooltip("TextMeshPro untuk tampilkan isi teks di kertas")]
     public TextMeshProUGUI documentTextTMP;
- 
     [SerializeField] [Tooltip("TextMeshPro untuk tampilkan judul dokumen (opsional)")]
     public TextMeshProUGUI documentTitleTMP;
  
@@ -53,10 +45,10 @@ public class DocumentItem : MonoBehaviour
     void Start()
     {
         if (documentTextTMP != null)
-            documentTextTMP.text = documentText;
+            documentTextTMP.text = Description;
 
         if (documentTitleTMP != null)
-            documentTitleTMP.text = documentTitle;
+            documentTitleTMP.text = DocumentName;
     }
 
     public void StartInspect()
@@ -106,7 +98,7 @@ public class DocumentItem : MonoBehaviour
     }
     public void CollectDocument()
     {
-        GameManager.Instance.evidenceManager.AddEvidence(documentTitle,documentText,documentID);
+        GameManager.Instance.evidenceManager.AddEvidence(DocumentName, Description, DocumentID);
         Destroy(gameObject);
     }
 }

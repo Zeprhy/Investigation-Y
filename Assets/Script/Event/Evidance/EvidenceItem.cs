@@ -7,22 +7,10 @@ using UnityEngine;
 /// </summary>
 public class EvidenceItem : MonoBehaviour
 {
-    [Header("== Data Barang Bukti ==")]
-    [Tooltip("Nama barang bukti yang muncul di UI")]
-    public string evidenceName = "Barang Bukti";
+    [Header(" Data Barang Bukti ")]
+    public EvidenceDataSO evidenceDataSO;
 
-    [Tooltip("Deskripsi singkat yang muncul saat inspeksi")]
-    [TextArea(2, 4)] 
-    [SerializeField] private string description = "Deskripsi barang bukti...";
-
-    [Tooltip("Dialog yang muncul saat barang bukti diperiksa")]
-    [TextArea(2, 4)] 
-    [SerializeField] private string dialog = "DescriptionDialog...";
-
-    [Tooltip("ID unik untuk tracking (opsional)")]
-    [SerializeField] private string evidenceID = "";
-
-    [Header("== Inspeksi ==")]
+    [Header(" Inspeksi ")]
     [Tooltip("Apakah barang ini bisa dipegang/melayang ke kamera? (Matikan untuk bercak darah di dinding)")]
     public bool canBePickedUp = true;
 
@@ -44,8 +32,10 @@ public class EvidenceItem : MonoBehaviour
 
     public bool IsBeingInspected => _isBeingInspected;
 
-    public string Description => description;
-    public string Dialog => dialog;
+    public string EvidenceName => evidenceDataSO != null ? evidenceDataSO.itemName : "Barang Bukti";
+    public string Description => evidenceDataSO != null ? evidenceDataSO.description : "";
+    public string Dialog => evidenceDataSO != null ? evidenceDataSO.dialog : "";
+    public string EvidenceID => evidenceDataSO != null ? evidenceDataSO.itemID : "";
 
     void Awake()
     {
@@ -96,7 +86,7 @@ public class EvidenceItem : MonoBehaviour
 
     public void CollectEvidence()
     {
-        GameManager.Instance.evidenceManager.AddEvidence(evidenceName, description, evidenceID);
+        GameManager.Instance.evidenceManager.AddEvidence(evidenceDataSO.itemName, evidenceDataSO.description, evidenceDataSO.itemID);
 
         if (canBePickedUp)
         {
@@ -113,7 +103,7 @@ public class EvidenceItem : MonoBehaviour
             
             if (DialogueManager.Instance != null)
             {
-                DialogueManager.Instance.ShowDialogue(dialog);
+                DialogueManager.Instance.ShowDialogue(evidenceDataSO.dialog);
             }
 
         }
