@@ -394,9 +394,9 @@ public class NewEnemyAI : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(transform.position + Vector3.up, transform.forward, out hit, doorCheckDistance, doorLayer))
         {
-            if (hit.collider.TryGetComponent(out NormalDoor door) && !door.isOpen && !door.isLocked)
+            if (hit.collider.TryGetComponent(out BaseDoor door) && !door.isOpen && !door.isLocked)
             {
-                door.Interact(transform.position);
+                door.ToggleDoor(transform.position);
             }
         }
     }

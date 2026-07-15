@@ -221,7 +221,7 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            NormalDoor door = hit.collider.GetComponentInParent<NormalDoor>();
+            BaseDoor door = hit.collider.GetComponentInParent<BaseDoor>();
             if (door != null)
             {
                 door.Interact(gameObject);
