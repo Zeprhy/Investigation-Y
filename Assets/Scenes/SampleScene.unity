@@ -922,6 +922,7 @@ MonoBehaviour:
   - {fileID: 431455912}
   - {fileID: 142768645}
   - {fileID: 254878299}
+  PryingSound: {fileID: 0}
   fallForceMin: 1
   fallForceMax: 3
   uiDisplayDistance: 3
@@ -7148,7 +7149,8 @@ MonoBehaviour:
   playerInteraction: {fileID: 0}
   evidenceManager: {fileID: 977741239}
   hideManager: {fileID: 0}
-  audioManager: {fileID: 0}
+  gameplayStateManager: {fileID: 0}
+  audioManager: {fileID: 2260874477487786542}
   cameraShakeManager: {fileID: 0}
   dialogueManager: {fileID: 0}
   checkpointManager: {fileID: 0}
@@ -7562,6 +7564,7 @@ MonoBehaviour:
   gravity: 5
   defaultHeight: 2
   crouchHeight: 0.03
+  playerStamina: {fileID: 0}
   health: {fileID: 769955107}
   noiseUpdateFrequency: 0.2
   isDead: 0
@@ -8005,16 +8008,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EvidenceInspector
   playerCamera: {fileID: 330585545}
-  inspectionPoint: {fileID: 1566102055}
-  movementPlayer: {fileID: 769955098}
-  detectRange: 10
-  moveSpeed: 10
-  inspectHintText: {fileID: 852197307}
-  evidenceNameText: {fileID: 1509101474}
-  evidenceDescText: {fileID: 1534623076}
-  inspectUIPanel: {fileID: 788255300}
+  inspectionUIManager: {fileID: 0}
   pickupSound: {fileID: 0}
   collectSound: {fileID: 0}
+  inspectionPoint: {fileID: 1566102055}
+  detectRange: 10
+  moveSpeed: 10
 --- !u!114 &769955109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8358,9 +8357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e58d39884d0653b4ba3d026a20f74f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DocumentItem
-  documentTitle: SuratAncaman
-  documentText: Kau tidak akan selamat dari sini...
-  documentID: Surat_001
+  evidenceDataSO: {fileID: 0}
   documentCanvas: {fileID: 612214012}
   documentTextTMP: {fileID: 360809150}
   documentTitleTMP: {fileID: 0}
@@ -12288,10 +12285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afa84ad41b48c894e9bc96c2946211f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EvidenceItem
-  evidenceName: Pilar Kuno
-  description: Ini Adalah Pilar Kuno Yang Konon Katanya Angker
-  dialog: DescriptionDialog...
-  evidenceID: Pilar_01
+  evidenceDataSO: {fileID: 0}
   canBePickedUp: 1
   inspectPositionOffset: {x: 0, y: 0, z: 0}
   inspectRotationOffset: {x: 0, y: 0, z: 0}
@@ -15795,6 +15789,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 526078129}
   m_SourcePrefab: {fileID: 100100000, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
+--- !u!114 &2260874477487786542 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4327153315121819686, guid: 6bf29f8cd83c68843b56a0b763ef318e, type: 3}
+  m_PrefabInstance: {fileID: 2260874477487786541}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6bc771cb6e923f4dac583fb4157b826, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
 --- !u!1001 &2994346617017303370
 PrefabInstance:
   m_ObjectHideFlags: 0

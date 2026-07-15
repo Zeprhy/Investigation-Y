@@ -47,7 +47,7 @@ public class ApartmentEventManager : MonoBehaviour
     {
         if (apartementDoor != null)
         {
-            NormalDoor doorScript = apartementDoor.GetComponent<NormalDoor>();
+            BaseDoor doorScript = apartementDoor.GetComponent<BaseDoor>();
             if (doorScript != null)
             {
                 doorScript.CloseDoor();
