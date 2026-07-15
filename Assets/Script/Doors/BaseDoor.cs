@@ -14,9 +14,9 @@ public abstract class BaseDoor : MonoBehaviour
     [SerializeField] private float interactionRadius = 3f;
 
     [Header("Auto Close")]
-    [SerializeField] private bool useAutoClose = true;
+    [SerializeField] protected bool useAutoClose = true;
     [SerializeField] private float autoCloseDelay = 3f;
-    private Coroutine autoCloseCoroutine;
+    protected Coroutine autoCloseCoroutine;
 
     [Header("UI System (Direct TMP)")]
     //[SerializeField] private TextMeshProUGUI globalInteractText;
@@ -26,7 +26,7 @@ public abstract class BaseDoor : MonoBehaviour
     protected Quaternion _defaultRotation;
     protected Transform _playerTransform;
     protected PlayerInteraction _playerInteraction;
-    private UnityEngine.AI.NavMeshObstacle _doorObstacle;
+    protected UnityEngine.AI.NavMeshObstacle _doorObstacle;
  
   
     // ---- Cache threshold ----
@@ -35,7 +35,7 @@ public abstract class BaseDoor : MonoBehaviour
     protected float _interactRadiusSqr;
  
     // ---- Cache WaitForSeconds ----
-    private WaitForSeconds _autoCloseWait;     
+    protected WaitForSeconds _autoCloseWait;     
     
     protected virtual void Awake()
     {
@@ -66,7 +66,7 @@ public abstract class BaseDoor : MonoBehaviour
         HandleUIDistance();
     }
 
-    protected virtual void HandleUIDistance()
+    protected  void HandleUIDistance()
     {
         if (_playerTransform == null) return;
         float distSqr = (_playerTransform.position - transform.position).sqrMagnitude;
@@ -96,7 +96,7 @@ public abstract class BaseDoor : MonoBehaviour
         UpdateUIText();
     }
 
-    public void ToggleDoor(Vector3 interactorPosition)
+    public virtual void ToggleDoor(Vector3 interactorPosition)
     {
         if (autoCloseCoroutine != null) StopCoroutine(autoCloseCoroutine);
     
@@ -124,7 +124,7 @@ public abstract class BaseDoor : MonoBehaviour
         UpdateUIText();
     }
 
-    public void CloseDoor()
+    public virtual void CloseDoor()
     {
         isOpen = false;
         _targetRotation = _defaultRotation;

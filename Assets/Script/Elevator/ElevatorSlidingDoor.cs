@@ -1,50 +1,63 @@
 using UnityEngine;
 using System.Collections;
 
-public class ElevatorSlidingDoor : MonoBehaviour
+public class ElevatorSlidingDoor : BaseDoor
 {
-    [Header("Components")]
+    [Header("== Komponen Lift ==")]
     [SerializeField] private Animator elevatorAnimator;
-    [SerializeField] private UnityEngine.AI.NavMeshObstacle doorObstacle;
 
-    [Header("Settings")]
-    public bool isOpen = false;
-
-    [Header("Auto Close")]
-    [SerializeField] private bool useAutoClose = true;
-    [SerializeField] private float autoCloseDelay = 3f;
-    private Coroutine autoCloseCoroutine;
-
-    private WaitForSeconds _autoCloseWait;
-
-    void Awake()
+    protected override void Awake()
     {
-        _autoCloseWait = new WaitForSeconds(autoCloseDelay);
+        base.Awake(); // Menjalankan setup radius bawaan BaseDoor
         if (elevatorAnimator == null) elevatorAnimator = GetComponent<Animator>();
     }
 
-    void Start()
+    protected override void Initialize()
     {
+        base.Initialize();
         UpdateAnimator();
-        if (doorObstacle != null) doorObstacle.enabled = !isOpen;
     }
 
-    public void Interact()
+   
+    protected override void Update()
     {
-        ToggleDoor();
+        HandleUIDistance(); 
     }
 
-    private void ToggleDoor()
+    
+    public override void Interact(GameObject player)
+    {
+        float distSqr = (transform.position - player.transform.position).sqrMagnitude;
+        if (distSqr > _interactRadiusSqr) return;
+
+        if (!isLocked)
+        {
+            ToggleDoor(player.transform.position);
+        }
+    }
+
+   
+    public override void ToggleDoor(Vector3 interactorPosition)
     {
         if (autoCloseCoroutine != null) StopCoroutine(autoCloseCoroutine);
     
         isOpen = !isOpen;
         UpdateAnimator();
     
-        if (doorObstacle != null) doorObstacle.enabled = !isOpen;
+        if (_doorObstacle != null) _doorObstacle.enabled = !isOpen;
 
         if (isOpen && useAutoClose) 
-            autoCloseCoroutine = StartCoroutine(AutoCloseTimer());
+            autoCloseCoroutine = StartCoroutine(AutoCloseTimerLift());
+        
+        UpdateUIText(); 
+    }
+
+    public override void CloseDoor()
+    {
+        isOpen = false;
+        UpdateAnimator();
+        if (_doorObstacle != null) _doorObstacle.enabled = true;
+        UpdateUIText();
     }
 
     private void UpdateAnimator()
@@ -53,10 +66,35 @@ public class ElevatorSlidingDoor : MonoBehaviour
             elevatorAnimator.SetBool("isOpen", isOpen);
     }
 
-    private IEnumerator AutoCloseTimer()
+    private IEnumerator AutoCloseTimerLift()
     {
         yield return _autoCloseWait;
-        if (isOpen) ToggleDoor();
+        if (isOpen) CloseDoor();
         autoCloseCoroutine = null;
+    }
+
+   
+    protected override void UpdateUIText()
+    {
+        if (!_isPlayerNear || GameManager.Instance.interactionUIManager == null) return;
+
+        string hintText = "";
+        
+        if (isLocked)
+        {
+            hintText = "[Locked] Elevator is Disabled";
+        }
+        else
+        {
+            hintText = isOpen ? "Press [F] To Close Elevator" : "Press [F] To Call Elevator";
+        }
+
+        GameManager.Instance.interactionUIManager.ShowText(hintText);
+    }
+
+    protected override void HideUIText()
+    {
+        if (GameManager.Instance.interactionUIManager != null)
+            GameManager.Instance.interactionUIManager.HideText();
     }
 }
