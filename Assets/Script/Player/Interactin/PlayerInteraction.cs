@@ -20,7 +20,8 @@ public class PlayerInteraction : MonoBehaviour
     private float rayTimer;
     private Collider[] cachedColliders;
 
-    private Item equippedItem;
+    // MENGGUNAKAN ItemBase
+    private ItemBase equippedItem;
     private Rigidbody equippedRb;
     private DragHandler dragHandler;
     private MovementPlayer player;
@@ -48,7 +49,7 @@ public class PlayerInteraction : MonoBehaviour
     { 
         if (PauseMenu.isPausedStatic) return;
 
-        HandleOutlineRaycast();
+        // HandleOutlineRaycast();
 
         rayTimer += Time.deltaTime;
         if (rayTimer >= raycastFrequency)
@@ -72,6 +73,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             PuzzleSocket socket = hit.collider.GetComponent<PuzzleSocket>();
 
+            // Pastikan PuzzleSocket juga sudah di-update untuk menerima ItemBase
             if (socket != null && equippedItem != null && socket.IsCorrectItem(equippedItem) && !socket.IsOccupied)
             {
                 if (_lastViewedSocket != socket)
@@ -103,48 +105,47 @@ public class PlayerInteraction : MonoBehaviour
         equippedRb = null;
         cachedColliders = null;
         
-
         Destroy(ObjItem);
     }
 
-    void HandleOutlineRaycast()
-    {
-        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-        RaycastHit hit;
+    // void HandleOutlineRaycast()
+    // {
+    //     Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+    //     RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 3f))
-        {
-            Outline outline = hit.collider.GetComponent<Outline>();
+    //     if (Physics.Raycast(ray, out hit, 3f))
+    //     {
+    //         Outline outline = hit.collider.GetComponent<Outline>();
 
-            if (outline != null)
-            {                
-                if (lastHighlightedItem != outline)
-                {
-                    if (lastHighlightedItem != null) lastHighlightedItem.enabled = false;
+    //         if (outline != null)
+    //         {                
+    //             if (lastHighlightedItem != outline)
+    //             {
+    //                 if (lastHighlightedItem != null) lastHighlightedItem.enabled = false;
 
-                    outline.enabled = true;
-                    lastHighlightedItem = outline;
-                }
-            }
-            else
-            {
-                DisableLastOutline();
-            }
-        }
-        else
-        {
-            DisableLastOutline();
-        }
-    }
+    //                 outline.enabled = true;
+    //                 lastHighlightedItem = outline;
+    //             }
+    //         }
+    //         else
+    //         {
+    //             DisableLastOutline();
+    //         }
+    //     }
+    //     else
+    //     {
+    //         DisableLastOutline();
+    //     }
+    // }
 
-    void DisableLastOutline()
-    {
-        if (lastHighlightedItem != null)
-        {
-            lastHighlightedItem.enabled = false;
-            lastHighlightedItem = null;
-        }    
-    }
+    // void DisableLastOutline()
+    // {
+    //     if (lastHighlightedItem != null)
+    //     {
+    //         lastHighlightedItem.enabled = false;
+    //         lastHighlightedItem = null;
+    //     }    
+    // }
 
     private void ToggleEquippedColliders(bool state)
     {
@@ -181,7 +182,6 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 3f)) 
         {
-            // 1. CEK TOMBOL LIFT
             ElevatorButton buttonLift = hit.collider.GetComponent<ElevatorButton>();
             if (buttonLift != null)
             {
@@ -210,19 +210,17 @@ public class PlayerInteraction : MonoBehaviour
             RotateWheel wheel = hit.collider.GetComponent<RotateWheel>();
             if (wheel != null)
             {
-                // Putar rodanya!
                 wheel.Interact();
                 return;
             }
 
-            // 2. CEK ITEM (Pick up)
-            if (hit.collider.TryGetComponent(out Item item))
+            // MENGGUNAKAN ItemBase
+            if (hit.collider.TryGetComponent(out ItemBase item))
             {
                 TryEquip();
                 return;
             }
 
-            // 3. CEK PINTU BIASA (Normal Door)
             NormalDoor door = hit.collider.GetComponentInParent<NormalDoor>();
             if (door != null)
             {
@@ -230,7 +228,6 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            // 4. CEK LOCKER (Tempat Sembunyi)
             Locker locker = hit.collider.GetComponentInParent<Locker>();
             if (locker != null)
             {
@@ -239,7 +236,6 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            // 5. CEK SAKLAR LAMPU
             LightSwitch salkar = hit.collider.GetComponent<LightSwitch>();
             if (salkar != null)
             {
@@ -247,14 +243,12 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            // 6. SMART METER
             if (hit.collider.TryGetComponent(out SmartMeter meter))
             {
                 meter.UseMeter();
                 return;    
             }
 
-            // 7. CLIMB SYSTEM
             if (Physics.Raycast(ray, out hit, 3.5f))
             {                
                 if (climbingSystem != null && ((1 << hit.collider.gameObject.layer) & climbingSystem.climbableLayer) != 0)
@@ -270,8 +264,9 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (equippedItem == null) return false;
 
-        return (equippedItem.itemType == ItemType.Key || equippedItem.itemType == ItemType.doorID) 
-            && equippedItem.keyID == requiredKeyID;
+        // Langsung cek tipe item dan cocokkan ID-nya dari ItemBase
+        return (equippedItem.itemType == ItemType.Key || equippedItem.itemType == ItemType.door) 
+            && equippedItem.KeyID == requiredKeyID;
     }
 
     public bool IsHoldingLockPick()
@@ -363,7 +358,7 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            if (dragHandler != null && dragHandler.IsDragging)return;
+            if (dragHandler != null && dragHandler.IsDragging) return;
             TryEquip();
         }
     }
@@ -373,10 +368,10 @@ public class PlayerInteraction : MonoBehaviour
         if (context.started)
         {
             if (equippedItem == null) return;
-            if (equippedItem.itemType != ItemType.StunGun) return;
-
-            StunGun stunGun = equippedItem.GetComponent<StunGun>();
-            if (stunGun != null) stunGun.TryShoot();
+            
+            // Cukup panggil UseItem(). Jika itu StunGun, dia akan otomatis menembak!
+            // Jika itu item lain (misal obat), dia bisa memakai efek obatnya.
+            equippedItem.UseItem(); 
         }
     }
 
@@ -386,7 +381,8 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, 3f))
         {
-            Item item = hit.collider.GetComponent<Item>();
+            // MENGGUNAKAN ItemBase
+            ItemBase item = hit.collider.GetComponent<ItemBase>();
             if (item != null && item.isUsable)
             {
                 if (equippedItem != null) DropEquipped();
@@ -416,10 +412,8 @@ public class PlayerInteraction : MonoBehaviour
 
                 ToggleEquippedColliders(false);
 
-                if (equippedItem.TryGetComponent(out StunGun stunGun))
-                {
-                    stunGun.OnPickedUp();
-                }
+                // LANGSUNG PANGGIL OnEquip() TANPA PERLU CEK STUNGUN!
+                equippedItem.OnEquip();
             }
         }
     }
@@ -446,6 +440,9 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (equippedItem == null) return;
 
+        // LANGSUNG PANGGIL OnDrop() TANPA PERLU CEK STUNGUN!
+        equippedItem.OnDrop();
+
         equippedItem.transform.SetParent(null);
         equippedItem.transform.localScale = originalItemScale;
         ToggleEquippedColliders(true);
@@ -458,11 +455,6 @@ public class PlayerInteraction : MonoBehaviour
 
             Vector3 pushDirection = playerCamera.transform.forward;
             equippedRb.AddForce(pushDirection * ForcePush, ForceMode.Impulse);
-        }
-
-        if (equippedItem.TryGetComponent(out StunGun stunGun))
-        {
-            stunGun.OnDropped();
         }
 
         cachedColliders = null; 
@@ -478,16 +470,17 @@ public class PlayerInteraction : MonoBehaviour
         IInteractable interactable = hit.collider.GetComponent<IInteractable>();
         if (interactable == null) interactable = hit.collider.GetComponentInParent<IInteractable>();
         if (interactable == null) return;
-        if (interactable.CanInteract(equippedItem.itemType, equippedItem.keyID))
+        
+        // MENGIRIM SELURUH OBJEK ItemBase, BUKAN CUMA TIPE ATAU ID-NYA
+        if (interactable.CanInteract(equippedItem.itemType, equippedItem.KeyID))
         {
             interactable.Interact(equippedItem.itemType);
         }
     }
 
+    // Jika Anda masih membutuhkan fungsi ini di script lain, kita gunakan "as StunGun"
     public StunGun GetHeldStunGun()
     {
-        if (equippedItem == null) return null;
-        if (equippedItem.itemType != ItemType.StunGun) return null;
-        return equippedItem.GetComponent<StunGun>();
+        return equippedItem as StunGun;
     }
 }

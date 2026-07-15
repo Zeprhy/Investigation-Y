@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class PuzzleSocket : MonoBehaviour
+public class PuzzleSocket : ItemBase // Catatan: Pastikan memang sengaja menjadikan Socket ini sebagai ItemBase (bisa di-interact/diambil)
 {
     [Header("== Syarat Item ==")]
     [Tooltip("Tipe Item (misal: Tool, Evidence, Key)")]
@@ -30,19 +30,21 @@ public class PuzzleSocket : MonoBehaviour
 
     void Start()
     {
-        // Matikan kedua model visual di awal
         if (hologramPreviewMesh != null) hologramPreviewMesh.SetActive(false);
         if (placedRealMesh != null) placedRealMesh.SetActive(false);
     }
 
-    // Fungsi untuk mengecek kecocokan barang di tangan Player dengan tatakan ini
-    public bool IsCorrectItem(Item itemToTest)
+    // --- PERUBAHAN DI SINI ---
+    // Ubah tipe parameter 'Item' menjadi 'ItemBase'
+    public bool IsCorrectItem(ItemBase itemToTest)
     {
         if (itemToTest == null) return false;
-        return itemToTest.itemType == requiredItemType && itemToTest.keyID == requiredKeyID;
+        
+        // Pastikan variabel 'keyID' sudah Anda tambahkan di script ItemBase utama Anda
+        return itemToTest.itemType == requiredItemType && itemToTest.KeyID == requiredKeyID;
     }
+    // -------------------------
 
-    // Fungsi memunculkan efek transparan (seperti di video)
     public void SetPreview(bool isVisible)
     {
         if (IsOccupied) return;
@@ -53,12 +55,10 @@ public class PuzzleSocket : MonoBehaviour
         if (hologramPreviewMesh != null) hologramPreviewMesh.SetActive(isVisible);
     }
 
-    // Fungsi saat barang berhasil diletakkan (diklik Player)
     public void PutItemInSocket()
     {
         IsOccupied = true;
         
-        // Matikan hologram, nyalakan objek asli
         if (hologramPreviewMesh != null) hologramPreviewMesh.SetActive(false);
         if (placedRealMesh != null) placedRealMesh.SetActive(true);
 
@@ -67,7 +67,6 @@ public class PuzzleSocket : MonoBehaviour
             _Collider.isTrigger = true;  
         }
 
-        // Lapor ke Puzzle Manager bahwa item ini sudah terpasang
         if (puzzleManager != null)
         {
             puzzleManager.PlaceItem(requiredKeyID);

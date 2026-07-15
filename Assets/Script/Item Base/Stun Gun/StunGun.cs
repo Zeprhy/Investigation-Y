@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
-public class StunGun : MonoBehaviour
+// 1. UBAH INDUK CLASS DARI MonoBehaviour MENJADI ItemBase
+public class StunGun : ItemBase
 {
     [Header("References")]
     [SerializeField] private Camera playerCamera;
@@ -23,12 +24,11 @@ public class StunGun : MonoBehaviour
 
     [Header("Battery Settings")]
     [SerializeField] private float maxBattery = 100f;
-    [SerializeField] private float batteryPerShot = 100f;       // 1 tembakan langsung habis
-    [SerializeField] private float chargeRateHeld = 15f;        // cas/detik saat dipegang diam
-    [SerializeField] private float chargeRateDropped = 25f;     // cas/detik saat di-drop
-    [SerializeField] private float holdChargeDelay = 1.5f;      // delay sebelum mulai cas saat dipegang
+    [SerializeField] private float batteryPerShot = 100f;       
+    [SerializeField] private float chargeRateHeld = 15f;        
+    [SerializeField] private float chargeRateDropped = 25f;     
+    [SerializeField] private float holdChargeDelay = 1.5f;      
 
-    // State
     private float currentBattery = 100f;
     private bool isHeld = false;
     private bool isDropped = false;
@@ -57,6 +57,11 @@ public class StunGun : MonoBehaviour
         HandleCharging();
     }
 
+    // 3. OVERRIDE FUNGSI USE DARI ITEMBASE UNTUK MENEMBAK
+    public override void UseItem()
+    {
+        TryShoot();
+    }
 
     public void TryShoot()
     {
@@ -78,7 +83,6 @@ public class StunGun : MonoBehaviour
         holdStillTimer = 0f;
         chargingSoundPlayed = false;
 
-        //efek muzzle
         if (muzzleFlash) muzzleFlash.Play();
         if (fireSound != null) GameManager.Instance.audioManager.PlaySFX(fireSound);
 
@@ -86,26 +90,25 @@ public class StunGun : MonoBehaviour
         RaycastHit hit;
         Vector3 endPoint = ray.origin + ray.direction * shootRange;
 
-         // Posisi awal arc = posisi muzzle flash, fallback ke posisi senjata
         Vector3 arcStart = muzzleFlash != null ? muzzleFlash.transform.position : transform.position;
 
         if (Physics.Raycast(ray, out hit, shootRange, hitMask))
         {
             endPoint = hit.point;
 
+            // Pastikan referensi NewEnemyAI Anda benar
             NewEnemyAI enemy = hit.collider.GetComponentInParent<NewEnemyAI>();
 
-            if (enemy != null)  enemy.ApplyStun(stunDuration);
-            // Impact Flash di titik kena
-            if (impactFlash)    impactFlash.PlayAt(hit.point);
-               
+            if (enemy != null) enemy.ApplyStun(stunDuration);
+            
+            if (impactFlash) impactFlash.PlayAt(hit.point);
         }
-        // Electric arc selalu tampil (kena/tidak)
+        
         if (electricArc)
-        electricArc.Play(arcStart, endPoint);
+            electricArc.Play(arcStart, endPoint);
 
         if (bulletTrail)
-        StartCoroutine(ShowTrail(bulletTrail, transform.position, endPoint));
+            StartCoroutine(ShowTrail(bulletTrail, transform.position, endPoint));
     }
 
     private void HandleCharging()
@@ -159,8 +162,11 @@ public class StunGun : MonoBehaviour
             chargingSoundPlayed = true;
         }
     }
-    public void OnPickedUp()
+
+    // 4. MENGGANTI OnPickedUp MENJADI override OnEquip
+    public override void OnEquip()
     {
+        base.OnEquip(); // Memanggil logika dasar (jika ada) di ItemBase
         isHeld = true;
         isDropped = false;
         holdStillTimer = 0f;
@@ -168,12 +174,15 @@ public class StunGun : MonoBehaviour
         lastPosition = transform.position;
     }
 
-    public void OnDropped()
+    // 5. MENGGANTI OnDropped MENJADI override OnDrop
+    public override void OnDrop()
     {
+        base.OnDrop();
         isHeld = false;
         isDropped = true;
         chargingSoundPlayed = false;
     }
+
     private IEnumerator ShowTrail(LineRenderer lr, Vector3 from, Vector3 to)
     {
         lr.enabled = true;

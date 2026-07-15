@@ -199,13 +199,13 @@ public class NormalDoor : MonoBehaviour
 
     private bool HasCorrectItem()
     {
-        if (_playerInteraction == null) return false;
+        if (GameManager.Instance.playerInteraction == null) return false;
 
         return doorMode switch
         {
-            DoorOpenMode.Key      => _playerInteraction.IsHoldingKey(doorID),
-            DoorOpenMode.Lockpick => _playerInteraction.IsHoldingLockPick(),
-            DoorOpenMode.Crank    => _playerInteraction.IsHoldingCrankHandle(),
+            DoorOpenMode.Key      => GameManager.Instance.playerInteraction.IsHoldingKey(doorID),
+            DoorOpenMode.Lockpick => GameManager.Instance.playerInteraction.IsHoldingLockPick(),
+            DoorOpenMode.Crank    => GameManager.Instance.playerInteraction.IsHoldingCrankHandle(),
             _                     => false
         };
     }
