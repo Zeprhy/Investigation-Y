@@ -156,7 +156,7 @@ public class HealthManager : MonoBehaviour
             ));
             attacker.TriggerKillAnimation();
 
-            if (movementPlayer != null) movementPlayer.SetminigameState(true);
+            if (GameManager.Instance != null) GameManager.Instance.gameplayStateManager.SetState(GameplayState.Dead);
         }
         else
         {

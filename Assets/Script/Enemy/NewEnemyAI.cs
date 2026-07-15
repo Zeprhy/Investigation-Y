@@ -441,10 +441,10 @@ public class NewEnemyAI : MonoBehaviour
             agent.velocity = Vector3.zero;
         }
 
-        if (playerScript != null)
+        if (GameManager.Instance != null)
         {
-            playerScript.SetminigameState(true);
-            playerScript.isDead = true;
+            GameManager.Instance.gameplayStateManager.SetState(GameplayState.Gameplay);
+            GameManager.Instance.gameplayStateManager.SetState(GameplayState.Dead);
         }
 
         GameObject playerObj = playerScript != null ? playerScript.gameObject : null;

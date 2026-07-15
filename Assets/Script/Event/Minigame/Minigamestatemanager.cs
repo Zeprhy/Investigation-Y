@@ -37,8 +37,8 @@ public class MinigameStateManager : MonoBehaviour
         _isInMinigame = true;
 
         // Freeze movement dan camera
-        if (movementPlayer != null)
-            movementPlayer.SetminigameState(true);
+        if (GameManager.Instance != null)
+            GameManager.Instance.gameplayStateManager.SetState(GameplayState.Puzzle);
 
         switch (type)
         {
@@ -60,8 +60,8 @@ public class MinigameStateManager : MonoBehaviour
         _isInMinigame = false;
 
         // Unfreeze movement dan camera
-        if (movementPlayer != null)
-            movementPlayer.SetminigameState(false);
+        if (GameManager.Instance != null)
+            GameManager.Instance.gameplayStateManager.SetState(GameplayState.Puzzle);
 
         // Lock cursor kembali
         Cursor.lockState = CursorLockMode.Locked;

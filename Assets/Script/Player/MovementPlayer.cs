@@ -28,7 +28,7 @@ public class MovementPlayer : MonoBehaviour
 
     [Header("Optimization Settings")]
     [SerializeField] private float noiseUpdateFrequency = 0.2f;
-    private Transform myTransform;
+    // private Transform myTransform;
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
     private Vector2 inputMove;
@@ -49,7 +49,7 @@ public class MovementPlayer : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         savedFOV = PlayerPrefs.GetFloat("Settings_FOV", 60f);
-        myTransform = transform;
+        // myTransform = transform;
 
         SetCursorState(false);
     }

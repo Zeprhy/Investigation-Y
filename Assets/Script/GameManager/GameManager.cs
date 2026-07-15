@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public PlayerInteraction playerInteraction;
     public EvidenceManager evidenceManager;
     public HideManager hideManager;
+    public GameplayStateManager gameplayStateManager;
 
     [Header("Sevice")]
     public AudioManager audioManager;
@@ -64,6 +65,7 @@ public class GameManager : MonoBehaviour
         if (checkpointManager == null) checkpointManager = Object.FindAnyObjectByType<CheckpointManager>();
         if (dataPersistenceManager == null) dataPersistenceManager = Object.FindAnyObjectByType<DataPersistenceManager>();
         if (hideManager == null) hideManager = Object.FindAnyObjectByType<HideManager>();
+        if (gameplayStateManager == null) gameplayStateManager = Object.FindAnyObjectByType<GameplayStateManager>();
 
         if (movementPlayer != null) movementPlayer.Initialize();
         if (healthManager != null) healthManager.Initialize();
@@ -75,6 +77,7 @@ public class GameManager : MonoBehaviour
         if (checkpointManager != null) checkpointManager.Initialize();
         if (dataPersistenceManager != null) dataPersistenceManager.Initialize();
         if (hideManager != null) hideManager.Initialize();
+        if (gameplayStateManager != null) gameplayStateManager .Initialize();
     }
 
     private IEnumerator DeferredLoadCheckpoint()
