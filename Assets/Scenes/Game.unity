@@ -645,15 +645,16 @@ GameObject:
   - component: {fileID: 128134627}
   - component: {fileID: 128134626}
   - component: {fileID: 128134625}
-  - component: {fileID: 128134624}
   - component: {fileID: 128134623}
+  - component: {fileID: 128134616}
+  - component: {fileID: 128134624}
   - component: {fileID: 128134622}
+  - component: {fileID: 128134629}
   - component: {fileID: 128134621}
   - component: {fileID: 128134620}
   - component: {fileID: 128134619}
   - component: {fileID: 128134618}
   - component: {fileID: 128134617}
-  - component: {fileID: 128134616}
   - component: {fileID: 128134615}
   m_Layer: 10
   m_Name: Player
@@ -1063,8 +1064,8 @@ MonoBehaviour:
     m_ActionName: 'New action map/Remove Item[/Keyboard/g]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 128134622}
-        m_TargetAssemblyTypeName: MovementPlayer, Assembly-CSharp
+      - m_Target: {fileID: 128134629}
+        m_TargetAssemblyTypeName: FlashLight, Assembly-CSharp
         m_MethodName: OnFlashlight
         m_Mode: 0
         m_Arguments:
@@ -1279,6 +1280,19 @@ Transform:
   - {fileID: 1395638950}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 270, z: 0}
+--- !u!114 &128134629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128134614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d3cb0ccde440ad2b3151639cf3c5cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlashLight
+  flashlightObject: {fileID: 0}
 --- !u!1 &341688297
 GameObject:
   m_ObjectHideFlags: 0
@@ -1406,6 +1420,11 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &425775752 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6727051266885646454, guid: 573a03f7a31ea674ca49848a56946768, type: 3}
+  m_PrefabInstance: {fileID: 1919612329}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &472698748
 GameObject:
   m_ObjectHideFlags: 0
@@ -2141,7 +2160,7 @@ GameObject:
   - component: {fileID: 820336027}
   - component: {fileID: 820336026}
   m_Layer: 0
-  m_Name: Board (2)
+  m_Name: Board
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2525,6 +2544,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56f66c777b5ff1e45868171369084ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EvidenceManager
+  evidenceIconUI: {fileID: 0}
   evidenceCountText: {fileID: 0}
 --- !u!4 &1031309452
 Transform:
@@ -2607,7 +2627,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1229340521652340269, guid: 70cdcef461890014a948307c36b2f8fe, type: 3}
   m_PrefabInstance: {fileID: 1159132667}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1089545180
+--- !u!114 &1089545174
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2616,11 +2636,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1089545172}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d254dfad15e35aa980d4fc407d0f955, type: 3}
+  m_Script: {fileID: 11500000, guid: c3ec55b503140eca6a785b84ee1d99bc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemBase
-  itemName: 
-  itemType: 0
+  m_EditorClassIdentifier: Assembly-CSharp::Crowbar
+  itemName: Crowbar
+  itemType: 1
   isUsable: 1
   KeyID: 
 --- !u!1001 &1115368035
@@ -2675,10 +2695,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2638601580979367431, guid: ef5bf70af2040e1479f52992ba8580e3, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3121674860725449511, guid: ef5bf70af2040e1479f52992ba8580e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1978253630}
   m_SourcePrefab: {fileID: 100100000, guid: ef5bf70af2040e1479f52992ba8580e3, type: 3}
 --- !u!1001 &1159132667
 PrefabInstance:
@@ -2739,7 +2763,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7421309213090211509, guid: 70cdcef461890014a948307c36b2f8fe, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1089545180}
+      addedObject: {fileID: 1089545174}
   m_SourcePrefab: {fileID: 100100000, guid: 70cdcef461890014a948307c36b2f8fe, type: 3}
 --- !u!1001 &1270468203
 PrefabInstance:
@@ -2752,6 +2776,14 @@ PrefabInstance:
     - target: {fileID: 2260901774648163283, guid: ca420cee08bbed545bae1755add817f0, type: 3}
       propertyPath: m_Name
       value: StunGun
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602406976013450740, guid: ca420cee08bbed545bae1755add817f0, type: 3}
+      propertyPath: itemName
+      value: Stun Gun
+      objectReference: {fileID: 0}
+    - target: {fileID: 2602406976013450740, guid: ca420cee08bbed545bae1755add817f0, type: 3}
+      propertyPath: itemType
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4004725202885986966, guid: ca420cee08bbed545bae1755add817f0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2814,7 +2846,7 @@ GameObject:
   - component: {fileID: 1280739302}
   - component: {fileID: 1280739301}
   m_Layer: 0
-  m_Name: Board (1)
+  m_Name: Board
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3497,6 +3529,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3270470994532873503, guid: 573a03f7a31ea674ca49848a56946768, type: 3}
   m_PrefabInstance: {fileID: 1919612329}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1454956626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425775752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 845c235a91ea7e92f8f75e854ffe2086, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Lockpick
+  itemName: LockPick
+  itemType: 5
+  isUsable: 1
+  KeyID: 
 --- !u!1 &1882802698
 GameObject:
   m_ObjectHideFlags: 0
@@ -3678,10 +3726,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lockpick
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2097528230920804106, guid: 573a03f7a31ea674ca49848a56946768, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6727051266885646454, guid: 573a03f7a31ea674ca49848a56946768, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1454956626}
   m_SourcePrefab: {fileID: 100100000, guid: 573a03f7a31ea674ca49848a56946768, type: 3}
 --- !u!1 &1922434583
 GameObject:
@@ -3971,6 +4023,27 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1970315810}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1978253624 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3121674860725449511, guid: ef5bf70af2040e1479f52992ba8580e3, type: 3}
+  m_PrefabInstance: {fileID: 1115368035}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1978253630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1978253624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a4ff08fb489b6e389807cd730b1684, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CrankHandle
+  itemName: CrankHandle
+  itemType: 6
+  isUsable: 1
+  KeyID: 
 --- !u!1 &2123416846
 GameObject:
   m_ObjectHideFlags: 0

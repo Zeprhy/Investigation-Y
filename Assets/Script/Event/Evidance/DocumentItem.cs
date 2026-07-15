@@ -6,7 +6,7 @@ using TMPro;
 /// Punya World Space Canvas yang "nempel" di kertas untuk tampilkan teks.
 /// Canvas aktif saat inspeksi, nonaktif saat di scene.
 /// </summary>
-public class DocumentItem : MonoBehaviour
+public class DocumentItem : ItemBase
 {
     [Header(" Data Dokumen ")]
     public EvidenceDataSO evidenceDataSO;
