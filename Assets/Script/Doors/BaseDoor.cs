@@ -1,111 +1,52 @@
 using UnityEngine;
-using System.Collections;
+using DG.Tweening;
 
-/// <summary>
-/// Parent (BaseDoor)
-/// </summary>
-public abstract class BaseDoor : MonoBehaviour
+public class BaseDoor : MonoBehaviour
 {
     [Header("Base Settings")]
     public bool isOpen = false;
     public bool isLocked = true;
     [SerializeField] private float openAngle = 90f;
-    [SerializeField] private float smoothSpeed = 5f;
-    [SerializeField] private float interactionRadius = 3f;
+    [SerializeField] private float animationDuration = 0.5f; 
 
-    [Header("Auto Close")]
-    [SerializeField] protected bool useAutoClose = true;
-    [SerializeField] private float autoCloseDelay = 3f;
-    protected Coroutine autoCloseCoroutine;
-
-    [Header("UI System (Direct TMP)")]
-    //[SerializeField] private TextMeshProUGUI globalInteractText;
-    [SerializeField] private float uiDisplayDistance = 3.0f;
-    // ---- Cache komponen ----
     protected Quaternion _targetRotation;
     protected Quaternion _defaultRotation;
-    protected Transform _playerTransform;
-    protected PlayerInteraction _playerInteraction;
     protected UnityEngine.AI.NavMeshObstacle _doorObstacle;
- 
-  
-    // ---- Cache threshold ----
-    protected bool _isPlayerNear = false;
-    private float _uiDistanceSqr;
-    protected float _interactRadiusSqr;
- 
-    // ---- Cache WaitForSeconds ----
-    protected WaitForSeconds _autoCloseWait;     
-    
+
     protected virtual void Awake()
     {
-        _uiDistanceSqr     = uiDisplayDistance * uiDisplayDistance;
-        _interactRadiusSqr = interactionRadius * interactionRadius;
-        _autoCloseWait     = new WaitForSeconds(autoCloseDelay);
-    }
-    protected virtual void Initialize()
-    {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         _doorObstacle = GetComponent<UnityEngine.AI.NavMeshObstacle>();
 
-        if (_doorObstacle != null) _doorObstacle.enabled = !isOpen;
+        if (_doorObstacle != null) 
+            _doorObstacle.enabled = !isOpen;
 
-        if (playerObj != null)
-        {
-            _playerTransform = playerObj.transform;
-            _playerInteraction = playerObj.GetComponent<PlayerInteraction>();
-        }
-        
         _defaultRotation = transform.localRotation;
         _targetRotation = _defaultRotation;
     }
 
-    protected virtual void Update()
+    public virtual void Interact(GameObject player)
     {
-        transform.localRotation = Quaternion.Slerp(transform.localRotation, _targetRotation, Time.deltaTime * smoothSpeed);
-        HandleUIDistance();
-    }
-
-    protected  void HandleUIDistance()
-    {
-        if (_playerTransform == null) return;
-        float distSqr = (_playerTransform.position - transform.position).sqrMagnitude;
-
-        if (distSqr <= _uiDistanceSqr)
+        if (!isLocked)
         {
-            _isPlayerNear = true;
-            UpdateUIText();
-        }
-
-        else if (_isPlayerNear)
-        {
-            _isPlayerNear = false;
-            HideUIText();
+            ToggleDoor(player.transform.position);
         }
     }
-
-    
-    public abstract void Interact(GameObject player);
-    protected abstract void UpdateUIText();
-    protected abstract void HideUIText();
-
 
     public void UnlockDoor()
     {
         isLocked = false;
-        UpdateUIText();
     }
 
     public virtual void ToggleDoor(Vector3 interactorPosition)
     {
-        if (autoCloseCoroutine != null) StopCoroutine(autoCloseCoroutine);
-    
         isOpen = !isOpen;
     
         if (_doorObstacle != null) 
         {
             _doorObstacle.enabled = !isOpen; 
         }
+
+        transform.DOKill();
 
         if (isOpen)
         {
@@ -114,28 +55,25 @@ public abstract class BaseDoor : MonoBehaviour
             float angle = dot >= 0 ? openAngle : -openAngle;
             
             _targetRotation = _defaultRotation * Quaternion.Euler(0, angle, 0);
-    
-            if (useAutoClose) autoCloseCoroutine = StartCoroutine(AutoCloseTimer());
+
+            transform.DOLocalRotateQuaternion(_targetRotation, animationDuration).SetEase(Ease.OutQuad);
         }
         else
         {
             CloseDoor();
         }
-        UpdateUIText();
     }
 
     public virtual void CloseDoor()
     {
         isOpen = false;
         _targetRotation = _defaultRotation;
-        if (_doorObstacle != null) _doorObstacle.enabled = true;
-        UpdateUIText();
-    }
+        
+        if (_doorObstacle != null) 
+            _doorObstacle.enabled = true;
 
-    private IEnumerator AutoCloseTimer()
-    {
-        yield return _autoCloseWait;
-        if (isOpen) CloseDoor();
-        autoCloseCoroutine = null;
+        // Animasi DOTween menutup pintu
+        transform.DOKill();
+        transform.DOLocalRotateQuaternion(_defaultRotation, animationDuration).SetEase(Ease.OutQuad);
     }
 }

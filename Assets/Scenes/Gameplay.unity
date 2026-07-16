@@ -7197,6 +7197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56f66c777b5ff1e45868171369084ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EvidenceManager
+  evidenceIconUI: {fileID: 0}
   evidenceCountText: {fileID: 1708213763}
 --- !u!1 &121026010
 GameObject:
@@ -8131,9 +8132,7 @@ MonoBehaviour:
   PryingSound: {fileID: 0}
   fallForceMin: 1
   fallForceMax: 3
-  uiDisplayDistance: 3
   objectiveManager: {fileID: 614701509}
-  globalInteractText: {fileID: 847129415}
 --- !u!4 &202232426
 Transform:
   m_ObjectHideFlags: 0
@@ -9331,8 +9330,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3410903c55092b30bc0231073806709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorButton
-  elevatorDoor: {fileID: 1252130323}
-  buttonSFX: {fileID: 0}
   canPressed: 1
   uiDisplayDistance: 2.5
   globalInteractText: {fileID: 847129415}
@@ -11956,8 +11953,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3410903c55092b30bc0231073806709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorButton
-  elevatorDoor: {fileID: 856422972}
-  buttonSFX: {fileID: 0}
   canPressed: 1
   uiDisplayDistance: 2.5
   globalInteractText: {fileID: 847129415}
@@ -12484,8 +12479,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3410903c55092b30bc0231073806709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorButton
-  elevatorDoor: {fileID: 806658133}
-  buttonSFX: {fileID: 0}
   canPressed: 1
   uiDisplayDistance: 2.5
   globalInteractText: {fileID: 847129415}
@@ -15052,8 +15045,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3410903c55092b30bc0231073806709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorButton
-  elevatorDoor: {fileID: 1624581195}
-  buttonSFX: {fileID: 0}
   canPressed: 1
   uiDisplayDistance: 2.5
   globalInteractText: {fileID: 847129415}
@@ -16832,8 +16823,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3410903c55092b30bc0231073806709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorButton
-  elevatorDoor: {fileID: 1624581195}
-  buttonSFX: {fileID: 0}
   canPressed: 0
   uiDisplayDistance: 2.5
   globalInteractText: {fileID: 847129415}
@@ -17041,8 +17030,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3410903c55092b30bc0231073806709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorButton
-  elevatorDoor: {fileID: 856422972}
-  buttonSFX: {fileID: 0}
   canPressed: 0
   uiDisplayDistance: 2.5
   globalInteractText: {fileID: 847129415}
@@ -17693,9 +17680,6 @@ MonoBehaviour:
   interactPromptText: {fileID: 0}
   hideFadeGroup: {fileID: 362284827}
   raycastFrequency: 0.1
-  SocketLayerMask:
-    serializedVersion: 2
-    m_Bits: 2048
 --- !u!114 &769955107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18809,9 +18793,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ba87c2b596f50c1c87bf87e423cb588, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorSlidingDoor
-  elevatorAnimator: {fileID: 806658134}
-  doorObstacle: {fileID: 806658135}
   isOpen: 0
+  isLocked: 1
+  leftDoor: {fileID: 0}
+  leftDoorSlideOffset: {x: -1.5, y: 0, z: 0}
+  rightDoor: {fileID: 0}
+  rightDoorSlideOffset: {x: 1.5, y: 0, z: 0}
+  animationDuration: 1.5
   useAutoClose: 1
   autoCloseDelay: 3
 --- !u!95 &806658134
@@ -19629,9 +19617,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ba87c2b596f50c1c87bf87e423cb588, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorSlidingDoor
-  elevatorAnimator: {fileID: 856422971}
-  doorObstacle: {fileID: 856422970}
   isOpen: 0
+  isLocked: 1
+  leftDoor: {fileID: 0}
+  leftDoorSlideOffset: {x: -1.5, y: 0, z: 0}
+  rightDoor: {fileID: 0}
+  rightDoorSlideOffset: {x: 1.5, y: 0, z: 0}
+  animationDuration: 1.5
   useAutoClose: 1
   autoCloseDelay: 3
 --- !u!1 &860403783
@@ -21419,17 +21411,7 @@ MonoBehaviour:
   isOpen: 0
   isLocked: 1
   openAngle: 90
-  smoothSpeed: 5
-  interactionRadius: 2
-  useAutoClose: 1
-  autoCloseDelay: 2
-  globalInteractText: {fileID: 847129415}
-  uiDisplayDistance: 3
-  doorMode: 0
-  doorID: Key_1
-  keyNameForUI: Kunci Ruangan
-  lockpickMinigame: {fileID: 0}
-  crankminigame: {fileID: 0}
+  animationDuration: 0.5
 --- !u!64 &960228109
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -24192,6 +24174,7 @@ MonoBehaviour:
   dialogueManager: {fileID: 1092385922}
   checkpointManager: {fileID: 1481385308}
   dataPersistenceManager: {fileID: 424031843}
+  interactionUIManager: {fileID: 0}
 --- !u!43 &1085668129
 Mesh:
   m_ObjectHideFlags: 0
@@ -27645,9 +27628,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ba87c2b596f50c1c87bf87e423cb588, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorSlidingDoor
-  elevatorAnimator: {fileID: 1252130324}
-  doorObstacle: {fileID: 1252130325}
   isOpen: 0
+  isLocked: 1
+  leftDoor: {fileID: 0}
+  leftDoorSlideOffset: {x: -1.5, y: 0, z: 0}
+  rightDoor: {fileID: 0}
+  rightDoorSlideOffset: {x: 1.5, y: 0, z: 0}
+  animationDuration: 1.5
   useAutoClose: 1
   autoCloseDelay: 3
 --- !u!95 &1252130324
@@ -28632,6 +28619,10 @@ PrefabInstance:
     - target: {fileID: 7831882424711097884, guid: 5809b64033c022245a2e2cadac06a44f, type: 3}
       propertyPath: m_Name
       value: ValveProgressUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 7831882424711097884, guid: 5809b64033c022245a2e2cadac06a44f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -34775,9 +34766,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ba87c2b596f50c1c87bf87e423cb588, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorSlidingDoor
-  elevatorAnimator: {fileID: 1624581196}
-  doorObstacle: {fileID: 1624581197}
   isOpen: 0
+  isLocked: 1
+  leftDoor: {fileID: 0}
+  leftDoorSlideOffset: {x: -1.5, y: 0, z: 0}
+  rightDoor: {fileID: 0}
+  rightDoorSlideOffset: {x: 1.5, y: 0, z: 0}
+  animationDuration: 1.5
   useAutoClose: 1
   autoCloseDelay: 3
 --- !u!95 &1624581196
@@ -36312,8 +36307,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3410903c55092b30bc0231073806709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorButton
-  elevatorDoor: {fileID: 806658133}
-  buttonSFX: {fileID: 0}
   canPressed: 0
   uiDisplayDistance: 2.5
   globalInteractText: {fileID: 847129415}
@@ -37917,6 +37910,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e58d39884d0653b4ba3d026a20f74f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DocumentItem
+  itemName: 
+  itemType: 0
+  isUsable: 1
+  KeyID: 
   evidenceDataSO: {fileID: 0}
   documentCanvas: {fileID: 202122545}
   documentTextTMP: {fileID: 1547560868}
@@ -46405,8 +46402,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3410903c55092b30bc0231073806709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElevatorButton
-  elevatorDoor: {fileID: 1252130323}
-  buttonSFX: {fileID: 0}
   canPressed: 0
   uiDisplayDistance: 2.5
   globalInteractText: {fileID: 847129415}

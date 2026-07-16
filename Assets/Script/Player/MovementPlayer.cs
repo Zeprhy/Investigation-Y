@@ -26,9 +26,6 @@ public class MovementPlayer : MonoBehaviour
     [Header("Health Integration")]
     [SerializeField] private HealthManager health;
 
-    [Header("Optimization Settings")]
-    [SerializeField] private float noiseUpdateFrequency = 0.2f;
-    // private Transform myTransform;
     private CharacterController characterController;
     private Vector3 moveDirection = Vector3.zero;
     private Vector2 inputMove;

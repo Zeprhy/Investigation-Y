@@ -3,11 +3,11 @@ using TMPro;
 
 public class ElevatorButton : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private ElevatorSlidingDoor elevatorDoor;
+    // [Header("References")]
+    // [SerializeField] private ElevatorSlidingDoor elevatorDoor;
 
-    [Header("Audio Settings")]
-    [SerializeField] private AudioClip buttonSFX;
+    // [Header("Audio Settings")]
+    // [SerializeField] private AudioClip buttonSFX;
 
     [Header("Settings")]
     [SerializeField] private bool canPressed = true;
@@ -44,12 +44,12 @@ public class ElevatorButton : MonoBehaviour
 
         if (!PowerSystem.IsPowerOn) return;
 
-        if (elevatorDoor != null)
-        {
-            elevatorDoor.Interact(); // Calls the door
-            if (GameManager.Instance.audioManager != null)
-                GameManager.Instance.audioManager.PlaySFX(buttonSFX);
-        }
+        // if (elevatorDoor != null)
+        // {
+        //     elevatorDoor.Interact(); // Calls the door
+        //     if (GameManager.Instance.audioManager != null)
+        //         GameManager.Instance.audioManager.PlaySFX(buttonSFX);
+        // }
     }
 
     private void HandleUI()

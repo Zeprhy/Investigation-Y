@@ -155,8 +155,6 @@ public class HealthManager : MonoBehaviour
                 attacker.transform.position.z
             ));
             attacker.TriggerKillAnimation();
-
-            if (GameManager.Instance != null) GameManager.Instance.gameplayStateManager.SetState(GameplayState.Dead);
         }
         else
         {

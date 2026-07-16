@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public PlayerInteraction playerInteraction;
     public EvidenceManager evidenceManager;
     public HideManager hideManager;
-    public GameplayStateManager gameplayStateManager;
+    public MinigameManager minigameManager;
 
     [Header("Sevice")]
     public AudioManager audioManager;
@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour
     public CheckpointManager checkpointManager;
     public DataPersistenceManager dataPersistenceManager;
     public InteractionUIManager interactionUIManager;
-
 
     private bool hasInitialized = false;
 
@@ -66,7 +65,7 @@ public class GameManager : MonoBehaviour
         if (checkpointManager == null) checkpointManager = Object.FindAnyObjectByType<CheckpointManager>();
         if (dataPersistenceManager == null) dataPersistenceManager = Object.FindAnyObjectByType<DataPersistenceManager>();
         if (hideManager == null) hideManager = Object.FindAnyObjectByType<HideManager>();
-        if (gameplayStateManager == null) gameplayStateManager = Object.FindAnyObjectByType<GameplayStateManager>();
+        if (minigameManager == null) minigameManager = Object.FindAnyObjectByType<MinigameManager>();
         if (interactionUIManager == null) interactionUIManager = Object.FindAnyObjectByType<InteractionUIManager>();
         
 
@@ -80,7 +79,7 @@ public class GameManager : MonoBehaviour
         if (checkpointManager != null) checkpointManager.Initialize();
         if (dataPersistenceManager != null) dataPersistenceManager.Initialize();
         if (hideManager != null) hideManager.Initialize();
-        if (gameplayStateManager != null) gameplayStateManager .Initialize();
+        if (minigameManager != null) minigameManager.Initialize();
         if (interactionUIManager != null) interactionUIManager.Initialize();
         
     }
