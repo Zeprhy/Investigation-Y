@@ -3,7 +3,7 @@ using UnityEngine;
 public class CrankDoor : BaseDoor
 {
     [Header("== Crank Settings ==")]
-    [SerializeField] private CrankMinigame crankMinigame;
+    [SerializeField] private CrankHandle_MiniGame crankMinigame;
 
     private bool _minigameInProgress = false;
     private Vector3 _lastInteractorPosition;

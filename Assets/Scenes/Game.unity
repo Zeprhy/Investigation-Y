@@ -119,6 +119,69 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &19374598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 19374599}
+  - component: {fileID: 19374600}
+  m_Layer: 0
+  m_Name: LockPick MiniGame
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &19374599
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19374598}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1488665107}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &19374600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19374598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7e4aef7483023f40a63c67c8ddd1e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LockPick_MiniGame
+  needleSpeed: 180
+  useCameraLock: 1
+  scriptsToDisable: []
+  unlockCursorForUI: 1
+  successZoneSize: 30
+  requiredSuccesses: 3
+  maxFailures: 2
+  needle: {fileID: 0}
+  successZoneRect: {fileID: 0}
+  minigamePanel: {fileID: 0}
+  onMinigameSuccess:
+    m_PersistentCalls:
+      m_Calls: []
+  onMinigameFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  onProgress:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &25599466 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5528277960327117766, guid: ef5bf70af2040e1479f52992ba8580e3, type: 3}
@@ -1406,6 +1469,38 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &328530096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 328530097}
+  m_Layer: 0
+  m_Name: Items Interaction
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &328530097
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328530096}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 289.62976, y: -0.7168, z: 22.33741}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 523305814}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &341688297
 GameObject:
   m_ObjectHideFlags: 0
@@ -1612,7 +1707,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 523305814}
   - {fileID: 97381598}
   - {fileID: 1454956620}
   - {fileID: 1089545173}
@@ -1646,14 +1740,14 @@ Transform:
   m_GameObject: {fileID: 523305813}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -8.597626, y: 1.1949999, z: 2.8132515}
-  m_LocalScale: {x: 1.2691998, y: 16.529999, z: 1}
+  m_LocalPosition: {x: -0.82977295, y: 1.1949999, z: 1.8625908}
+  m_LocalScale: {x: 1.2691997, y: 16.529999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1970315811}
   - {fileID: 1280739300}
   - {fileID: 820336025}
-  m_Father: {fileID: 493553545}
+  m_Father: {fileID: 328530097}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!208 &523305815
 NavMeshObstacle:
@@ -3672,7 +3766,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4851168844000864779, guid: ac7d97648452a6a42b1a61451fa7bf15, type: 3}
       propertyPath: m_Name
-      value: LockpickPanel
+      value: LockPick_MiniGame
       objectReference: {fileID: 0}
     - target: {fileID: 4851168844000864779, guid: ac7d97648452a6a42b1a61451fa7bf15, type: 3}
       propertyPath: m_IsActive
@@ -3689,13 +3783,45 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4851168844000864779, guid: ac7d97648452a6a42b1a61451fa7bf15, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1247296549}
   m_SourcePrefab: {fileID: 100100000, guid: ac7d97648452a6a42b1a61451fa7bf15, type: 3}
 --- !u!224 &1247296547 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3835313110739303624, guid: ac7d97648452a6a42b1a61451fa7bf15, type: 3}
   m_PrefabInstance: {fileID: 1247296546}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1247296548 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4851168844000864779, guid: ac7d97648452a6a42b1a61451fa7bf15, type: 3}
+  m_PrefabInstance: {fileID: 1247296546}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1247296549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247296548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 730ce62b2f1da73469038eb829cbd4a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LockPick_MiniGame_UI
+  minigame: {fileID: 0}
+  lockpickPanel: {fileID: 0}
+  successZoneImage: {fileID: 0}
+  needleTransform: {fileID: 0}
+  progressBarFill: {fileID: 0}
+  successCountText: {fileID: 0}
+  feedbackText: {fileID: 0}
+  successZoneColor: {r: 0.2, g: 0.9, b: 0.3, a: 0.8}
+  successFlashColor: {r: 1, g: 1, b: 0.2, a: 1}
+  failFlashColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+  normalNeedleColor: {r: 1, g: 0, b: 0, a: 1}
+  feedbackDuration: 0.8
 --- !u!1001 &1270468203
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4456,7 +4582,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2087596384}
+  - {fileID: 19374599}
   m_Father: {fileID: 114529632}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1488665108
@@ -4471,8 +4599,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5107884ecdb2f81d7bda024688784ef9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinigameManager
-  crankMinigame: {fileID: 0}
-  lockpickMinigame: {fileID: 0}
+  crankMinigame: {fileID: 2087596385}
+  lockpickMinigame: {fileID: 19374600}
+  crankUI: {fileID: 1682614942}
+  lockpickUI: {fileID: 0}
 --- !u!1 &1510303089
 GameObject:
   m_ObjectHideFlags: 0
@@ -5038,7 +5168,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8575242269030160025, guid: 3ceb3546fda9cc043abf9deb394018a5, type: 3}
       propertyPath: m_Name
-      value: CrankPanel
+      value: CrankHandle_MiniGame
       objectReference: {fileID: 0}
     - target: {fileID: 8575242269030160025, guid: 3ceb3546fda9cc043abf9deb394018a5, type: 3}
       propertyPath: m_IsActive
@@ -5054,6 +5184,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4850534633251721183, guid: 3ceb3546fda9cc043abf9deb394018a5, type: 3}
   m_PrefabInstance: {fileID: 1682614940}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1682614942 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1973404917021249006, guid: 3ceb3546fda9cc043abf9deb394018a5, type: 3}
+  m_PrefabInstance: {fileID: 1682614940}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e82135db2b634e843ac64879a2b6e836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CrankUI
 --- !u!1 &1824201540
 GameObject:
   m_ObjectHideFlags: 0
@@ -5603,6 +5744,67 @@ MonoBehaviour:
   itemType: 6
   isUsable: 1
   KeyID: 
+--- !u!1 &2087596383
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2087596384}
+  - component: {fileID: 2087596385}
+  m_Layer: 0
+  m_Name: CranckHandle MiniGame
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2087596384
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087596383}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1488665107}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2087596385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087596383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1b9b1b5f1295034d94764242595c0b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CrankHandle_MiniGame
+  isStoryUnlocked: 0
+  fillSpeed: 0.4
+  completeSound: {fileID: 0}
+  crankingSound: {fileID: 0}
+  drainSpeed: 0.15
+  graceTime: 1.5
+  rotationSensitivity: 0.5
+  crankPanel: {fileID: 0}
+  onCrankComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onCrankCancelled:
+    m_PersistentCalls:
+      m_Calls: []
+  useCameraLock: 1
+  scriptsToDisable: []
+  unlockCursorForUI: 0
 --- !u!1 &2123416846
 GameObject:
   m_ObjectHideFlags: 0
@@ -5721,5 +5923,6 @@ SceneRoots:
   - {fileID: 128134628}
   - {fileID: 1351273811}
   - {fileID: 119968772}
-  - {fileID: 493553545}
   - {fileID: 739405236}
+  - {fileID: 493553545}
+  - {fileID: 328530097}

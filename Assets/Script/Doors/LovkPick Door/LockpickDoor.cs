@@ -3,7 +3,7 @@ using UnityEngine;
 public class LockpickDoor : BaseDoor
 {
     [Header("== Lockpick Settings ==")]
-    [SerializeField] private LockpickMinigame lockpickMinigame;
+    [SerializeField] private LockPick_MiniGame lockpickMinigame;
 
     private bool _minigameInProgress = false;
     private Vector3 _lastInteractorPosition;

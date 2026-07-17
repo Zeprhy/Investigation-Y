@@ -1,11 +1,10 @@
-
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CrankUI : MonoBehaviour
+public class CrankHandle_MiniGame_UI : MonoBehaviour
 {
-     [Header(" Referensi ")]
-    [SerializeField] private CrankMinigame crankMinigame;
+    [Header(" Referensi ")]
+    [SerializeField] private CrankHandle_MiniGame crankMinigame;
 
     [Header(" UI Elements ")]
     [SerializeField] private Image progressBarFill;
@@ -16,6 +15,11 @@ public class CrankUI : MonoBehaviour
     [SerializeField] private float crankRotateSpeed = 200f;
 
     private float _currentRotation = 0f;
+
+    public void Setup(CrankHandle_MiniGame logicInstance)
+    {
+        crankMinigame = logicInstance;
+    }
 
     void Update()
     {
@@ -38,6 +42,4 @@ public class CrankUI : MonoBehaviour
             }
         }
     }
-        
-    
 }

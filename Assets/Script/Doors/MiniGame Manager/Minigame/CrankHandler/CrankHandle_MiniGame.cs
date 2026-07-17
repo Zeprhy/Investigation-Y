@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
 
-public class CrankMinigame : MonoBehaviour
+public class CrankHandle_MiniGame : MonoBehaviour
 {
     // KODE BARU: Gembok cerita
     [Header(" Story Event ")]

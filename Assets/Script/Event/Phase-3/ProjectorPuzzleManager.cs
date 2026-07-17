@@ -31,7 +31,7 @@ public class ProjectorPuzzleManager : MonoBehaviour
     // KODE BARU: Referensi ke pintu maintenance
     [Header("== Phase 4 Transition ==")]
     [Tooltip("Masukkan script CrankMinigame dari Pintu Maintenance")]
-    [SerializeField] private CrankMinigame maintenanceDoorCrank;
+    [SerializeField] private CrankHandle_MiniGame maintenanceDoorCrank;
 
     [Header(" Objective Manager ")]
     [SerializeField] ObjectiveManager objectiveManager;

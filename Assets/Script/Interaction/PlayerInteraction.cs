@@ -139,6 +139,11 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 3f)) 
         {
+            if (hit.collider.TryGetComponent(out LockPick_MiniGame LockPick_Obj))
+            {
+                if (IsHoldingLockPick())
+            }
+
             ElevatorButton buttonLift = hit.collider.GetComponent<ElevatorButton>();
             if (buttonLift != null)
             {

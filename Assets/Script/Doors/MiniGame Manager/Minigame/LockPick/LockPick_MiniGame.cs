@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
 
-public class LockpickMinigame : MonoBehaviour
+public class LockPick_MiniGame : MonoBehaviour
 {
     [Header(" Pengaturan Minigame ")]
     [SerializeField] private float needleSpeed = 180f;
@@ -23,7 +23,6 @@ public class LockpickMinigame : MonoBehaviour
     [SerializeField] private RectTransform successZoneRect;
     [SerializeField] private GameObject minigamePanel;
 
-    // --- BAGIAN AUDIO LOKAL DIHAPUS ---
 
     [Header(" Events ")]
     public UnityEvent onMinigameSuccess;
@@ -159,9 +158,6 @@ public class LockpickMinigame : MonoBehaviour
     private void HandleSuccess()
     {
         _currentSuccesses++;
-        
-        // if (AudioManager.Instance != null)
-            // AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickSuccess);
  
         onProgress?.Invoke(_currentSuccesses, requiredSuccesses);
  
@@ -179,9 +175,6 @@ public class LockpickMinigame : MonoBehaviour
     private void HandleFail()
     {
         _currentFailures++;
-        
-        // if (AudioManager.Instance != null)
-            // AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickFail);
  
         if (_currentFailures >= maxFailures)
         {
@@ -207,9 +200,6 @@ public class LockpickMinigame : MonoBehaviour
     private IEnumerator CompleteMinigame()
     {
         _isActive = false;
-
-        // if (AudioManager.Instance != null)
-            // AudioManager.Instance.PlaySFX(AudioManager.Instance.lockpickComplete);
 
         yield return _endWait;
 
