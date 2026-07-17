@@ -100,10 +100,6 @@ public class ProjectorPuzzleManager : MonoBehaviour
             elevatorDebrisTrigger.ActivateEventReady();
 
         CompletePuzzleObjective();
-
-        // KODE BARU: 5. Buka gembok fungsi Crank Handle di ruang Maintenance
-        if (maintenanceDoorCrank != null)
-            maintenanceDoorCrank.UnlockCrankFeature();
     }
 
     private void CompletePuzzleObjective()

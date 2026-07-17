@@ -263,6 +263,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 114529632}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &46114397
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 46114398}
+  m_Layer: 5
+  m_Name: <=== GamePlay ===>
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &46114398
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46114397}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1569147375}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &67777658
 GameObject:
   m_ObjectHideFlags: 0
@@ -390,51 +425,6 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!1 &67805331
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 67805333}
-  - component: {fileID: 67805332}
-  m_Layer: 0
-  m_Name: Gameplay State Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &67805332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 67805331}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e9b1ddda02587471b210cbaf357d097, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameplayStateManager
-  <CurrentState>k__BackingField: 0
---- !u!4 &67805333
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 67805331}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 114529632}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &97381598 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4004725202885986966, guid: ca420cee08bbed545bae1755add817f0, type: 3}
@@ -474,7 +464,7 @@ MonoBehaviour:
   playerInteraction: {fileID: 128134621}
   evidenceManager: {fileID: 1031309451}
   hideManager: {fileID: 2132578241}
-  minigameManager: {fileID: 0}
+  minigameManager: {fileID: 1488665108}
   audioManager: {fileID: 1054463065}
   cameraShakeManager: {fileID: 895409735}
   dialogueManager: {fileID: 792577947}
@@ -503,7 +493,6 @@ Transform:
   - {fileID: 792577948}
   - {fileID: 1031309452}
   - {fileID: 2132578242}
-  - {fileID: 67805333}
   - {fileID: 1370014606}
   - {fileID: 444621317}
   - {fileID: 1488665107}
@@ -528,7 +517,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &119968768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -881,9 +870,6 @@ MonoBehaviour:
   handPoint: {fileID: 1395638950}
   ForcePush: 5
   climbingSystem: {fileID: 128134618}
-  equipppedItemText: {fileID: 0}
-  interactPromptText: {fileID: 0}
-  hideFadeGroup: {fileID: 0}
   raycastFrequency: 0.1
 --- !u!114 &128134622
 MonoBehaviour:
@@ -2626,6 +2612,41 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &612008572
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 612008573}
+  m_Layer: 5
+  m_Name: <=== Mini Game ===>
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &612008573
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612008572}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1569147375}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &730942109
 GameObject:
   m_ObjectHideFlags: 0
@@ -3025,7 +3046,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BaseDoor
   isOpen: 0
-  isLocked: 0
+  isLocked: 1
   openAngle: 90
   animationDuration: 0.5
 --- !u!1 &820336024
@@ -4602,7 +4623,12 @@ MonoBehaviour:
   crankMinigame: {fileID: 2087596385}
   lockpickMinigame: {fileID: 19374600}
   crankUI: {fileID: 1682614942}
-  lockpickUI: {fileID: 0}
+  lockpickUI: {fileID: 1247296549}
+--- !u!1 &1491090744 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8575242269030160025, guid: 3ceb3546fda9cc043abf9deb394018a5, type: 3}
+  m_PrefabInstance: {fileID: 1682614940}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1510303089
 GameObject:
   m_ObjectHideFlags: 0
@@ -4972,7 +4998,7 @@ GameObject:
   - component: {fileID: 1569147373}
   - component: {fileID: 1569147372}
   m_Layer: 5
-  m_Name: Mini Game Panel
+  m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5053,6 +5079,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 46114398}
+  - {fileID: 612008573}
   - {fileID: 1247296547}
   - {fileID: 1682614941}
   m_Father: {fileID: 0}
@@ -5077,7 +5105,7 @@ PrefabInstance:
     - target: {fileID: 1973404917021249006, guid: 3ceb3546fda9cc043abf9deb394018a5, type: 3}
       propertyPath: crankMinigame
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2087596385}
     - target: {fileID: 4369904113547091453, guid: 3ceb3546fda9cc043abf9deb394018a5, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 102
@@ -5189,7 +5217,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1973404917021249006, guid: 3ceb3546fda9cc043abf9deb394018a5, type: 3}
   m_PrefabInstance: {fileID: 1682614940}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1491090744}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e82135db2b634e843ac64879a2b6e836, type: 3}
@@ -5244,7 +5272,7 @@ MonoBehaviour:
   isLocked: 1
   openAngle: 90
   animationDuration: 0.5
-  crankMinigame: {fileID: 0}
+  crankMinigame: {fileID: 2087596385}
 --- !u!1 &1882802698
 GameObject:
   m_ObjectHideFlags: 0
@@ -5788,23 +5816,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1b9b1b5f1295034d94764242595c0b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrankHandle_MiniGame
-  isStoryUnlocked: 0
   fillSpeed: 0.4
   completeSound: {fileID: 0}
   crankingSound: {fileID: 0}
   drainSpeed: 0.15
   graceTime: 1.5
   rotationSensitivity: 0.5
-  crankPanel: {fileID: 0}
+  crankPanel: {fileID: 1491090744}
   onCrankComplete:
     m_PersistentCalls:
       m_Calls: []
   onCrankCancelled:
     m_PersistentCalls:
       m_Calls: []
-  useCameraLock: 1
-  scriptsToDisable: []
-  unlockCursorForUI: 0
 --- !u!1 &2123416846
 GameObject:
   m_ObjectHideFlags: 0
@@ -5922,7 +5946,7 @@ SceneRoots:
   - {fileID: 114529632}
   - {fileID: 128134628}
   - {fileID: 1351273811}
-  - {fileID: 119968772}
   - {fileID: 739405236}
   - {fileID: 493553545}
   - {fileID: 328530097}
+  - {fileID: 119968772}

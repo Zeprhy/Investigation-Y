@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.ProBuilder.Shapes;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -9,10 +10,10 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private float ForcePush;
     [SerializeField] private ClimbingSystem climbingSystem;
 
-    [Header("UI")]
-    [SerializeField] private TMPro.TextMeshProUGUI equipppedItemText;
-    [SerializeField] private TMPro.TextMeshProUGUI interactPromptText;
-    [SerializeField] private CanvasGroup hideFadeGroup;
+    // [Header("UI")]
+    // [SerializeField] private TMPro.TextMeshProUGUI equipppedItemText;
+    // [SerializeField] private TMPro.TextMeshProUGUI interactPromptText;
+    // [SerializeField] private CanvasGroup hideFadeGroup;
     
     [Header("Optimization")]
     [SerializeField] private float raycastFrequency = 0.1f;
@@ -126,6 +127,20 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (!context.performed || PauseMenu.isPausedStatic) return;
 
+        if (GameManager.Instance != null && GameManager.Instance.minigameManager != null)
+        {
+            var minigameMgr = GameManager.Instance.minigameManager;
+            
+            if (minigameMgr.IsAnyMinigameActive())
+            {
+                if (minigameMgr.lockpickMinigame != null && minigameMgr.lockpickMinigame.IsActive)
+                {
+                    minigameMgr.lockpickMinigame.ReceiveInteractInput();
+                }
+                return; 
+            }
+        }
+
         if (climbingSystem != null && climbingSystem.IsClimbing)
         {
             climbingSystem.StopClimbing();
@@ -139,10 +154,6 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 3f)) 
         {
-            if (hit.collider.TryGetComponent(out LockPick_MiniGame LockPick_Obj))
-            {
-                if (IsHoldingLockPick())
-            }
 
             ElevatorButton buttonLift = hit.collider.GetComponent<ElevatorButton>();
             if (buttonLift != null)
@@ -183,17 +194,11 @@ public class PlayerInteraction : MonoBehaviour
                 return;
             }
 
-            BaseDoor door = hit.collider.GetComponentInChildren<BaseDoor>();
-            if (door != null)
-            {
-                door.Interact(gameObject);
-                return;
-            }
 
             Locker locker = hit.collider.GetComponentInParent<Locker>();
             if (locker != null)
             {
-                SetCurrentLocker(locker);
+                // SetCurrentLocker(locker);
                 locker.Interact(player);
                 return;
             }
@@ -210,6 +215,35 @@ public class PlayerInteraction : MonoBehaviour
                 meter.UseMeter();
                 return;    
             }
+
+            // Base Door & LockPick MiniGame
+            BaseDoor door = hit.collider.GetComponentInChildren<BaseDoor>();
+            if (door == null) door = hit.collider.GetComponent<BaseDoor>();
+            if (door != null)
+            {
+                if (door.isLocked)
+                {
+                    if (hit.collider.TryGetComponent(out LockPick_MiniGame lockPickObj))
+                    {
+                        if (IsHoldingLockPick()) lockPickObj.StartMinigame();
+                    }
+                }
+                else
+                {
+                    door.Interact(gameObject);
+                }
+                return;
+            }
+
+            // Crankhandle MiniGame
+            if (hit.collider.TryGetComponent(out CrankHandle_MiniGame CrankHandle_Obj))
+            {
+                if (IsHoldingCrankHandle())
+                {
+                    CrankHandle_Obj.StartMinigame();
+                    return;
+                }
+            }       
 
             if (Physics.Raycast(ray, out hit, 3.5f))
             {                
@@ -259,35 +293,35 @@ public class PlayerInteraction : MonoBehaviour
         equippedRb = null;
     }
 
-    public void UpdateFadeAlpha(float alpha) 
-    {
-        if (hideFadeGroup != null)
-        {
-            hideFadeGroup.alpha = alpha;
-            hideFadeGroup.blocksRaycasts = (alpha > 0.5f); 
-        }
-    }
+    // public void UpdateFadeAlpha(float alpha) 
+    // {
+    //     if (hideFadeGroup != null)
+    //     {
+    //         hideFadeGroup.alpha = alpha;
+    //         hideFadeGroup.blocksRaycasts = (alpha > 0.5f); 
+    //     }
+    // }
 
-    public void SetHiddenStatus(bool status)
-    {
-        isHidden = status;
-        hideManager.SetHidden(status);
+    // public void SetHiddenStatus(bool status)
+    // {
+    //     isHidden = status;
+    //     hideManager.SetHidden(status);
 
-        if (equippedItem != null)
-        {
-            ToggleEquippedColliders(false);
-            equippedRb.isKinematic = true;
-        }
+    //     if (equippedItem != null)
+    //     {
+    //         ToggleEquippedColliders(false);
+    //         equippedRb.isKinematic = true;
+    //     }
 
-        if (hideFadeGroup != null)
-        {
-            if (!status) 
-            {
-                hideFadeGroup.alpha = 0f;
-                hideFadeGroup.blocksRaycasts = false;
-            }
-        }
-    }
+    //     if (hideFadeGroup != null)
+    //     {
+    //         if (!status) 
+    //         {
+    //             hideFadeGroup.alpha = 0f;
+    //             hideFadeGroup.blocksRaycasts = false;
+    //         }
+    //     }
+    // }
 
     void FollowHand()
     {
@@ -295,19 +329,19 @@ public class PlayerInteraction : MonoBehaviour
         equippedRb.MoveRotation(handPoint.rotation);
     }
 
-    public void OnExitHiding(InputAction.CallbackContext context)
-    {
-        if (!context.performed) return;
+    // public void OnExitHiding(InputAction.CallbackContext context)
+    // {
+    //     if (!context.performed) return;
 
-        if (!isHidden) return;
+    //     if (!isHidden) return;
 
-        if (currentLocker != null)
-        {
-            currentLocker.Interact(player);
-            isHidden = false;
-            ClearLocker();
-        }
-    }
+    //     if (currentLocker != null)
+    //     {
+    //         currentLocker.Interact(player);
+    //         isHidden = false;
+    //         ClearLocker();
+    //     }
+    // }
 
     public void OnUse(InputAction.CallbackContext context)
     {
@@ -324,17 +358,14 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    public void OnTryShot(InputAction.CallbackContext context)
-    {
-        if (context.started)
-        {
-            if (equippedItem == null) return;
-            
-            // Cukup panggil UseItem(). Jika itu StunGun, dia akan otomatis menembak!
-            // Jika itu item lain (misal obat), dia bisa memakai efek obatnya.
-            equippedItem.UseItem(); 
-        }
-    }
+    // public void OnTryShot(InputAction.CallbackContext context)
+    // {
+    //     if (context.started)
+    //     {
+    //         if (equippedItem == null) return;
+    //         equippedItem.UseItem(); 
+    //     }
+    // }
 
     void TryEquip()
     {
@@ -379,15 +410,15 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    public void SetCurrentLocker(Locker locker)
-    {
-        currentLocker = locker;
-    }
+    // public void SetCurrentLocker(Locker locker)
+    // {
+    //     currentLocker = locker;Coba Anda perhatikan jendela Console di bagian bawah pada screenshot tersebut. Di sana terdapat pesan error berwarna merah:
+    // }
 
-    public void ClearLocker()
-    {
-        currentLocker = null;
-    }
+    // public void ClearLocker()
+    // {
+    //     currentLocker = null;
+    // }
 
     public void OnDrop(InputAction.CallbackContext context)
     {

@@ -21,8 +21,6 @@ public class MinigameManager : MonoBehaviour
         {
             lockpickUI.Setup(lockpickMinigame);
         }
-
-        Debug.Log("[MinigameManager] Berhasil diinisialisasi. Logic dan UI telah terhubung.");
     }
 
     public bool IsAnyMinigameActive()

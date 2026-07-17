@@ -64,13 +64,12 @@ public class LockPick_MiniGame : MonoBehaviour
         {
             needle.localRotation = Quaternion.AngleAxis(- _currentAngle,Vector3.forward);
         }
+    }
 
-        if (Input.GetKeyUp(KeyCode.F))
-            _inputConsumed = false;
- 
-        if (Input.GetKeyDown(KeyCode.F) && !_inputConsumed)
+    public void ReceiveInteractInput()
+    {
+        if (_isActive)
         {
-            _inputConsumed = true;
             CheckInput();
         }
     }

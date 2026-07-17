@@ -74,7 +74,7 @@ public class Locker : MonoBehaviour
         {
             float progress = 1f - (_hidingTimer / maxHidingTime);
             float targetAlpha = Mathf.Lerp(0.3f, 1.0f, progress);
-            _playerInteraction.UpdateFadeAlpha(targetAlpha);
+            // _playerInteraction.UpdateFadeAlpha(targetAlpha);
         }
         if (_hidingTimer <= 0) ExitLocker(_currentPlayerScript);
     }
@@ -92,12 +92,12 @@ public class Locker : MonoBehaviour
         _hidingTimer = maxHidingTime;
         _playerInteraction = player.GetComponent<PlayerInteraction>();
 
-        if (_playerInteraction != null)
-        {
-            _playerInteraction.SetCurrentLocker(this);
-            _playerInteraction.SetHiddenStatus(true);
-            _playerInteraction.UpdateFadeAlpha(0.3f);
-        }
+        // if (_playerInteraction != null)
+        // {
+        //     _playerInteraction.SetCurrentLocker(this);
+        //     _playerInteraction.SetHiddenStatus(true);
+        //     _playerInteraction.UpdateFadeAlpha(0.3f);
+        // }
 
         StartCoroutine(SmoothEnter(player));
     }
@@ -107,10 +107,10 @@ public class Locker : MonoBehaviour
         if (player == null || !_isOccupied) return;
         _isOccupied = false;
         
-        if (_playerInteraction != null)
-        {
-            _playerInteraction.UpdateFadeAlpha(0f);
-        }
+        // if (_playerInteraction != null)
+        // {
+        //     _playerInteraction.UpdateFadeAlpha(0f);
+        // }
 
         StartCoroutine(SmoothExit(player));
     }
@@ -174,10 +174,10 @@ public class Locker : MonoBehaviour
         player.transform.position = exitPoint.position;
         player.ResetRotation(exitPoint.eulerAngles.y);
 
-        if (_playerInteraction != null) {
-            _playerInteraction.SetHiddenStatus(false);
-            _playerInteraction.ClearLocker();
-        }
+        // if (_playerInteraction != null) {
+        //     _playerInteraction.SetHiddenStatus(false);
+        //     _playerInteraction.ClearLocker();
+        // }
 
         CharacterController cc = player.GetComponent<CharacterController>();
         if (cc != null) cc.enabled = true;

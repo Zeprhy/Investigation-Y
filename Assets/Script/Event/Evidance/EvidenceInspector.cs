@@ -94,7 +94,7 @@ public class EvidenceInspector : MonoBehaviour
                 return;
             }
         }
-        inspectionUIManager.HideHint();
+        // inspectionUIManager.HideHint();
     }
 
     public bool TryHandleInteract()

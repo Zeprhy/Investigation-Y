@@ -39,13 +39,13 @@ public class SettingsManager : MonoBehaviour
     float savedFOV = PlayerPrefs.GetFloat("Settings_FOV", 60f);
     SetFOV(savedFOV);
 
-    // --- Brightness ---
-        if (globalVolume.profile.TryGet(out colorAdjustments))
-        {
-            float savedBrightness = PlayerPrefs.GetFloat("Settings_Brightness", 0f);
-            brightnessSlider.value = savedBrightness;
-            SetBrightness(savedBrightness);
-        }
+    // // --- Brightness ---
+    //     if (globalVolume.profile.TryGet(out colorAdjustments))
+    //     {
+    //         float savedBrightness = PlayerPrefs.GetFloat("Settings_Brightness", 0f);
+    //         brightnessSlider.value = savedBrightness;
+    //         SetBrightness(savedBrightness);
+    //     }
 
 
     }

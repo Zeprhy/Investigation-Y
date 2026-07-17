@@ -4,11 +4,6 @@ using System.Collections;
 
 public class CrankHandle_MiniGame : MonoBehaviour
 {
-    // KODE BARU: Gembok cerita
-    [Header(" Story Event ")]
-    [Tooltip("Jika false, minigame tidak akan bisa dimulai meskipun player membawa Crank Handle")]
-    public bool isStoryUnlocked = false;
-
     [Header(" Pengaturan ")]
     [Tooltip("Seberapa cepat progress naik saat mouse diputar searah jarum jam")]
     [SerializeField] private float fillSpeed = 0.4f;
@@ -26,32 +21,30 @@ public class CrankHandle_MiniGame : MonoBehaviour
     [Tooltip("Sensitivitas deteksi gerakan mouse searah jarum jam")]
     [SerializeField] private float rotationSensitivity = 0.5f;
  
-    [Header("== UI ==")]
+    [Header("UI Referencess")]
     [Tooltip("Panel UI minigame")]
     [SerializeField] private GameObject crankPanel;
  
-    [Header("== Events ==")]
+    [Header("Events")]
     public UnityEvent onCrankComplete;   // Dipanggil saat progress penuh
     public UnityEvent onCrankCancelled;  // Dipanggil saat player berhenti
 
-    [Header("Pengaturan Kamera")]
-    [SerializeField] private bool useCameraLock = true;
-    [SerializeField] private MonoBehaviour[] scriptsToDisable;
-    [SerializeField] private bool unlockCursorForUI = false;
+    // [Header("Settings Camera")]
+    // [SerializeField] private bool useCameraLock = true;
+    // [SerializeField] private MonoBehaviour[] scriptsToDisable;
+    // [SerializeField] private bool unlockCursorForUI = false;
  
     // ---- State ----
-    private float _progress = 0f;        // 0 sampai 1
+    private float _progress = 0f;
     private bool _isActive = false;
     private bool _isHolding = false;
     private float _graceTimer = 0f;
     private bool _isComplete = false;
     private float _smoothedInput = 0f;
- 
-    // ---- Cache ----
+
     private WaitForSeconds _completeWait;
     private AudioSource _audioSource;
- 
-    // ---- Property untuk UI baca progress ----
+
     public float Progress => _progress;
     public bool IsActive => _isActive;
 
@@ -111,17 +104,8 @@ public class CrankHandle_MiniGame : MonoBehaviour
         }
     }
 
-    // KODE BARU: Fungsi untuk membuka kunci dari script lain
-    public void UnlockCrankFeature()
-    {
-        isStoryUnlocked = true;
-    }
-
     public void StartMinigame()
     {
-        // KODE BARU: Tolak interaksi jika cerita belum sampai sini
-        if (!isStoryUnlocked) return;
-
         _progress = 0f;
         _isActive = true;
         _isComplete = false;
@@ -131,21 +115,19 @@ public class CrankHandle_MiniGame : MonoBehaviour
         if (crankPanel != null)
             crankPanel.SetActive(true);
 
-        if (useCameraLock && scriptsToDisable != null)
-        {
-            foreach (MonoBehaviour script in scriptsToDisable)
-            {
-                if (script != null) script.enabled = false;
-            }
+        // if (useCameraLock && scriptsToDisable != null)
+        // {
+        //     foreach (MonoBehaviour script in scriptsToDisable)
+        //     {
+        //         if (script != null) script.enabled = false;
+        //     }
 
-            if (unlockCursorForUI)
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
-        }
-
-        Debug.Log("[CrankGame] Dimulai!");
+        //     if (unlockCursorForUI)
+        //     {
+        //         Cursor.lockState = CursorLockMode.None;
+        //         Cursor.visible = true;
+        //     }
+        // }
     }
 
     public void StopMinigame()
@@ -157,19 +139,19 @@ public class CrankHandle_MiniGame : MonoBehaviour
         if (crankPanel != null)
             crankPanel.SetActive(false);
 
-        if (useCameraLock && scriptsToDisable != null)
-        {
-            foreach (MonoBehaviour script in scriptsToDisable)
-            {
-                if (script != null) script.enabled = true;
-            }
+        // if (useCameraLock && scriptsToDisable != null)
+        // {
+        //     foreach (MonoBehaviour script in scriptsToDisable)
+        //     {
+        //         if (script != null) script.enabled = true;
+        //     }
 
-            if (unlockCursorForUI)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
-        }
+        //     if (unlockCursorForUI)
+        //     {
+        //         Cursor.lockState = CursorLockMode.Locked;
+        //         Cursor.visible = false;
+        //     }
+        // }
     }
 
     private IEnumerator CompleteMinigame()
@@ -181,8 +163,6 @@ public class CrankHandle_MiniGame : MonoBehaviour
 
         StopCrankSound();
         GameManager.Instance.audioManager.PlaySFX(completeSound);
-
-        //Debug.Log("[CrankMinigame] selesai pintu terbuka!");
 
         yield return _completeWait;
         StopMinigame();
